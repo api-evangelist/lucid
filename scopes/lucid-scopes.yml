@@ -1,0 +1,945 @@
+generated: '2026-08-01'
+method: derived
+source: openapi/lucid-data-api-openapi.yml, openapi/lucid-rest-api-openapi.yml
+schemes:
+- name: OAuth2
+  source: openapi/lucid-data-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://lucid.app/oauth2/authorize
+    tokenUrl: https://api.lucid.co/oauth2/token
+- name: OAuth2
+  source: openapi/lucid-rest-api-openapi.yml
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://lucid.app/oauth2/authorize
+    tokenUrl: https://api.lucid.co/oauth2/token
+scopes:
+- scope: account.audit.logs
+  description: View audit logs on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.info
+  description: View basic information about your account (e.g., account ID and account name)
+    .
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.legalhold
+  description: Create, view, and expire legal holds on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.legalhold.users
+  description: Manage legal hold users on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.legalhold.users:readonly
+  description: View legal hold users on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.legalhold:readonly
+  description: View legal holds on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.settings:readonly
+  description: View settings on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.user
+  description: Create, view, edit, and delete users on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.user.transfercontent
+  description: Transfer ownership of a user's resources to another user on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.user:readonly
+  description: View users on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: account.users:admin.readonly
+  description: View all users and their roles on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: cloud.credential
+  description: Manage cloud credentials.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: cloud.credential:readonly
+  description: View cloud credentials.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: cloud.datasource
+  description: Manage cloud data sources.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: cloud.datasource:readonly
+  description: View cloud data sources.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: cloud.model
+  description: Manage cloud models.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: data-service.admin
+  description: Scope needed for access to the Data APIs.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-data-api-openapi.yml
+- scope: document.app
+  description: View, edit, and manage any Lucidchart document selected for this third-party
+    application. Create, view, edit, and manage any Lucidchart document within its app-specific
+    folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: document.app.folder
+  description: Create, view, edit, and manage any Lucidchart document within its app-specific
+    folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: document.app.picker
+  description: View, edit, and manage any Lucidchart document selected for this third-party
+    application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: document.app.picker:readonly
+  description: View and download any Lucidchart document selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: document.content
+  description: Create, view, edit, and delete any Lucidchart document on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: document.content:readonly
+  description: View and download any Lucidchart document on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: folder
+  description: Create, view, edit, share, and delete your folders. Organize your folders and
+    their contents.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: folder:admin
+  description: Perform admin actions on folders belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: folder:admin.readonly
+  description: View all folders belonging to the account with admin permissions.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: folder:readonly
+  description: View any of your folders and list their contents.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: invitation
+  description: Accept document and folder share links.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: invitation.accept
+  description: Accept document and folder share links.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: licenses:admin
+  description: Perform admin actions on licenses and subscriptions belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: licenses:admin.readonly
+  description: View licenses and subscriptions belonging to the account with admin permissions.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.accessRequest
+  description: Request access to Lucid documents.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app
+  description: View, edit, create, and manage folders and documents within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.folder
+  description: Create, view, edit, and manage any Lucid document within its app-specific folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker
+  description: View, edit, and manage any Lucid document selected within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker.share
+  description: Create, view, edit, and delete document collaborators, embeds, and share links
+    for any Lucid document selected within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker.share.collaborator
+  description: Create, view, edit, and delete document collaborators for any Lucid document
+    selected within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker.share.collaborator:readonly
+  description: View document collaborators for any Lucid document selected within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker.share.embed
+  description: Create, view, edit, and delete document embeds for any Lucid document selected
+    within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker.share.embed:readonly
+  description: View document embeds for any Lucid document selected within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker.share.link
+  description: Create, view, edit, and delete share links for any Lucid document selected within
+    an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker.share.link:readonly
+  description: View share links for any Lucid document selected within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker.share:readonly
+  description: View document collaborators, embeds, and share links for any Lucid document selected
+    within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.app.picker:readonly
+  description: View and download any Lucid document selected within an app.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content
+  description: Create, view, edit, and delete any Lucid document accessible by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content.share
+  description: Create, view, edit, and delete document collaborators, embeds, and share links
+    for any Lucid document accessible by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content.share.collaborator
+  description: Create, view, edit, and delete document collaborators for any Lucid document
+    accessible by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content.share.collaborator:readonly
+  description: View document collaborators for any Lucid document accessible by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content.share.embed
+  description: Create, view, edit, and delete document embeds for any Lucid document accessible
+    by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content.share.embed:readonly
+  description: View document embeds for any Lucid document accessible by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content.share.link
+  description: Create, view, edit, and delete share links for any Lucid document accessible
+    by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content.share.link:readonly
+  description: View share links for any Lucid document accessible by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content.share:readonly
+  description: View document collaborators, embeds, and share links for any Lucid document accessible
+    by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content:admin
+  description: Perform admin actions on Lucid documents belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content:admin.readonly
+  description: View all Lucid documents belonging to the account with admin permissions.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.content:readonly
+  description: View and download any Lucid document accessible by the user.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucid.document.storage:admin.readonly
+  description: Perform admin actions backing up Lucid documents belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.accessRequest
+  description: Request access to Lucidchart documents.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app
+  description: View, edit, and manage any Lucidchart document selected for this third-party
+    application. Create, view, edit, and manage any Lucidchart document within its app-specific
+    folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.folder
+  description: Create, view, edit, and manage any Lucidchart document within its app-specific
+    folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker
+  description: View, edit, and manage any Lucidchart document selected for this third-party
+    application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker.share
+  description: Create, view, edit, and delete document collaborators, embeds, and share links
+    for any Lucidchart document selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker.share.collaborator
+  description: Create, view, edit, and delete collaborators and invitations of any Lucidchart
+    document on your team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker.share.collaborator:readonly
+  description: View collaborators and invitations of any Lucidchart document on your team or
+    enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker.share.embed
+  description: Create, view, edit, and delete embeds of any Lucidchart document on your team
+    or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker.share.embed:readonly
+  description: View embeds of any Lucidchart document on your team or enterprise account selected
+    for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker.share.link
+  description: Create, view, edit, and delete the third party application's share links of any
+    Lucidchart document on your team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker.share.link:readonly
+  description: View the third party application's share links of any Lucidchart document on
+    your team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker.share:readonly
+  description: View document collaborators, embeds, and share links for any Lucidchart document
+    selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.app.picker:readonly
+  description: View and download any Lucidchart document selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content
+  description: Create, view, edit, and delete any Lucidchart document on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content.share
+  description: Create, view, edit, and delete document collaborators, embeds, and share links
+    for any of your Lucidchart documents.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content.share.collaborator
+  description: Create, view, edit, and delete collaborators and invitations for any of your
+    Lucidchart documents on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content.share.collaborator:readonly
+  description: View collaborators and invitations for any of your Lucidchart documents on your
+    team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content.share.embed
+  description: Create, view, edit, and delete embeds for any of your Lucidchart documents on
+    your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content.share.embed:readonly
+  description: View embeds for any of your Lucidchart documents on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content.share.link
+  description: Create, view, edit, and delete the third party application's share links for
+    any of your Lucidchart documents on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content.share.link:readonly
+  description: View the third party application's share links for any of your Lucidchart documents
+    on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content.share:readonly
+  description: View document collaborators, embeds, and share links for any of your Lucidchart
+    documents.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content:admin
+  description: Perform admin actions on Lucidchart documents belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content:admin.readonly
+  description: View all Lucidchart documents belonging to the account with admin permissions.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.content:readonly
+  description: View and download any Lucidchart document on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidchart.document.storage:admin.readonly
+  description: Perform admin actions backing up Lucidchart documents belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.accessRequest
+  description: Request access to Lucidscale models.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app
+  description: View, edit, and manage any Lucidscale model selected for this third-party application.
+    Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.folder
+  description: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker
+  description: View, edit, and manage any Lucidscale model selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker.share
+  description: Create, view, edit, and delete document collaborators, embeds, and share links
+    for any Lucidscale model selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker.share.collaborator
+  description: Create, view, edit, and delete collaborators and invitations of any Lucidscale
+    model on your team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker.share.collaborator:readonly
+  description: View collaborators and invitations of any Lucidscale model on your team or enterprise
+    account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker.share.embed
+  description: Create, view, edit, and delete embeds of any Lucidscale model on your team or
+    enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker.share.embed:readonly
+  description: View embeds of any Lucidscale model on your team or enterprise account selected
+    for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker.share.link
+  description: Create, view, edit, and delete the third party application's share links of any
+    Lucidscale model on your team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker.share.link:readonly
+  description: View the third party application's share links of any Lucidscale model on your
+    team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker.share:readonly
+  description: View document collaborators, embeds, and share links for any Lucidscale model
+    selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.app.picker:readonly
+  description: View and download any Lucidscale model selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content
+  description: Create, view, edit, and delete any Lucidscale model on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content.share
+  description: Create, view, edit, and delete document collaborators, embeds, and share links
+    for any of your Lucidscale models.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content.share.collaborator
+  description: Create, view, edit, and delete collaborators and invitations for any of your
+    Lucidscale models on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content.share.collaborator:readonly
+  description: View collaborators and invitations for any of your Lucidscale models on your
+    team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content.share.embed
+  description: Create, view, edit, and delete embeds for any of your Lucidscale models on your
+    team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content.share.embed:readonly
+  description: View embeds for any of your Lucidscale models on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content.share.link
+  description: Create, view, edit, and delete the third party application's share links for
+    any of your Lucidscale models on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content.share.link:readonly
+  description: View the third party application's share links for any of your Lucidscale models
+    on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content.share:readonly
+  description: View document collaborators, embeds, and share links for any of your Lucidscale
+    models.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content:admin
+  description: Perform admin actions on Lucidscale models belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content:admin.readonly
+  description: View all Lucidscale models belonging to the account with admin permissions.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.content:readonly
+  description: View and download any Lucidscale model on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidscale.document.storage:admin.readonly
+  description: Perform admin actions backing up Lucidscale models belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.accessRequest
+  description: Request access to Lucidspark boards.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app
+  description: View, edit, and manage any Lucidspark board selected for this third-party application.
+    Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.folder
+  description: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker
+  description: View, edit, and manage any Lucidspark board selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker.share
+  description: Create, view, edit, and delete document collaborators, embeds, and share links
+    for any Lucidspark board selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker.share.collaborator
+  description: Create, view, edit, and delete collaborators and invitations of any Lucidspark
+    board on your team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker.share.collaborator:readonly
+  description: View collaborators and invitations of any Lucidspark board on your team or enterprise
+    account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker.share.embed
+  description: Create, view, edit, and delete embeds of any Lucidspark board on your team or
+    enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker.share.embed:readonly
+  description: View embeds of any Lucidspark board on your team or enterprise account selected
+    for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker.share.link
+  description: Create, view, edit, and delete the third party application's share links of any
+    Lucidspark board on your team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker.share.link:readonly
+  description: View the third party application's share links of any Lucidspark board on your
+    team or enterprise account selected for the third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker.share:readonly
+  description: View document collaborators, embeds, and share links for any Lucidspark board
+    selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.app.picker:readonly
+  description: View and download any Lucidspark board selected for this third-party application.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content
+  description: Create, view, edit, and delete any Lucidspark board on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content.share
+  description: Create, view, edit, and delete document collaborators, embeds, and share links
+    for any of your Lucidspark boards.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content.share.collaborator
+  description: Create, view, edit, and delete collaborators and invitations for any of your
+    Lucidspark boards on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content.share.collaborator:readonly
+  description: View collaborators and invitations for any of your Lucidspark boards on your
+    team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content.share.embed
+  description: Create, view, edit, and delete embeds for any of your Lucidspark boards on your
+    team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content.share.embed:readonly
+  description: View embeds for any of your Lucidspark boards on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content.share.link
+  description: Create, view, edit, and delete the third party application's share links for
+    any of your Lucidspark boards on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content.share.link:readonly
+  description: View the third party application's share links for any of your Lucidspark boards
+    on your team or enterprise account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content.share:readonly
+  description: View document collaborators, embeds, and share links for any of your Lucidspark
+    boards.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content:admin
+  description: Perform admin actions on Lucidspark boards belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content:admin.readonly
+  description: View all Lucidspark boards belonging to the account with admin permissions.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.content:readonly
+  description: View and download any Lucidspark board on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: lucidspark.document.storage:admin.readonly
+  description: Perform admin actions backing up Lucidspark boards belonging to the account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: offline_access
+  description: Continue to perform authorized actions when you're not logged in (required to
+    refresh tokens).
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: repository
+  description: Manage repositories.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: repository:admin
+  description: Perform admin actions on repositories.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: repository:readonly
+  description: View repositories.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: teams
+  description: Create, view, and edit, archive, and restore any teams on your account. Control
+    which users belong to teams.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: teams:admin
+  description: Manage teams on your account.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: teams:readonly
+  description: View any teams on your account and list which users belong to them.
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+- scope: user.profile
+  description: Allow applications to view basic information about you (e.g., full name, username,
+    and email).
+  flows:
+  - authorizationCode
+  sources:
+  - openapi/lucid-rest-api-openapi.yml

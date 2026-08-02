@@ -1,0 +1,140 @@
+generated: '2026-08-01'
+method: derived
+source: >-
+  openapi/lucid-rest-api-openapi.yml, openapi/lucid-data-api-openapi.yml,
+  openapi/lucid-scim-api-openapi.yml, https://developer.lucid.co/reference/rate-limits,
+  https://developer.lucid.co/reference/authentication-methods,
+  https://developer.lucid.co/reference/general-oauth-20-errors
+summary: >-
+  Cross-cutting request/response semantics for the Lucid Developer Platform, derived from the
+  three harvested OpenAPI specs and the docs pages that describe auth, limits and errors. Recorded
+  as observed — where Lucid does not publish a convention (idempotency, RFC 9457 problem details,
+  a request-id header, a documented rate-limit header) that is stated as absent rather than
+  guessed at.
+
+authentication:
+  styles:
+  - name: API key
+    scheme: http bearer (securityScheme "ApiKey" in the REST and SCIM specs)
+    docs: https://developer.lucid.co/docs/api-keys
+    grants: https://developer.lucid.co/reference/api-key-grants
+    note: Account-level key with grant-based permissions; not user-scoped.
+  - name: OAuth 2.0
+    scheme: authorizationCode
+    authorization_url: https://lucid.app/oauth2/authorize
+    token_url: https://api.lucid.co/oauth2/token
+    refresh_url: https://api.lucid.co/oauth2/token
+    introspection_url: https://api.lucid.co/oauth2/token/introspect
+    revocation_url: https://api.lucid.co/oauth2/token/revoke
+    pkce: [S256, plain]
+    token_types: [user token, account token]
+    docs: https://developer.lucid.co/reference/authentication-methods
+    discovery: https://lucid.app/.well-known/oauth-authorization-server
+    scopes: scopes/lucid-scopes.yml
+  - name: OAuth 2.0 (MCP surface)
+    scheme: authorizationCode + PKCE S256 with RFC 7591 dynamic client registration
+    resource: https://mcp.lucid.app/mcp
+    discovery:
+    - https://mcp.lucid.app/.well-known/oauth-protected-resource
+    - https://mcp.lucid.app/.well-known/oauth-authorization-server
+  profile: authentication/lucid-authentication.yml
+
+idempotency:
+  supported: false
+  evidence: >-
+    No Idempotency-Key header, parameter or documented retry-safety contract appears in any of the
+    220 harvested operations or in the developer docs. Repeated POSTs to creation endpoints
+    (createDocument, createFolder, createUser, createDataItems, …) are not deduplicated by any
+    published client-supplied key.
+
+pagination:
+  styles:
+  - api: REST
+    style: opaque-cursor
+    where: audit logs (getAuditLogs, queryAuditLogs)
+    request_params:
+    - {name: pageSize, in: query, description: The number of audit logs to return per request.}
+    - {name: pageToken, in: query, description: A token used for pagination to retrieve the next page of results when polling audit logs.}
+  - api: REST
+    style: unpaginated
+    where: >-
+      Most collection endpoints (search documents/folders, list collaborators, list folder
+      contents, list users) return the full result array with server-side caps documented in the
+      operation description rather than a cursor.
+  - api: SCIM
+    style: index-based (SCIM 2.0 standard)
+    request_params:
+    - {name: startIndex, in: query}
+    - {name: count, in: query}
+    - {name: filter, in: query}
+    - {name: attributes, in: query}
+    - {name: excludedAttributes, in: query}
+  - api: Data
+    style: range
+    request_params:
+    - {name: start, in: query}
+    - {name: end, in: query}
+    - {name: fields, in: query}
+    - {name: filter, in: query}
+
+field_selection:
+  supported: partial
+  mechanisms:
+  - {api: SCIM, params: [attributes, excludedAttributes]}
+  - {api: Data, params: [fields, properties, items, collection, dataSet, dataSource]}
+  - {api: REST, note: 'Export format selection on getOrExportDocument is negotiated with the Accept header rather than a query parameter.'}
+
+impersonation:
+  header: Lucid-Request-As
+  description: >-
+    Account owners and document admins with the required permissions can act on behalf of another
+    user by supplying the Lucid-Request-As header. Declared as a reusable component parameter
+    (RequestAs-AccountDocuments, RequestAs-Folders, RequestAs-Teams) and applied to 8 operations.
+
+content_negotiation:
+  header: Accept
+  description: >-
+    On the Export Document API the format of the exported document (PNG, PDF, JPEG, SVG, CSV) is
+    set via the Accept header. 415 Unsupported Media Type is returned for unsupported values.
+
+request_tracing:
+  request_id_header: null
+  evidence: No request-id / correlation-id header is documented or declared in any spec.
+
+versioning:
+  scheme: uri-path
+  current: v1
+  note: >-
+    A single v2 path exists in the REST spec (/v2/dataSources/aws/regions) alongside the v1
+    surface. The SCIM API is versioned in its base path (/scim/v2). Lucid publishes no dated or
+    header-based API version negotiation.
+  lifecycle: lifecycle/lucid-lifecycle.yml
+
+errors:
+  envelope: >-
+    Plain HTTP status codes with a prose description per operation; no RFC 9457
+    application/problem+json anywhere in the three specs. SCIM returns the SCIM 2.0 error schema.
+  most_used_status_codes: [403, 400, 404, 409, 401, 429]
+  oauth_errors: [invalid_client, invalid_scopes]
+  catalog: errors/lucid-problem-types.yml
+
+rate_limits:
+  documented: true
+  docs: https://developer.lucid.co/reference/rate-limits
+  published:
+  - {surface: Data API, limit: 750 requests per minute, scope: user}
+  - {surface: Data API, control: 'Hard/Soft refresh interval — 30 seconds since last'}
+  - {surface: Data API, control: 'File size limit — 3 MB'}
+  - {surface: REST — searchDocuments, limit: 300 requests in 5 seconds, scope: account, evidence: '429 response description in openapi/lucid-rest-api-openapi.yml'}
+  status_code: 429
+  headers:
+    documented: false
+    note: Lucid documents no X-RateLimit-*/RateLimit-*/Retry-After response headers.
+  introspection_operation: openapi/lucid-data-api-openapi.yml#getRateLimits
+
+cross_links:
+  authentication: authentication/lucid-authentication.yml
+  scopes: scopes/lucid-scopes.yml
+  errors: errors/lucid-problem-types.yml
+  lifecycle: lifecycle/lucid-lifecycle.yml
+  conformance: conformance/lucid-conformance.yml

@@ -1,0 +1,73 @@
+generated: '2026-08-01'
+method: searched
+source: npm registry + https://developer.lucid.co/docs/lucid-extension-api
+note: >-
+  Lucid publishes no first-party server-side REST SDK (no Python/Java/Go/Ruby/.NET client for
+  api.lucid.co). Its shipped libraries are the browser/editor extension toolchain, both
+  maintained by the npm user "lucid-ops". Sample REST applications are published as source, not
+  as installable packages.
+packages:
+- language: typescript
+  registry: npm
+  name: lucid-extension-sdk
+  url: https://www.npmjs.com/package/lucid-extension-sdk
+  install: npm install lucid-extension-sdk
+  version: 1.2.4
+  license: Apache-2.0
+  official: true
+  maintainers: [lucid-ops, bendilts]
+  first_published: '2021-12-02'
+  last_published: '2026-07-30'
+  downloads_last_month: 66808
+  description: Utility classes for writing Lucid Software editor extensions.
+  covers: Lucid Extension API (in-editor extensions, custom shapes, data connectors, OAuth providers)
+- language: typescript
+  registry: npm
+  name: lucid-package
+  url: https://www.npmjs.com/package/lucid-package
+  install: npm install lucid-package
+  version: 0.0.144
+  license: Apache-2.0
+  official: true
+  bin: lucid-package
+  maintainers: [lucid-ops, bendilts]
+  first_published: '2021-12-07'
+  last_published: '2026-07-30'
+  downloads_last_month: 16999
+  description: >-
+    CLI for creating, bundling and testing Lucid extension packages. Command surface captured in
+    cli/lucid-cli.yml.
+  covers: Lucid extension packaging toolchain
+source_samples:
+- name: sample-lucid-rest-applications
+  url: https://github.com/lucidsoftware/sample-lucid-rest-applications
+  language: python
+  official: true
+  kind: sample-source
+  description: Example REST API apps for Lucid (lucid.app). Not a published package.
+- name: sample-lucid-extensions
+  url: https://github.com/lucidsoftware/sample-lucid-extensions
+  language: typescript
+  official: true
+  kind: sample-source
+  description: Example Lucid editor extensions. Not a published package.
+- name: lucid-mcp-server
+  url: https://github.com/lucidsoftware/lucid-mcp-server
+  official: true
+  kind: repo
+  description: The Lucid MCP server repo (hosted remotely at https://mcp.lucid.app/mcp).
+registries_checked:
+- {registry: npm, result: 2 official packages}
+- {registry: pypi, result: no first-party Lucid client (the `lucid` project on PyPI is unrelated)}
+- {registry: rubygems, result: no first-party Lucid client (the `lucid` gem is unrelated)}
+- {registry: maven-central, result: none found}
+- {registry: nuget, result: none found}
+- {registry: pkg.go.dev, result: none found}
+- {registry: packagist, result: none found}
+- {registry: crates.io, result: none found}
+x-evidence:
+  fetched: '2026-08-01'
+  urls:
+  - https://registry.npmjs.org/lucid-extension-sdk
+  - https://registry.npmjs.org/lucid-package
+  - https://api.github.com/orgs/lucidsoftware/repos

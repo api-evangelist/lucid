@@ -1,0 +1,55 @@
+generated: '2026-08-01'
+method: searched
+source: https://developer.lucid.co/docs/lucid-package-cli
+name: lucid-package
+description: >-
+  First-party CLI for authoring Lucid extension packages — editor extensions, custom shape
+  libraries, data connectors and OAuth providers — then bundling them into the package.zip Lucid
+  installs. It targets the Extension API (browser/editor surface), not the REST API; there is no
+  first-party CLI for api.lucid.co.
+install:
+- method: npm
+  command: npm install lucid-package
+  package: packages/lucid-packages.yml#lucid-package
+binary: lucid-package
+version: 0.0.144
+license: Apache-2.0
+commands:
+- name: create
+  description: Create a new Lucid extension in a new directory.
+- name: create-editor-extension
+  description: Creates a new directory with the given name, with a very simple editor extension inside it.
+- name: create-data-connector
+  description: Creates a new directory with the given name in the data-connectors folder of your extension package.
+- name: create-shape-library
+  description: Creates a shape library in a new directory with the given name, and adds a reference to that shape library in manifest.json.
+- name: create-image-shape-library
+  description: Creates a shape library from a directory of images.
+- name: test-editor-extension
+  description: Starts a local HTTP server that watches the given editor extension's source code and provides a debug-compiled version.
+- name: test-shape-libraries
+  description: Starts a local HTTP server that watches this extension's shape library source code and provides a debug-compiled version.
+- name: bundle
+  description: Compiles the editor extensions and custom shape libraries in the current extension package and produces the final package.zip file.
+- name: build-editor-extension
+  description: Compiles that extension in release mode, performing type checking and producing the final bin/extension.js file.
+- name: update-sdk
+  description: Updates the npm dependency of each of your editor extensions to the latest published version.
+flows:
+- name: Scaffold and run an extension locally
+  steps:
+  - lucid-package create
+  - lucid-package create-editor-extension
+  - lucid-package test-editor-extension
+- name: Ship an extension package
+  steps:
+  - lucid-package build-editor-extension
+  - lucid-package bundle
+  - Upload package.zip via the Lucid developer portal
+artifacts:
+  manifest: manifest.json declares the package id and every shape library, editor extension, OAuth provider and data connector it contains.
+  output: package.zip
+x-evidence:
+  fetched: '2026-08-01'
+  url: https://developer.lucid.co/docs/lucid-package-cli
+  http_status: 200

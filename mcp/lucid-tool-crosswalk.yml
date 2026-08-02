@@ -1,0 +1,129 @@
+generated: '2026-08-01'
+method: derived
+source: mcp/lucid-mcp.yml + mcp/lucid-docs-mcp-tools.json + openapi/*.yml
+summary: >-
+  Lucid's two MCP servers and its REST surface are genuinely different projections. The
+  documentation MCP server (anonymous, 6 tools captured live) exposes NO product operations at
+  all — it is a meta-surface over the OpenAPI specs plus two extension-authoring tools, so every
+  one of its tools is mcp_only. The product MCP server (mcp.lucid.app) is OAuth-gated and its
+  tools/list returned 401, so its tools cannot be bound to operationIds without fabricating the
+  mapping; it is recorded as unresolved rather than guessed. That leaves all 219 REST operations
+  as rest_only for now.
+
+surfaces:
+  openapi:
+  - file: openapi/lucid-rest-api-openapi.yml
+    server: https://api.lucid.co
+    operations: 154
+  - file: openapi/lucid-data-api-openapi.yml
+    server: https://data.lucid.app
+    operations: 50
+  - file: openapi/lucid-scim-api-openapi.yml
+    server: https://users.lucid.app/scim/v2
+    operations: 15
+  - file: openapi/lucid-chatgpt-plugin-openapi.yaml
+    server: https://mlai.lucid.app
+    operations: 1
+  graphql: null
+  mcp:
+  - url: https://mcp.lucid.app/mcp
+    gated: true
+    reason: 'tools/list returns HTTP 401 {"error":"unauthorized"} — OAuth token required'
+  - url: https://lucid-developer-docs.readme.io/mcp
+    gated: false
+    tools: 6
+
+crosswalk: []
+
+mcp_only:
+- tool: list-specs
+  server: lucid-developer-docs
+  reason: Documentation meta-tool; enumerates the three uploaded OpenAPI specs. No REST operation backs it.
+- tool: list-endpoints
+  server: lucid-developer-docs
+  reason: Documentation meta-tool; returns paths+methods+summaries for one spec. No REST operation backs it.
+- tool: get-endpoint
+  server: lucid-developer-docs
+  reason: Documentation meta-tool; returns a verbatim OpenAPI fragment for one path+method. No REST operation backs it.
+- tool: search-endpoints
+  server: lucid-developer-docs
+  reason: Documentation meta-tool; keyword search across paths/operations/parameters. No REST operation backs it.
+- tool: extension-sdk
+  server: lucid-developer-docs
+  reason: Code-authoring tool for the lucid-extension-sdk (client-side editor extension API). The Extension API is a browser SDK, not a REST surface.
+- tool: build-extension
+  server: lucid-developer-docs
+  reason: Scaffolds a lucid-package project. Local tooling, not a REST operation.
+
+unresolved:
+- server: https://mcp.lucid.app/mcp
+  reason: auth-gated tools/list (HTTP 401)
+  what_lucid_documents: >-
+    Search, retrieve, edit, summarize and create Lucid documents from an AI client; a Lucid
+    repositories MCP server also shipped in the July 2026 Process Accelerator release notes.
+  next_step: >-
+    Authenticated MCP introspection (OAuth authorization_code + PKCE via
+    https://mcp.lucid.app/oauth/authorize, dynamic client registration available) would return
+    the real tool set with inputSchema and allow a proper binding to the document/folder/search
+    operationIds in openapi/lucid-rest-api-openapi.yml.
+
+rest_only:
+- capability: Cloud (AWS / Azure / Google Cloud model creation, sync, credentials, data sources)
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 50
+- capability: Folders Collaboration
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 11
+- capability: Document Access (create, import, copy, search, export, trash, contents)
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 10
+- capability: Folders
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 9
+- capability: Teams
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 9
+- capability: Repositories
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 9
+- capability: Legal Holds
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 8
+- capability: Documents Collaboration
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 7
+- capability: Users
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 5
+- capability: Embedding Utils / Document Embedding / Document Picker / Unfurling
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 11
+- capability: Documents Sharing / Folders Sharing / Sharing (share links)
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 9
+- capability: OAuth 2.0 Tokens
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 3
+- capability: Document Comments
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 3
+- capability: Licenses / Subscriptions / Accounts / Audit Logs / Transfer Content
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 10
+- capability: Data API (data sets, sources, collections, schemas, items, grants, rate limits)
+  spec: openapi/lucid-data-api-openapi.yml
+  operations: 50
+- capability: SCIM 2.0 provisioning (Users, Groups, Schemas, ServiceProviderConfig)
+  spec: openapi/lucid-scim-api-openapi.yml
+  operations: 15
+- capability: ChatGPT plugin diagram creation from Mermaid
+  spec: openapi/lucid-chatgpt-plugin-openapi.yaml
+  operations: 1
+
+coverage:
+  tools_named: 6
+  tools_bound: 0
+  mcp_only: 6
+  mcp_tools_unresolved_gated: true
+  rest_operations_total: 220
+  rest_operations_with_tool: 0

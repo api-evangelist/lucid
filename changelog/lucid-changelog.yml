@@ -1,0 +1,72 @@
+generated: '2026-08-01'
+method: searched
+source: https://community.lucid.co/product-updates
+url: https://community.lucid.co/product-updates
+scheme: dated release notes, one thread per product line
+cadence:
+  lucid_suite: monthly
+  admin_panel: quarterly
+  cloud_accelerator: monthly
+  process_accelerator: monthly
+  enterprise_shield: monthly
+  airfocus: monthly
+note: >-
+  Lucid publishes no API-specific changelog on developer.lucid.co — the ReadMe hub has no
+  /changelog. Product release notes are posted to the community site, and API/agent-facing changes
+  (MCP servers, integrations) surface inside those posts. Recent window only; the live page is the
+  source of truth.
+entries:
+- date: '2026-07-31'
+  title: Lucid Suite release notes | July 2026
+  scope: Lucid Suite
+  highlights:
+  - AI-powered diagram generation
+  - Intelligent line nudging
+  - Presentation updates
+- date: '2026-07-31'
+  title: Admin panel release notes | July 2026
+  scope: Admin panel (quarterly)
+  highlights:
+  - Enhanced search capabilities
+  - Bulk archive options
+  - Team merge functionality
+- date: '2026-07-31'
+  title: Cloud Accelerator release notes | July 2026
+  scope: Lucid Cloud Accelerator (Lucidscale)
+  highlights:
+  - Cloud agent (beta)
+  - Version comparison
+- date: '2026-07-31'
+  title: Process Accelerator release notes | July 2026
+  scope: Lucid Process Accelerator
+  highlights:
+  - Lucid repositories MCP server
+  - Process Capture tool
+  api_relevant: true
+- date: '2026-07-31'
+  title: Enterprise Shield release notes | July 2026
+  scope: Lucid Enterprise Shield
+  highlights:
+  - Advanced AI controls
+  - Custom infotypes
+  - Audit logging
+  api_relevant: true
+- date: '2026-07-31'
+  title: airfocus release notes | July 2026
+  scope: airfocus
+  highlights:
+  - Rich text fields
+  - MCP server enhancements
+  - Integration management restrictions
+  api_relevant: true
+related:
+- kind: announcement
+  title: Lucid MCP server — connect the visual power of Lucid with your AI tools
+  url: https://lucid.co/blog/lucid-mcp-server
+- kind: announcement
+  title: Introducing the Lucid Model Context Protocol (MCP) server
+  url: https://community.lucid.co/community-news-and-announcements-9/introducing-the-lucid-model-context-protocol-mcp-server-12230
+x-evidence:
+  fetched: '2026-08-01'
+  url: https://community.lucid.co/product-updates
+  http_status: 200

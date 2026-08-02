@@ -1,23 +1,222 @@
 aid: lucid
 name: Lucid
-description: 'Lucid is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
 url: https://raw.githubusercontent.com/api-evangelist/lucid/refs/heads/main/apis.yml
+description: >-
+  Lucid Software Inc. is the visual collaboration company behind the Lucid Suite — Lucidchart
+  (intelligent diagramming), Lucidspark (virtual whiteboarding) and Lucidscale (cloud
+  visualization) — plus the Lucid Cloud, Process and Enterprise Shield accelerators and airfocus.
+  The Lucid Developer Platform at developer.lucid.co publishes three OpenAPI-described surfaces:
+  the Lucid REST API on api.lucid.co for documents, folders, sharing, embeds, comments, teams,
+  repositories, legal holds, licenses and audit logs; the Lucid Data API on data.lucid.app for
+  the structured data sets, collections, schemas and data items that back data-linked diagrams;
+  and a SCIM 2.0 API on users.lucid.app for enterprise user and group provisioning. Lucid also
+  ships an in-editor Extension API (lucid-extension-sdk plus the lucid-package CLI), an Embed
+  SDK, and an OAuth-gated remote MCP server at mcp.lucid.app that lets AI clients search, read,
+  edit and create Lucid documents. Lucid is privately held and trades on secondary markets.
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/lucidchart.png
 created: '2026-08-01'
 modified: '2026-08-01'
 tags:
-- Company
-apis: []
+- Visual Collaboration
+- Diagramming
+- Whiteboarding
+- Productivity
+- SaaS
+- Cloud Visualization
+- SCIM
+- Identity
+- Data
+- MCP
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- aid: lucid:lucid-rest-api
+  name: Lucid REST API
+  description: >-
+    The Lucid REST API provides programmatic access to manage documents, users, folders, sharing,
+    licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale).
+    154 operations across 125 paths, covering document create/import/copy/search/export, folder
+    trees, user and team collaborators, share links, embeds and the document picker, comments,
+    repositories, legal holds, subscriptions and licenses, audit logs, and the Lucidscale cloud
+    surfaces for AWS, Azure and Google Cloud. Authenticate via OAuth 2.0 or API key.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Documents
+  - Folders
+  - Sharing
+  - Users
+  - Teams
+  - Audit Logs
+  - Cloud
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-rest-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: Overlay
+    url: overlays/lucid-rest-api-overlay.yaml
+- aid: lucid:lucid-data-api
+  name: Lucid Data API
+  description: >-
+    The Lucid Data API enables external applications to create, read, update, and delete
+    structured data linked to Lucid documents. 50 operations across data sets, data set grants
+    and properties, data sources (including a CSV adapter), collections, field-definition
+    schemas, and data items addressed by id or by key. Authenticate via OAuth 2.0 with the
+    data-service.admin scope.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://data.lucid.app
+  tags:
+  - Data
+  - Collections
+  - Schemas
+  - Data Sets
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-data-api-openapi.yml
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: Overlay
+    url: overlays/lucid-data-api-overlay.yaml
+- aid: lucid:lucid-scim-api
+  name: Lucid SCIM API
+  description: >-
+    The Lucid SCIM 2.0 API enables identity providers to automatically provision and deprovision
+    users and groups in a Lucid account. 15 operations over /Users, /Groups, /Schemas and
+    /ServiceProviderConfig, available to Enterprise accounts with bearer-token auth.
+  humanURL: https://developer.lucid.co/reference/overview-scim
+  baseURL: https://users.lucid.app/scim/v2
+  tags:
+  - SCIM
+  - Identity
+  - Provisioning
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-scim-api-openapi.yml
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+  - type: Overlay
+    url: overlays/lucid-scim-api-overlay.yaml
+- aid: lucid:lucid-mcp-server
+  name: Lucid MCP Server
+  description: >-
+    Lucid's remote Model Context Protocol server. Connects AI clients (ChatGPT, Claude, Microsoft
+    Copilot, Cursor) to Lucid documents so they can be searched, retrieved, edited, summarized
+    and created in natural language. OAuth 2.0 protected, with RFC 9728 protected-resource
+    metadata, RFC 8414 authorization-server metadata and RFC 7591 dynamic client registration.
+  humanURL: https://developer.lucid.co/docs/mcp
+  baseURL: https://mcp.lucid.app/mcp
+  tags:
+  - MCP
+  - Agents
+  - AI
+  properties:
+  - type: MCPServer
+    url: mcp/lucid-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/lucid-tool-crosswalk.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/mcp
+- aid: lucid:lucid-chatgpt-plugin-api
+  name: Lucid ChatGPT Plugin API
+  description: >-
+    The API behind Lucid's ChatGPT plugin — accepts Mermaid diagram source and returns a rendered
+    image link plus, for flowcharts, an editable Lucidchart link. Described by the OpenAPI that
+    Lucid's /.well-known/ai-plugin.json manifest points at.
+  humanURL: https://lucid.app/.well-known/ai-plugin.json
+  baseURL: https://mlai.lucid.app
+  tags:
+  - AI
+  - Mermaid
+  - Diagramming
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-chatgpt-plugin-openapi.yaml
 common:
+- type: AgenticAccess
+  url: agentic-access/lucid-agentic-access.yml
+- type: TrustCenter
+  url: security/lucid-trust-center.yml
+- type: DomainSecurity
+  url: security/lucid-domain-security.yml
+- type: OAuthScopes
+  url: scopes/lucid-scopes.yml
+- type: Authentication
+  url: authentication/lucid-authentication.yml
 - type: Website
+  url: https://lucid.co/
+- type: DeveloperPortal
+  url: https://developer.lucid.co/
+- type: Documentation
+  url: https://developer.lucid.co/docs/welcome
+- type: APIReference
+  url: https://developer.lucid.co/reference/api
+- type: GettingStarted
+  url: https://developer.lucid.co/docs/welcome
+- type: Support
+  url: https://community.lucid.co/lucid-for-developers-6
+- type: Blog
+  url: https://lucid.co/blog
+- type: GitHubOrganization
+  url: https://github.com/lucidsoftware
+- type: Pricing
+  url: https://lucid.app/pricing/lucidchart
+- type: SignUp
+  url: https://lucid.app/users/login?activate=lucidchart
+- type: TermsOfService
+  url: https://lucid.co/tos
+- type: PrivacyPolicy
+  url: https://lucid.co/privacy
+- type: Compliance
+  url: https://lucid.co/security
+- type: Security
+  url: https://lucid.co/security
+- type: VulnerabilityDisclosure
+  url: security/lucid-vulnerability-disclosure.yml
+- type: StatusPage
+  url: https://status.lucid.co/
+- type: Lifecycle
+  url: lifecycle/lucid-lifecycle.yml
+- type: ChangeLog
+  url: changelog/lucid-changelog.yml
+- type: WellKnown
+  url: well-known/lucid-well-known.yml
+- type: Conventions
+  url: conventions/lucid-conventions.yml
+- type: Conformance
+  url: conformance/lucid-conformance.yml
+- type: ErrorCatalog
+  url: errors/lucid-problem-types.yml
+- type: DataModel
+  url: data-model/lucid-data-model.yml
+- type: RateLimits
+  url: rate-limits/lucid-rate-limits.yml
+- type: Packages
+  url: packages/lucid-packages.yml
+- type: SDKs
+  url: packages/lucid-packages.yml
+- type: CLI
+  url: cli/lucid-cli.yml
+- type: Components
+  url: components/lucid-components.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/lucid-llms.txt
+- type: MCPServer
+  url: mcp/lucid-mcp.yml
+- type: SecondaryMarket
   url: https://forgeglobal.com/lucid_stock/
+x-enrichment:
+  date: '2026-08-01'
+  status: enriched
+  artifacts_added: 39
+  pass: local-v1

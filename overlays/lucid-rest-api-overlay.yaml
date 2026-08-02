@@ -1,0 +1,82 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Lucid REST API
+  version: 1.0.0
+extends: openapi/lucid-rest-api-openapi.yml
+x-generated: '2026-08-01'
+x-method: generated
+x-source: api-evangelist enrichment pipeline (all/lucid)
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: lucid
+    x-apievangelist-artifacts:
+      authentication: authentication/lucid-authentication.yml
+      scopes: scopes/lucid-scopes.yml
+      conventions: conventions/lucid-conventions.yml
+      errors: errors/lucid-problem-types.yml
+      lifecycle: lifecycle/lucid-lifecycle.yml
+      conformance: conformance/lucid-conformance.yml
+      data_model: data-model/lucid-data-model.yml
+      mcp: mcp/lucid-mcp.yml
+    x-apievangelist-harvest:
+      method: searched
+      source: https://lucid-developer-docs.readme.io/mcp
+      harvested: '2026-08-01'
+      operations: 154
+    x-apievangelist-gaps:
+    - no idempotency key contract
+    - no RFC 9457 problem+json error envelope
+    - no documented rate-limit response headers
+    - no deprecation/sunset policy
+    - no AsyncAPI or webhook event surface
+- target: $.servers
+  update:
+  - url: https://api.lucid.co
+    description: Lucid REST API production
+- target: $.tags
+  update:
+  - name: OAuth 2.0 Tokens
+    x-apievangelist-capability: OAuth 2.0 Tokens
+  - name: Accounts
+    x-apievangelist-capability: Accounts
+  - name: Document Access
+    x-apievangelist-capability: Document Access
+  - name: Legal Holds
+    x-apievangelist-capability: Legal Holds
+  - name: Documents Collaboration
+    x-apievangelist-capability: Documents Collaboration
+  - name: Folders Collaboration
+    x-apievangelist-capability: Folders Collaboration
+  - name: Document Embedding
+    x-apievangelist-capability: Document Embedding
+  - name: Folders
+    x-apievangelist-capability: Folders
+  - name: Documents Sharing
+    x-apievangelist-capability: Documents Sharing
+  - name: Folders Sharing
+    x-apievangelist-capability: Folders Sharing
+  - name: Transfer Content
+    x-apievangelist-capability: Transfer Content
+  - name: Users
+    x-apievangelist-capability: Users
+  - name: Unfurling
+    x-apievangelist-capability: Unfurling
+  - name: Embedding Utils
+    x-apievangelist-capability: Embedding Utils
+  - name: Document Picker
+    x-apievangelist-capability: Document Picker
+  - name: Audit Logs
+    x-apievangelist-capability: Audit Logs
+  - name: Teams
+    x-apievangelist-capability: Teams
+  - name: Cloud
+    x-apievangelist-capability: Cloud
+  - name: Repositories
+    x-apievangelist-capability: Repositories
+  - name: Document Comments
+    x-apievangelist-capability: Document Comments
+  - name: Subscriptions
+    x-apievangelist-capability: Subscriptions
+  - name: Licenses
+    x-apievangelist-capability: Licenses

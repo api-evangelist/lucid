@@ -1,0 +1,109 @@
+generated: '2026-08-01'
+method: probed
+source: live GET of /.well-known/* on every Lucid host in apis.yml (website, portal, baseURLs, OpenAPI servers)
+hosts:
+- host: https://lucid.app
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    spec: RFC 8414 OAuth 2.0 Authorization Server Metadata
+    status: 200
+    content_type: application/json
+    file: lucid-oauth-authorization-server.json
+    notes: >-
+      Advertises issuer lucid.app, authorization_endpoint https://lucid.app/oauth2/authorizeUser,
+      token/revocation/introspection endpoints on https://api.lucid.co, PKCE S256 + plain,
+      authorization_code + refresh_token grants, and 18 supported scopes.
+  - path: /.well-known/ai-plugin.json
+    spec: OpenAI ChatGPT plugin manifest (v1)
+    status: 200
+    content_type: text/plain
+    file: lucid-ai-plugin.json
+    notes: >-
+      Legacy ChatGPT plugin manifest for "Lucid" (create diagrams from Mermaid). Points at the
+      OpenAPI at https://lucid.app/ai/openapi.yaml (harvested to openapi/lucid-chatgpt-plugin-openapi.yaml).
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://mcp.lucid.app
+  documents:
+  - path: /.well-known/oauth-protected-resource
+    spec: RFC 9728 OAuth 2.0 Protected Resource Metadata
+    status: 200
+    content_type: application/json
+    file: lucid-mcp-oauth-protected-resource.json
+    notes: >-
+      Declares resource https://mcp.lucid.app/mcp ("Lucid MCP Server") with authorization server
+      https://mcp.lucid.app. Also served at the resource-suffixed path /.well-known/oauth-protected-resource/mcp.
+  - path: /.well-known/oauth-authorization-server
+    spec: RFC 8414 OAuth 2.0 Authorization Server Metadata
+    status: 200
+    content_type: application/json
+    file: lucid-mcp-oauth-authorization-server.json
+    notes: >-
+      Separate authorization server for the MCP surface, with an RFC 7591 dynamic client
+      registration_endpoint and client_id_metadata_document_supported = true.
+- host: https://lucid.co
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 500
+  - path: /.well-known/agent.json
+    status: 500
+- host: https://api.lucid.co
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://developer.lucid.co
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 500
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://users.lucid.app
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+    notes: SCIM host rejects unauthenticated requests to every path with 403.
+findings:
+  security_txt: false
+  openid_configuration: false
+  oauth_authorization_server: true
+  oauth_protected_resource: true
+  api_catalog: false
+  ai_plugin: true
+  agent_card: false
+x-evidence:
+  fetched: '2026-08-01'
+  probe: curl HTTPS GET, browser user-agent, 12s timeout

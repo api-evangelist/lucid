@@ -1,0 +1,60 @@
+generated: '2026-08-01'
+method: searched
+source: >-
+  https://status.lucid.co/, https://community.lucid.co/product-updates,
+  openapi/lucid-rest-api-openapi.yml
+versioning:
+  scheme: uri-path
+  current: v1
+  note: >-
+    All three surfaces are path-versioned: /v1 on api.lucid.co, /scim/v2 on users.lucid.app, and
+    unversioned resource paths on data.lucid.app. One v2 path
+    (/v2/dataSources/aws/regions) coexists with v1 in the REST spec. No header or date-based
+    version negotiation is published.
+  docs: https://developer.lucid.co/reference/api
+deprecation:
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  note: >-
+    Lucid publishes no API deprecation or sunset policy, and no RFC 8594 Sunset / Deprecation
+    header support is documented. No operation in any of the three harvested specs carries
+    `deprecated: true`.
+sla:
+  url: null
+  uptime_target: null
+  note: >-
+    No public SLA or uptime commitment was found on lucid.co or developer.lucid.co. Enterprise
+    commitments, if any, are behind the trust center request flow.
+status_page:
+  url: https://status.lucid.co/
+  platform: Atlassian Statuspage
+  api:
+    summary: https://status.lucid.co/api/v2/summary.json
+    status: https://status.lucid.co/api/v2/status.json
+  page_id: tbzrhcdrtv38
+  page_name: Lucid Software
+  aliases:
+  - https://status.lucid.app/
+  - https://status.lucidchart.com/
+  observed:
+    fetched: '2026-08-01'
+    indicator: none
+    description: All Systems Operational
+  components_include:
+  - Document List (US)
+release_notes:
+  url: https://community.lucid.co/product-updates
+  cadence: monthly per product line, quarterly for the admin panel
+  detail: changelog/lucid-changelog.yml
+deprecated_operations: []
+gaps:
+- No deprecation/sunset policy published.
+- No SLA published.
+- No RFC 9116 security.txt (see security/lucid-vulnerability-disclosure.yml).
+- No developer-facing API changelog on developer.lucid.co; release notes live on the community site.
+x-evidence:
+  fetched: '2026-08-01'
+  urls:
+  - https://status.lucid.co/api/v2/status.json
+  - https://community.lucid.co/product-updates

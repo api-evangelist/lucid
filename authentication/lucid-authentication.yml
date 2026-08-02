@@ -1,0 +1,26 @@
+generated: '2026-08-01'
+method: derived
+source: openapi/lucid-data-api-openapi.yml, openapi/lucid-rest-api-openapi.yml, openapi/lucid-scim-api-openapi.yml
+summary:
+  types:
+  - http
+  - oauth2
+  oauth2_flows:
+  - authorizationCode
+schemes:
+- name: OAuth2
+  type: oauth2
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://lucid.app/oauth2/authorize
+    tokenUrl: https://api.lucid.co/oauth2/token
+    scopes: 1
+  sources:
+  - openapi/lucid-data-api-openapi.yml
+  - openapi/lucid-rest-api-openapi.yml
+- name: ApiKey
+  type: http
+  scheme: bearer
+  sources:
+  - openapi/lucid-rest-api-openapi.yml
+  - openapi/lucid-scim-api-openapi.yml

@@ -1,0 +1,72 @@
+generated: '2026-08-01'
+method: searched
+source: https://developer.lucid.co/docs/welcome
+description: >-
+  Lucid's client-side / embeddable surface. Distinct from the server-side REST APIs in openapi/
+  and from the npm packages in packages/ — these are things that render inside someone else's
+  page, or inside the Lucid editor itself.
+families:
+- family: Embedded documents
+  description: Put a live Lucid document inside a third-party application.
+  components:
+  - name: Embed Viewer
+    kind: iframe endpoint
+    surface: GET https://api.lucid.co/v1/embeds
+    operation: openapi/lucid-rest-api-openapi.yml#documentEmbeds
+    description: Renders a Lucid document in an iframe for viewing.
+  - name: Direct Embed
+    kind: iframe endpoint
+    surface: GET https://api.lucid.co/v1/embeds/link
+    operation: openapi/lucid-rest-api-openapi.yml#directEmbed
+  - name: Embed Session Token
+    kind: token endpoint
+    surface: POST https://api.lucid.co/v1/embeds/token
+    operation: openapi/lucid-rest-api-openapi.yml#documentEmbedsToken
+    description: Mints the short-lived token an embedded viewer authenticates with.
+  - name: Embed management
+    kind: REST
+    surface: /v1/documents/{id}/embeds and /v1/documents/{documentId}/embeds/{embedId}
+    description: Create, read, delete and change the version of an embed of a document.
+- family: Document Picker
+  description: Hosted picker UI that lets a user choose a Lucid document from inside a third-party app.
+  components:
+  - name: Document Picker
+    kind: hosted UI
+    surface: GET https://api.lucid.co/v1/documents/picker?token=:token
+    operation: openapi/lucid-rest-api-openapi.yml#embeddedDocumentPicker
+    options: allowDocumentCreation, autoSelectCreatedDocument, hideCancelButton, onErrorRedirectUrl
+  - name: Document Picker Token
+    kind: token endpoint
+    surface: POST https://api.lucid.co/v1/documents/pickerToken
+    operation: openapi/lucid-rest-api-openapi.yml#generateDocumentPickerToken
+- family: Unfurling
+  description: Rich link previews for Lucid URLs pasted into other products.
+  components:
+  - name: Describe Link
+    kind: REST
+    surface: POST https://api.lucid.co/v1/describeLink
+    operation: openapi/lucid-rest-api-openapi.yml#describeLink
+- family: Editor extensions (in-Lucid UI)
+  description: >-
+    UI that Lucid renders inside its own editors, authored with lucid-extension-sdk and packaged
+    with the lucid-package CLI.
+  loader: packages/lucid-packages.yml#lucid-extension-sdk
+  components:
+  - name: Custom shape libraries
+    docs: https://developer.lucid.co/docs/custom-shape-libraries
+  - name: Editor extension menus
+    docs: https://developer.lucid.co/docs/editor-extension-menus
+  - name: Editor extension modals
+    docs: https://developer.lucid.co/docs/editor-extension-modals
+  - name: Editor extension iframes
+    docs: https://developer.lucid.co/docs/editor-extension-iframes
+  - name: Lucid cards
+    docs: https://developer.lucid.co/docs/editor-extension-lucid-cards
+  - name: Data connectors
+    docs: https://developer.lucid.co/docs/data-connectors
+x-evidence:
+  fetched: '2026-08-01'
+  urls:
+  - https://developer.lucid.co/docs/welcome
+  - https://developer.lucid.co/docs/lucid-extension-api
+  - openapi/lucid-rest-api-openapi.yml

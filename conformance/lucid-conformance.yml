@@ -1,0 +1,91 @@
+generated: '2026-08-01'
+method: derived
+source: >-
+  openapi/*.yml, well-known/lucid-well-known.yml, security/lucid-trust-center.yml,
+  https://lucid.co/security
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: >-
+    Three OpenAPI 3.0.3 documents (REST 154 ops, Data 50 ops, SCIM 15 ops) published through the
+    developer hub; a fourth 3.1.0 document at https://lucid.app/ai/openapi.yaml.
+- id: oauth2
+  conforms: true
+  evidence: securitySchemes type oauth2 (authorizationCode) in the REST and Data specs.
+- id: rfc8414-oauth-authorization-server-metadata
+  conforms: true
+  evidence: 200 at https://lucid.app/.well-known/oauth-authorization-server and https://mcp.lucid.app/.well-known/oauth-authorization-server
+- id: rfc9728-oauth-protected-resource-metadata
+  conforms: true
+  evidence: 200 at https://mcp.lucid.app/.well-known/oauth-protected-resource (resource https://mcp.lucid.app/mcp)
+- id: rfc7591-dynamic-client-registration
+  conforms: true
+  evidence: registration_endpoint https://mcp.lucid.app/oauth/register advertised in the MCP authorization-server metadata
+- id: rfc7636-pkce
+  conforms: true
+  evidence: code_challenge_methods_supported ["S256","plain"] on lucid.app; ["S256"] on mcp.lucid.app
+- id: rfc7009-token-revocation
+  conforms: true
+  evidence: revocation_endpoint https://api.lucid.co/oauth2/token/revoke (operation revokeAccessToken)
+- id: rfc7662-token-introspection
+  conforms: true
+  evidence: introspection_endpoint https://api.lucid.co/oauth2/token/introspect (operation introspectAccessToken)
+- id: oidc-discovery
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on every Lucid host probed.
+- id: scim-2.0
+  conforms: true
+  evidence: >-
+    Dedicated SCIM 2.0 API on https://users.lucid.app/scim/v2 with /Users, /Groups, /Schemas and
+    /ServiceProviderConfig, urn:ietf:params:scim:* schemas, and PATCH support.
+- id: model-context-protocol
+  conforms: true
+  evidence: >-
+    Two remote MCP servers — https://mcp.lucid.app/mcp (OAuth-gated, streamable HTTP) and
+    https://lucid-developer-docs.readme.io/mcp (anonymous, 6 tools captured).
+- id: a2a
+  conforms: false
+  evidence: No agent card at /.well-known/agent-card.json or /.well-known/agent.json on any host.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    No AsyncAPI document and no webhook/event-subscription surface in any of the 220 harvested
+    operations. Lucid's API is request/response only.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    No application/problem+json media type anywhere in the three specs; errors are bare HTTP
+    statuses with prose descriptions.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt 404 on lucid.co, lucid.app, api.lucid.co and developer.lucid.co.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: No deprecation policy, no Sunset/Deprecation header support documented.
+- id: idempotency-key
+  conforms: false
+  evidence: No idempotency key header or parameter in any of the 220 operations.
+- id: rfc9116-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog 404 on every host.
+- id: openai-plugin-manifest
+  conforms: true
+  evidence: 200 at https://lucid.app/.well-known/ai-plugin.json (schema_version v1)
+compliance_program:
+  published: true
+  url: https://lucid.co/security
+  trust_center: https://trust.lucid.co/
+  certifications:
+  - SOC 2 Type II
+  - ISO/IEC 27001:2022
+  - ISO/IEC 27701
+  - ISO/IEC 42001
+  - CSA STAR
+  - PCI DSS
+  - FedRAMP Moderate
+  - TX-RAMP
+  - IRAP
+  regimes: [GDPR, CCPA]
+  detail: security/lucid-trust-center.yml
+x-evidence:
+  fetched: '2026-08-01'

@@ -1,0 +1,63 @@
+generated: '2026-08-01'
+method: searched
+probe: true
+source: https://trust.lucid.co/
+url: https://trust.lucid.co/
+platform: SafeBase
+company:
+  legal_name: Lucid Software
+  founded: '2010'
+  website: https://lucid.co
+  report_vulnerability: mailto:security@lucid.co
+certifications:
+- id: soc2-type-2
+  name: SOC 2 Type II
+- id: iso-27001-2022
+  name: ISO/IEC 27001:2022
+- id: iso-27701
+  name: ISO/IEC 27701
+- id: iso-42001
+  name: ISO/IEC 42001 (AI management systems)
+- id: csa
+  name: CSA STAR
+- id: pci
+  name: PCI DSS
+- id: fedramp-moderate
+  name: FedRAMP Moderate
+- id: tx-ramp
+  name: TX-RAMP
+- id: irap
+  name: IRAP (Australia)
+- id: gdpr
+  name: GDPR
+- id: ccpa
+  name: CCPA
+questionnaires:
+- SIG
+- CAIQ
+documents:
+  note: >-
+    Lucid states its trust center holds the SOC 2 Type II report, CAIQ and SIG questionnaires and
+    30+ additional documents; access to the reports themselves is gated behind a request/NDA flow
+    on trust.lucid.co and was not fetched.
+public_security_page: https://lucid.co/security
+evidence:
+- source: https://trust.lucid.co/
+  kind: SafeBase trust-center company payload
+  extracted: >-
+    certifications list (iso-42001, csa, pci, soc2-type-2, iso-27001-2022, gdpr, sig, ccpa,
+    fedramp-moderate, tx-ramp, iso-27701, irap), legal name, founded year, vulnerability-report
+    address
+  http_status: 200
+- source: https://lucid.co/security
+  kind: public security page — states SOC 2 Type 2, ISO 27001, ISO 27701, GDPR and CCPA
+  http_status: 200
+correction_note: >-
+  An earlier keyword-only probe of this page recorded ISO 27017/27018 and HIPAA. Those strings
+  appear in the SafeBase page bundle but not in Lucid Software's own certification list, so they
+  were removed rather than carried forward.
+x-evidence:
+  fetched: '2026-08-01'
+  urls:
+  - https://trust.lucid.co/
+  - https://lucid.co/security

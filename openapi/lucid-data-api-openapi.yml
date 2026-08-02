@@ -1,0 +1,3963 @@
+openapi: 3.0.3
+info:
+  title: Lucid Data API
+  version: '1.0'
+  description: The Lucid Data API enables external applications to create, read, update, and delete structured
+    data linked to Lucid documents. Use it to sync data sets, collections, and schemas between your data
+    sources and Lucid diagrams. Authenticate via OAuth 2.0.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/data-api
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints
+    + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to
+    its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies,
+    responses, components and securitySchemes are provider content, unmodified. Only the info block is
+    ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the
+    provider''s own list-specs description for this spec.'
+servers:
+- url: https://data.lucid.app
+tags:
+- name: Rate Limits
+  description: Retrieve current rate limit thresholds and quotas for the authenticated user.
+- name: Data Set
+  description: Create, retrieve, update, and delete data sets. A data set is a top-level container that
+    groups related data sources and their collections.
+- name: Data Set Grant
+  description: Manage access grants on data sets to control which users or applications can read or write
+    data.
+- name: Data Set Properties
+  description: Read and update metadata properties on a data set, such as display name and configuration.
+- name: Data Source
+  description: Create, retrieve, update, and delete data sources within a data set. A data source represents
+    an external system whose data is synced into Lucid.
+- name: Collection
+  description: Create, retrieve, update, and delete collections within a data source. A collection is
+    a named group of data items that share a common schema (similar to a database table).
+- name: Collection Properties
+  description: Read and update metadata properties on a collection, such as display name and configuration.
+- name: Schema
+  description: Define and retrieve the schema for a collection, specifying the fields, types, and constraints
+    for its data items.
+- name: Data Item
+  description: Create, retrieve, update, and delete individual data items within a collection. A data
+    item is a single record conforming to the collection's schema.
+paths:
+  /rateLimits:
+    get:
+      summary: Get Rate Limits
+      description: 'See what your current rate limits are.
+
+        '
+      operationId: getRateLimits
+      tags:
+      - Rate Limits
+      security:
+      - OAuth2:
+        - data-service.admin
+      responses:
+        '200':
+          description: OK with current limits for requesting user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userHardRefreshInterval:
+                    type: integer
+                    description: Minimum number of seconds that must elapse before a hard (full) data
+                      refresh can be triggered again.
+                    example: 30
+                  userSoftRefreshInterval:
+                    type: integer
+                    description: Minimum number of seconds that must elapse before a soft (incremental)
+                      data refresh can be triggered again.
+                    example: 30
+                  userApiCallRate:
+                    type: integer
+                    description: Maximum number of API requests the user can make per minute.
+                    example: 750
+                  fileSizeLimit:
+                    type: integer
+                    description: Maximum file upload size in megabytes.
+                    example: 3
+                required:
+                - userHardRefreshInterval
+                - userSoftRefreshInterval
+                - userApiCallRate
+                - fileSizeLimit
+                example:
+                  userHardRefreshInterval: 30
+                  userSoftRefreshInterval: 30
+                  userApiCallRate: 750
+                  fileSizeLimit: 3
+  /dataSets:
+    head:
+      summary: Get Total Data Sets Count
+      description: 'This endpoint returns the number of data sets a user has access to. The return value
+        is in the response headers as `Lucid-DataSets-Total`
+
+        '
+      operationId: getDataSetCount
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      responses:
+        '200':
+          description: OK with lucid-datasets-total header in response
+          headers:
+            lucid-datasets-total:
+              description: Total number of data sets
+              schema:
+                type: integer
+                example: 123
+    get:
+      summary: Get All Data Sets
+      description: 'This endpoint returns all data sets that the user has access to. The results will
+        be paginated. If the number of data sets exceeds the pagination limit, links will be provided
+        to get the next set of results or the previous set of results (if applicable). The range of returned
+        values can be determined by optional start and end parameters. If the difference between the end
+        and start values is greater than the pagination limit, the endpoint returns data sets in the range
+        from start to start + pagination limit. Items in the response are determined based on their creation
+        order.
+
+        '
+      operationId: getAllDataSets
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: start
+        in: query
+        description: Starting 1-based index of data sets to retreive. Defaults to 1.
+        required: false
+        schema:
+          type: integer
+      - name: end
+        in: query
+        description: Ending index of data sets to retreive. Defaults to 100.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with paginated list of Data Set objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataSets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uri:
+                          type: string
+                          description: URI of the data set
+                          example: https://data.lucid.app/dataSets/2168
+                        name:
+                          type: string
+                          description: Name of the data set
+                          example: Data Set Name
+                        properties:
+                          type: string
+                          description: Link to get properties of the data set
+                          example: https://data.lucid.app/dataSets/2168/properties
+                        created:
+                          type: string
+                          description: Date the data set was created
+                          example: '2021-01-01T00:00:00Z'
+                        modified:
+                          type: string
+                          description: Date the data set was last modified
+                          example: '2021-01-01T00:00:00Z'
+                        creatorId:
+                          type: integer
+                          description: ID of the user who created the data set
+                          example: 123456
+                        dataSetGrants:
+                          type: string
+                          description: Link to get grants for the data set
+                          example: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                        dataSources:
+                          type: string
+                          description: Link to get data sources for the data set
+                          example: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                      required:
+                      - uri
+                      - name
+                      - properties
+                      - created
+                      - modified
+                      - creatorId
+                      - dataSetGrants
+                      - dataSources
+                      example:
+                        uri: https://data.lucid.app/dataSets/2168
+                        name: Data Set Name
+                        properties: https://data.lucid.app/dataSets/2168/properties
+                        created: '2021-01-01'
+                        modified: '2021-01-01T00:00:00Z'
+                        creatorId: 123456
+                        dataSetGrants: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                        dataSources: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  total:
+                    type: integer
+                    description: Total number of data sets
+                    example: 125
+                  prev:
+                    type: string
+                    description: Link to get the previous set of data sets
+                    example: https://data.lucid.app/dataSets?start=80&end=90
+                  next:
+                    type: string
+                    description: Link to get the next set of data sets
+                    example: https://data.lucid.app/dataSets?start=100&end=110
+    post:
+      summary: Create Data Set
+      description: 'Creates a new data set and a corresponding new data set grant for the user. Note that
+        a data set cannot be created with data sources already inside it, so data sources must be added
+        to a data set through either the Create Data Source endpoint or the Update Data Source endpoint.
+
+        '
+      operationId: createDataSet
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name to give the new data set
+                  example: Data Set Name
+                properties:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Used to create the data set properties for the new data set.
+                  example: null
+              required:
+              - name
+              example:
+                name: Data Set Name
+                properties:
+                  Color: green
+                  AuthoredBy: Lucidchart
+      responses:
+        '200':
+          description: OK with Data Set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set
+                    example: https://data.lucid.app/dataSets/2168
+                  name:
+                    type: string
+                    description: Name of the data set
+                    example: Data Set Name
+                  properties:
+                    type: string
+                    description: Link to get properties of the data set
+                    example: https://data.lucid.app/dataSets/2168/properties
+                  created:
+                    type: string
+                    description: Date the data set was created
+                    example: '2021-01-01T00:00:00Z'
+                  modified:
+                    type: string
+                    description: Date the data set was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  creatorId:
+                    type: integer
+                    description: ID of the user who created the data set
+                    example: 123456
+                  dataSetGrants:
+                    type: string
+                    description: Link to get grants for the data set
+                    example: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources:
+                    type: string
+                    description: Link to get data sources for the data set
+                    example: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                required:
+                - uri
+                - name
+                - properties
+                - created
+                - modified
+                - creatorId
+                - dataSetGrants
+                - dataSources
+                example:
+                  uri: https://data.lucid.app/dataSets/2168
+                  name: Data Set Name
+                  properties: https://data.lucid.app/dataSets/2168/properties
+                  created: '2021-01-01'
+                  modified: '2021-01-01T00:00:00Z'
+                  creatorId: 123456
+                  dataSetGrants: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+  /dataSets/{dataSetId}:
+    get:
+      summary: Get Data Set
+      description: 'Gets a specific existing data set from Lucid.
+
+        '
+      operationId: getDataSet
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to return
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Set object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set
+                    example: https://data.lucid.app/dataSets/2168
+                  name:
+                    type: string
+                    description: Name of the data set
+                    example: Data Set Name
+                  properties:
+                    type: string
+                    description: Link to get properties of the data set
+                    example: https://data.lucid.app/dataSets/2168/properties
+                  created:
+                    type: string
+                    description: Date the data set was created
+                    example: '2021-01-01T00:00:00Z'
+                  modified:
+                    type: string
+                    description: Date the data set was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  creatorId:
+                    type: integer
+                    description: ID of the user who created the data set
+                    example: 123456
+                  dataSetGrants:
+                    type: string
+                    description: Link to get grants for the data set
+                    example: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources:
+                    type: string
+                    description: Link to get data sources for the data set
+                    example: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                required:
+                - uri
+                - name
+                - properties
+                - created
+                - modified
+                - creatorId
+                - dataSetGrants
+                - dataSources
+                example:
+                  uri: https://data.lucid.app/dataSets/2168
+                  name: Data Set Name
+                  properties: https://data.lucid.app/dataSets/2168/properties
+                  created: '2021-01-01T00:00:00Z'
+                  modified: '2021-01-01T00:00:00Z'
+                  creatorId: 123456
+                  dataSetGrants: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+    patch:
+      summary: Update Data Set Name
+      description: 'This endpoint takes the payload specified below and updates the data set name. Updates
+        will only occur if the user has access to the data set. Note that the other fields in a dataset
+        cannot be updated through this endpoint.
+
+        '
+      operationId: updateDataSetName
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name to give the existing data set
+                  example: New Data Set Name
+              required:
+              - name
+              example:
+                name: New Data Set Name
+      responses:
+        '200':
+          description: OK with Data Set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set
+                    example: https://data.lucid.app/dataSets/2168
+                  name:
+                    type: string
+                    description: Name of the data set
+                    example: Data Set Name
+                  properties:
+                    type: string
+                    description: Link to get properties of the data set
+                    example: https://data.lucid.app/dataSets/2168/properties
+                  created:
+                    type: string
+                    description: Date the data set was created
+                    example: '2021-01-01T00:00:00Z'
+                  modified:
+                    type: string
+                    description: Date the data set was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  creatorId:
+                    type: integer
+                    description: ID of the user who created the data set
+                    example: 123456
+                  dataSetGrants:
+                    type: string
+                    description: Link to get grants for the data set
+                    example: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources:
+                    type: string
+                    description: Link to get data sources for the data set
+                    example: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                required:
+                - uri
+                - name
+                - properties
+                - created
+                - modified
+                - creatorId
+                - dataSetGrants
+                - dataSources
+                example:
+                  uri: https://data.lucid.app/dataSets/2168
+                  name: Data Set Name
+                  properties: https://data.lucid.app/dataSets/2168/properties
+                  created: '2021-01-01'
+                  modified: '2021-01-01T00:00:00Z'
+                  creatorId: 123456
+                  dataSetGrants: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+    delete:
+      summary: Delete Data Set
+      description: 'This removes the specified data set and its associated properties. Once deleted, none
+        of the information can be recovered. The data sources in the set will be removed from the data
+        set but otherwise they will not be deleted or altered.
+
+        '
+      operationId: deleteDataSet
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /dataSetGrants/{dataSetId}:
+    get:
+      summary: Get Data Set Grant
+      description: 'Gets the requested data set grant if the access tokens are valid and the user has
+        access to the data set. Note that the id in the URI is the number at the end of the data set grant''s
+        uri, not the identifier field of the object.
+
+        '
+      operationId: getDataSetGrant
+      tags:
+      - Data Set Grant
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to return grant for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Set Grant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set grant
+                    example: https://data.lucid.app/dataSetGrants/435
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the grant
+                    example: https://data.lucid.app/dataSets/8
+                  permissionType:
+                    type: string
+                    description: Type of permission granted
+                    example: account
+                  identifier:
+                    type: string
+                    description: The document id, account id, or user id matching the permission type
+                    example: '1234'
+                  role:
+                    type: string
+                    description: 'Available types are: ''edit'' and ''view'''
+                    example: edit
+                required:
+                - uri
+                - dataSet
+                - permissionType
+                - identifier
+                - role
+                example:
+                  uri: https://data.lucid.app/dataSetGrants/435
+                  dataSet: https://data.lucid.app/dataSets/8
+                  permissionType: account
+                  identifier: '1234'
+                  role: edit
+    delete:
+      summary: Delete Data Set Grant
+      description: 'Removes the specified data set grant ONLY if it''s not the last data set grant. There
+        must always be at least one data set grant for a given data set, therefore the last data set grant
+        cannot be deleted. A response message is returned with the result of the deletion. Note that the
+        id in the URI is the number at the end of the data set grant''s URI, not the identifier field
+        of the Data Set Grant.
+
+        '
+      operationId: deleteDataSetGrant
+      tags:
+      - Data Set Grant
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set grant to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /dataSetGrants:
+    get:
+      summary: Get All Data Set Grants
+      description: 'Finds and returns all data set grants for the queried data set if the user has access
+        to the data set.
+
+        '
+      operationId: getAllDataSetGrants
+      tags:
+      - Data Set Grant
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSet
+        in: query
+        description: Data set to get grants for
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK with array of Data Set Grant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: URI of the data set grant
+                      example: https://data.lucid.app/dataSetGrants/435
+                    dataSet:
+                      type: string
+                      description: Link to get the data set for the grant
+                      example: https://data.lucid.app/dataSets/8
+                    permissionType:
+                      type: string
+                      description: Type of permission granted
+                      example: account
+                    identifier:
+                      type: string
+                      description: The document id, account id, or user id matching the permission type
+                      example: '1234'
+                    role:
+                      type: string
+                      description: 'Available types are: ''edit'' and ''view'''
+                      example: edit
+                  required:
+                  - uri
+                  - dataSet
+                  - permissionType
+                  - identifier
+                  - role
+                  example:
+                    uri: https://data.lucid.app/dataSetGrants/435
+                    dataSet: https://data.lucid.app/dataSets/8
+                    permissionType: account
+                    identifier: '1234'
+                    role: edit
+    post:
+      summary: Create Data Set Grant
+      description: 'Creates a new data set grant for the specified data set. The requesting user must
+        have access to the data set in order for it to succeed.
+
+        '
+      operationId: createDataSetGrant
+      tags:
+      - Data Set Grant
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSet:
+                  type: string
+                  description: Link to the data set to grant access to
+                  example: https://data.lucid.app/dataSets/8
+                permissionType:
+                  type: string
+                  description: Type of permission to grant
+                  example: account
+                identifier:
+                  type: string
+                  description: The document id, account id, or user id matching the permission type
+                  example: '1234'
+                role:
+                  type: string
+                  description: 'Available types are: ''edit'' and ''view'''
+                  example: edit
+              required:
+              - dataSet
+              - permissionType
+              - identifier
+              - role
+              example:
+                dataSet: https://data.lucid.app/dataSets/8
+                permissionType: account
+                identifier: '1234'
+                role: edit
+      responses:
+        '200':
+          description: OK with Data Set Grant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set grant
+                    example: https://data.lucid.app/dataSetGrants/435
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the grant
+                    example: https://data.lucid.app/dataSets/8
+                  permissionType:
+                    type: string
+                    description: Type of permission granted
+                    example: account
+                  identifier:
+                    type: string
+                    description: The document id, account id, or user id matching the permission type
+                    example: '1234'
+                  role:
+                    type: string
+                    description: 'Available types are: ''edit'' and ''view'''
+                    example: edit
+                required:
+                - uri
+                - dataSet
+                - permissionType
+                - identifier
+                - role
+                example:
+                  uri: https://data.lucid.app/dataSetGrants/435
+                  dataSet: https://data.lucid.app/dataSets/8
+                  permissionType: account
+                  identifier: '1234'
+                  role: edit
+  /dataSets/{dataSetId}/properties:
+    get:
+      summary: Get Data Set Properties
+      description: 'Gets all properties for the specified data set if the user has access to the data
+        set.
+
+        '
+      operationId: getDataSetProperties
+      tags:
+      - Data Set Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to return properties for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Set Properties
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                example:
+                  backgroundColor: blue
+                  font: Times New Roman
+    patch:
+      summary: Update Data Set Properties
+      description: 'Allows a user to update the properties on a data set. This endpoint uses the supplied
+        values to either update existing properties or add new properties.
+
+        '
+      operationId: updateDataSetProperties
+      tags:
+      - Data Set Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to update properties for
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+              example:
+                backgroundColor: blue
+                font: Times New Roman
+      responses:
+        '200':
+          description: OK with affected Data Set Properties
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                example:
+                  backgroundColor: blue
+                  font: Times New Roman
+    delete:
+      summary: Delete Data Set Properties
+      description: 'Removes only the properties provided in the query parameter. The deleted properties
+        cannot be undone. The deletion will only occur if the user has access to the data set.
+
+        '
+      operationId: deleteDataSetProperties
+      tags:
+      - Data Set Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to delete properties for
+        required: true
+        schema:
+          type: integer
+      - name: properties
+        in: query
+        description: List of properties to remove from specified data set
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /dataSources:
+    head:
+      summary: Get Total Data Sources Count
+      description: 'This endpoint returns the number of data sources a user has access to. The return
+        value is in the response headers as `Lucid-DataSources-Total`
+
+        '
+      operationId: getDataSourceCount
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      responses:
+        '200':
+          description: OK with lucid-datasources-total header in response
+          headers:
+            lucid-datasources-total:
+              description: Total number of data sources
+              schema:
+                type: integer
+                example: 123
+    get:
+      summary: Get All Data Sources
+      description: 'This endpoint returns all data sources that the user has access to. The results will
+        be paginated. If the number of data sources exceeds the pagination limit, links will be provided
+        to get the next set of results or the previous set of results (if applicable). The range of returned
+        values can be determined by optional start and end parameters. If the difference between the end
+        and start values is greater than the pagination limit, the endpoint returns data sources in the
+        range from start to start + pagination limit. Items in the response are determined based on their
+        creation order.
+
+        '
+      operationId: getAllDataSources
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: start
+        in: query
+        description: Starting 1-based index of data sources to retreive. Defaults to 1.
+        required: false
+        schema:
+          type: integer
+      - name: end
+        in: query
+        description: Ending index of data sources to retreive. Defaults to 100.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with paginated list of Data Source objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataSources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uri:
+                          type: string
+                          description: URI of the data source
+                          example: https://data.lucid.app/dataSources/2967
+                        name:
+                          type: string
+                          description: Name of the data source
+                          example: Internal Org Chart
+                        sourceGrants:
+                          type: string
+                          description: Link to get grants for the data source
+                          example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                        adapterType:
+                          type: string
+                          description: Type of adapter used to create the data source. Valid values are
+                            `CSV`, `DATA_API`, and `UNKNOWN`
+                          example: CSV
+                        collections:
+                          type: string
+                          description: Link to get collections for the data source
+                          example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                        created:
+                          type: string
+                          description: Date the data source was created
+                          example: '2021-01-01T00:00:00Z'
+                        lastModified:
+                          type: string
+                          description: Date the data source was last modified
+                          example: '2021-01-01T00:00:00Z'
+                        pending:
+                          type: boolean
+                          description: If a data source is marked pending it won't be availble for users
+                            to select within Lucid
+                          example: false
+                        dataSet:
+                          type: string
+                          description: Link to get the data set for the data source
+                          example: https://data.lucid.app/dataSets/2168
+                        linkParameters:
+                          type: object
+                          description: Link parameters for the data source
+                          example:
+                            param1: value1
+                            param2: value2
+                        deleted:
+                          type: string
+                          description: Date the data source was deleted
+                          example: '2021-01-01T00:00:00Z'
+                      required:
+                      - uri
+                      - name
+                      - sourceGrants
+                      - adapterType
+                      - collections
+                      - created
+                      - lastModified
+                      - pending
+                      - dataSet
+                      example:
+                        uri: https://data.lucid.app/dataSources/2967
+                        name: Internal Org Chart
+                        sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                        adapterType: CSV
+                        collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                        created: '2021-01-01T00:00:00Z'
+                        lastModified: '2021-01-01T00:00:00Z'
+                        pending: false
+                        dataSet: https://data.lucid.app/dataSets/2168
+                        linkParameters:
+                          param1: value1
+                          param2: value2
+                        deleted: '2021-01-01T00:00:00Z'
+                  total:
+                    type: integer
+                    description: Total number of data sources
+                    example: 125
+                  prev:
+                    type: string
+                    description: Link to get the previous set of data sources
+                    example: https://data.lucid.app/dataSources?start=80&end=90
+                  next:
+                    type: string
+                    description: Link to get the next set of data sources
+                    example: https://data.lucid.app/dataSources?start=100&end=110
+    post:
+      summary: Create Data Source
+      description: 'Creates a new data source and a corresponding new data source grant for the user.
+
+        '
+      operationId: createDataSource
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name to give the new data source
+                  example: New Data Source
+                adapterType:
+                  type: string
+                  description: Type of adapter used to create the data source. Valid values are `CSV`,
+                    `DATA_API`, and `UNKNOWN`. (Defaults to `UNKNOWN`)
+                  example: CSV
+              required:
+              - name
+              example:
+                name: Internal Org Chart
+                adapterType: CSV
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: Internal Org Chart
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`,
+                      `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to
+                      select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: New Data Source
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+  /dataSources/{dataSourceId}:
+    get:
+      summary: Get Data Source
+      description: 'Gets a specific existing data source from Lucid. If the creator of the data source
+        is the user making the request, the link parameters will be returned with the data source.
+
+        '
+      operationId: getDataSource
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSourceId
+        in: path
+        description: ID of data source to return
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: Internal Org Chart
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`,
+                      `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to
+                      select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: Internal Org Chart
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    param1: value1
+                    param2: value2
+                  deleted: '2021-01-01T00:00:00Z'
+    patch:
+      summary: Update Data Source
+      description: 'This endpoint takes a JSON object and uses it to update the data source''s name and/or
+        adapter type. The JSON object of the updated data source is returned. Updates will only occur
+        if the user has access to the data source.
+
+        '
+      operationId: updateDataSource
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSourceId
+        in: path
+        description: ID of data source to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: New name for the data source being updated
+                  example: Updated Data Source name
+                adapterType:
+                  type: string
+                  description: New adapter type for the data source being update. Valid values are `CSV`,
+                    `DATA_API`, and `UNKNOWN`
+                  example: CSV
+              example:
+                name: Updated Data Source name
+                adapterType: CSV
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: Internal Org Chart
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`,
+                      `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to
+                      select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: Updated Data Source name
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+    delete:
+      summary: Delete Data Source
+      description: 'This removes the specified data source and anything related to it (collections, schema,
+        items, link parameters). Once deleted, none of the information can be recovered.
+
+        '
+      operationId: deleteDataSource
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSourceId
+        in: path
+        description: ID of data source to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /adapter/csv:
+    post:
+      summary: Create Data Source from CSV
+      description: 'If able to successfully parse the attached file as a CSV file, a new data source with
+        be created (with the same name as the attached file) that includes a single collection. The single
+        collection in the newly created data source will contain the data from the CSV file. Each row
+        will be an item, and each column will be labelled A, B, C, …, AA, AB, AC, .. in the order in which
+        they were in the original file. There will be a single metadata collection created which represents
+        the mapping between the id of each created item and the original row number of the row it was
+        created from.
+
+        '
+      operationId: createDataSourceFromCSV
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CSV file to upload
+              required:
+              - file
+              example:
+                file: file=@location/file.csv
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: file
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`,
+                      `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to
+                      select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: file
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    param1: value1
+                    param2: value2
+                  deleted: '2021-01-01T00:00:00Z'
+        '400':
+          description: Bad Request if no file provided or unable to read file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: Invalid file format
+    put:
+      summary: Update Data Source from CSV
+      description: 'If able to successfully parse the attached file as a CSV file, the endpoint will overwrite
+        the contents of the single collection with the new data. The collection reference is left unchanged,
+        but will have new items.
+
+
+        A specific collection in a data source can be replaced by including both the data source and collection
+        query parameters. In this case, the items in that single collection will be overwritten with the
+        values from the CSV. The target collection''s id will remain the same, i.e., the original collection
+        is the same, just the items have changed. The specified collection must belong to the specified
+        data source.
+
+        '
+      operationId: updateDataSourceFromCSV
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSource
+        in: query
+        description: URI of Data source to update
+        required: true
+        schema:
+          type: string
+      - name: collection
+        in: query
+        description: URI of Collection to update
+        required: false
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CSV file to upload
+              required:
+              - file
+              example:
+                file: file=@location/file.csv
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: file
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`,
+                      `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to
+                      select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: file
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    param1: value1
+                    param2: value2
+                  deleted: '2021-01-01T00:00:00Z'
+        '400':
+          description: Bad Request if no file provided, unable to read file, or datasource query parameter
+            is missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: Invalid file format
+  /collections:
+    head:
+      summary: Get Total Collections Count
+      description: 'This endpoint returns the number of collections a user has access to. The return value
+        is in the response headers as Lucid-Collections-Total.
+
+        '
+      operationId: getTotalCollectionsCount
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      responses:
+        '200':
+          description: OK with `lucid-collections-total` header in response
+          headers:
+            lucid-collections-total:
+              schema:
+                type: integer
+                example: 123
+    get:
+      summary: Get All Collections
+      description: 'This endpoint returns all collections that the user has access to. The results will
+        be paginated. If the number of collections exceeds the pagination limit, links will be provided
+        to get the next set of results or the previous set of results (if applicable). The range of returned
+        values can be determined by optional start and end parameters. If the difference between the end
+        and start values is greater than the pagination limit, the endpoint returns collections in the
+        range from start to start + pagination limit. Items in the response are determined based on their
+        creation order.
+
+        '
+      operationId: getAllCollections
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: start
+        in: query
+        description: Starting 1-based index of collections to retreive. Defaults to 1.
+        required: false
+        schema:
+          type: integer
+      - name: end
+        in: query
+        description: Ending index of collections to retreive. Defaults to 1000.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with paginated list of Collections
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  collections:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uri:
+                          type: string
+                          description: URI of the collection
+                          example: https://data.lucid.app/collections/3
+                        dataSource:
+                          type: string
+                          description: Link to get parent data source
+                          example: https://data.lucid.app/dataSources/1
+                        name:
+                          type: string
+                          description: Name of the collection
+                          example: Collection 1
+                        lastSync:
+                          type: string
+                          description: Date the collection was last synced with upstream source
+                          example: '2021-01-01T00:00:00Z'
+                        versionTimestamp:
+                          type: string
+                          description: Timestamp of the last time the collection, the collection's schema,
+                            the collection's contents, one of its collection properties, or anything in
+                            any of its metadata collections was changed. It can be used to tell if a copy
+                            of the data is out of date and needs to be refreshed.
+                          example: '2021-01-01T00:00:00Z'
+                        created:
+                          type: string
+                          description: Date the collection was created
+                          example: '2021-01-01T00:00:00Z'
+                        lastModified:
+                          type: string
+                          description: Date the collection was last modified
+                          example: '2021-01-01T00:00:00Z'
+                        items:
+                          type: string
+                          description: Link to get items in the collection
+                          example: https://data.lucid.app/collections/3/items
+                        schema:
+                          type: string
+                          description: Link to get schema for the collection
+                          example: https://data.lucid.app/collections/3/schema
+                        properties:
+                          type: string
+                          description: Link to get properties for the collection
+                          example: https://data.lucid.app/collections/3/properties
+                        metadata:
+                          type: string
+                          description: Link to get metadata for the collection
+                          example: https://data.lucid.app/collections/3/metadata
+                        metadataType:
+                          type: string
+                          description: If a metadata collection, this specifies what tyep of metadata
+                            it contains
+                          example: null
+                        parent:
+                          type: string
+                          description: If a metadata collection, this link will get its parent collection
+                          example: https://data.lucid.app/collections/2
+                        syncStarted:
+                          type: string
+                          description: Represents the sync status of the collection. When it is null,
+                            there is no sync happening. When it has a DateTime value, that value represents
+                            the start time for the sync that is currently happening.
+                          example: '2021-01-01T00:00:00Z'
+                        deleted:
+                          type: string
+                          description: Date the collection was deleted
+                          example: '2021-01-01T00:00:00Z'
+                      required:
+                      - uri
+                      - dataSource
+                      - name
+                      - lastSync
+                      - versionTimestamp
+                      - created
+                      - lastModified
+                      - items
+                      - schema
+                      - properties
+                      - metadata
+                      example:
+                        uri: https://data.lucid.app/collections/3
+                        dataSource: https://data.lucid.app/dataSources/1
+                        name: Collection 1
+                        lastSync: '2021-01-01T00:00:00Z'
+                        versionTimestamp: '2021-01-01T00:00:00Z'
+                        created: '2021-01-01T00:00:00Z'
+                        lastModified: '2021-01-01T00:00:00Z'
+                        items: https://data.lucid.app/collections/3/items
+                        schema: https://data.lucid.app/collections/3/schema
+                        properties: https://data.lucid.app/collections/3/properties
+                        metadata: https://data.lucid.app/collections/3/metadata
+                  total:
+                    type: integer
+                    example: 123
+                  prev:
+                    type: string
+                    example: https://data.lucid.app/collections?start=80&end=90
+                  next:
+                    type: string
+                    example: https://data.lucid.app/collections?start=100&end=110
+    post:
+      summary: Create Collection
+      description: 'Creates a new collection for the specified data source. Only succeeds if the user
+        has access to the data source.
+
+        '
+      operationId: createCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSource:
+                  type: string
+                  description: URI of data source to add collection to
+                  example: https://data.lucid.app/dataSources/435
+                name:
+                  type: string
+                  description: Name of the new collection
+                  example: New Collection
+                schema:
+                  type: array
+                  description: The schema field takes an array of Field Definition objects
+                  items:
+                    type: object
+                    properties:
+                      uri:
+                        type: string
+                        description: Link to self
+                        example: https://data.lucid.app/collections/2/schema/4
+                      name:
+                        type: string
+                        description: Name of the field
+                        example: Co1B
+                      fieldType:
+                        type: string
+                        description: Stores the type of the field. The type does not affect how the data
+                          is interpreted in the Data Service; it is for use on the client side. Valid
+                          values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                        example: STRING
+                      collection:
+                        type: string
+                        description: Link to the associated collection
+                        example: https://data.lucid.app/collections/2
+                      isPrimary:
+                        type: boolean
+                        description: Denotes whether the specified field is part of the primary key. The
+                          default value is false
+                        example: false
+                      order:
+                        type: string
+                        description: Denotes a default ordering for the fields. This is currently used
+                          by the Lucid client to determine the order in which the fields are displayed,
+                          unless the context suggests a better ordering.
+                        example: '1'
+                      default:
+                        type: string
+                        description: Default value for this field
+                        example: '5'
+                      label:
+                        type: string
+                        description: Override name for field which is used when displaying to users
+                        example: User Friendly Field Name
+                    required:
+                    - uri
+                    - name
+                    - fieldType
+                    - collection
+                    - isPrimary
+                    example:
+                      uri: https://data.lucid.app/collections/2/schema/4
+                      name: Co1B
+                      fieldType: STRING
+                      collection: https://data.lucid.app/collections/2
+                      isPrimary: false
+                      order: '1'
+                      default: '5'
+                      label: User Friendly Field Name
+                properties:
+                  type: object
+                  description: The properties field takes an object of key-value pairs
+                  example:
+                    param1: value1
+                    param2: value2
+              required:
+              - dataSource
+              - name
+              - schema
+              - properties
+              example:
+                dataSource: https://data.lucid.app/dataSources/435
+                name: New Collection
+                schema:
+                - uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: '5'
+                  label: User Friendly Field Name
+                properties:
+                  fontSize: '12'
+      responses:
+        '200':
+          description: OK with Collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the collection
+                    example: https://data.lucid.app/collections/3
+                  dataSource:
+                    type: string
+                    description: Link to get parent data source
+                    example: https://data.lucid.app/dataSources/1
+                  name:
+                    type: string
+                    description: Name of the collection
+                    example: Collection 1
+                  lastSync:
+                    type: string
+                    description: Date the collection was last synced with upstream source
+                    example: '2021-01-01T00:00:00Z'
+                  versionTimestamp:
+                    type: string
+                    description: Timestamp of the last time the collection, the collection's schema, the
+                      collection's contents, one of its collection properties, or anything in any of its
+                      metadata collections was changed. It can be used to tell if a copy of the data is
+                      out of date and needs to be refreshed.
+                    example: '2021-01-01T00:00:00Z'
+                  created:
+                    type: string
+                    description: Date the collection was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the collection was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  items:
+                    type: string
+                    description: Link to get items in the collection
+                    example: https://data.lucid.app/collections/3/items
+                  schema:
+                    type: string
+                    description: Link to get schema for the collection
+                    example: https://data.lucid.app/collections/3/schema
+                  properties:
+                    type: string
+                    description: Link to get properties for the collection
+                    example: https://data.lucid.app/collections/3/properties
+                  metadata:
+                    type: string
+                    description: Link to get metadata for the collection
+                    example: https://data.lucid.app/collections/3/metadata
+                  metadataType:
+                    type: string
+                    description: If a metadata collection, this specifies what tyep of metadata it contains
+                    example: null
+                  parent:
+                    type: string
+                    description: If a metadata collection, this link will get its parent collection
+                    example: https://data.lucid.app/collections/2
+                  syncStarted:
+                    type: string
+                    description: Represents the sync status of the collection. When it is null, there
+                      is no sync happening. When it has a DateTime value, that value represents the start
+                      time for the sync that is currently happening.
+                    example: '2021-01-01T00:00:00Z'
+                  deleted:
+                    type: string
+                    description: Date the collection was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - dataSource
+                - name
+                - lastSync
+                - versionTimestamp
+                - created
+                - lastModified
+                - items
+                - schema
+                - properties
+                - metadata
+                example:
+                  uri: https://data.lucid.app/collections/3
+                  dataSource: https://data.lucid.app/dataSources/1
+                  name: Collection 1
+                  lastSync: '2021-01-01T00:00:00Z'
+                  versionTimestamp: '2021-01-01T00:00:00Z'
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  items: https://data.lucid.app/collections/3/items
+                  schema: https://data.lucid.app/collections/3/schema
+                  properties: https://data.lucid.app/collections/3/properties
+                  metadata: https://data.lucid.app/collections/3/metadata
+  /collections/{collectionId}:
+    get:
+      summary: Get Collection
+      description: 'Gets a specific existing collection from Lucid.
+
+        '
+      operationId: getCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to return
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the collection
+                    example: https://data.lucid.app/collections/3
+                  dataSource:
+                    type: string
+                    description: Link to get parent data source
+                    example: https://data.lucid.app/dataSources/1
+                  name:
+                    type: string
+                    description: Name of the collection
+                    example: Collection 1
+                  lastSync:
+                    type: string
+                    description: Date the collection was last synced with upstream source
+                    example: '2021-01-01T00:00:00Z'
+                  versionTimestamp:
+                    type: string
+                    description: Timestamp of the last time the collection, the collection's schema, the
+                      collection's contents, one of its collection properties, or anything in any of its
+                      metadata collections was changed. It can be used to tell if a copy of the data is
+                      out of date and needs to be refreshed.
+                    example: '2021-01-01T00:00:00Z'
+                  created:
+                    type: string
+                    description: Date the collection was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the collection was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  items:
+                    type: string
+                    description: Link to get items in the collection
+                    example: https://data.lucid.app/collections/3/items
+                  schema:
+                    type: string
+                    description: Link to get schema for the collection
+                    example: https://data.lucid.app/collections/3/schema
+                  properties:
+                    type: string
+                    description: Link to get properties for the collection
+                    example: https://data.lucid.app/collections/3/properties
+                  metadata:
+                    type: string
+                    description: Link to get metadata for the collection
+                    example: https://data.lucid.app/collections/3/metadata
+                  metadataType:
+                    type: string
+                    description: If a metadata collection, this specifies what tyep of metadata it contains
+                    example: null
+                  parent:
+                    type: string
+                    description: If a metadata collection, this link will get its parent collection
+                    example: https://data.lucid.app/collections/2
+                  syncStarted:
+                    type: string
+                    description: Represents the sync status of the collection. When it is null, there
+                      is no sync happening. When it has a DateTime value, that value represents the start
+                      time for the sync that is currently happening.
+                    example: '2021-01-01T00:00:00Z'
+                  deleted:
+                    type: string
+                    description: Date the collection was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - dataSource
+                - name
+                - lastSync
+                - versionTimestamp
+                - created
+                - lastModified
+                - items
+                - schema
+                - properties
+                - metadata
+                example:
+                  uri: https://data.lucid.app/collections/3
+                  dataSource: https://data.lucid.app/dataSources/1
+                  name: Collection 1
+                  lastSync: '2021-01-01T00:00:00Z'
+                  versionTimestamp: '2021-01-01T00:00:00Z'
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  items: https://data.lucid.app/collections/3/items
+                  schema: https://data.lucid.app/collections/3/schema
+                  properties: https://data.lucid.app/collections/3/properties
+                  metadata: https://data.lucid.app/collections/3/metadata
+    patch:
+      summary: Update Collection
+      description: 'This endpoint takes a JSON object and uses it to update the collection''s name and/or
+        data source. The JSON object of the updated collection is returned. Updates will only occur if
+        the user has access to the data source. Only top level collections can be updated. Metadata collections
+        cannot be updated.
+
+        '
+      operationId: updateCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSource:
+                  type: string
+                  description: URI of data source to move collection to
+                  example: https://data.lucid.app/dataSources/12
+                name:
+                  type: string
+                  description: New name for the collection
+                  example: Updated Collection Name
+              example:
+                dataSource: https://data.lucid.app/dataSources/12
+                name: Updated Collection Name
+      responses:
+        '200':
+          description: OK with Collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the collection
+                    example: https://data.lucid.app/collections/3
+                  dataSource:
+                    type: string
+                    description: Link to get parent data source
+                    example: https://data.lucid.app/dataSources/1
+                  name:
+                    type: string
+                    description: Name of the collection
+                    example: Collection 1
+                  lastSync:
+                    type: string
+                    description: Date the collection was last synced with upstream source
+                    example: '2021-01-01T00:00:00Z'
+                  versionTimestamp:
+                    type: string
+                    description: Timestamp of the last time the collection, the collection's schema, the
+                      collection's contents, one of its collection properties, or anything in any of its
+                      metadata collections was changed. It can be used to tell if a copy of the data is
+                      out of date and needs to be refreshed.
+                    example: '2021-01-01T00:00:00Z'
+                  created:
+                    type: string
+                    description: Date the collection was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the collection was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  items:
+                    type: string
+                    description: Link to get items in the collection
+                    example: https://data.lucid.app/collections/3/items
+                  schema:
+                    type: string
+                    description: Link to get schema for the collection
+                    example: https://data.lucid.app/collections/3/schema
+                  properties:
+                    type: string
+                    description: Link to get properties for the collection
+                    example: https://data.lucid.app/collections/3/properties
+                  metadata:
+                    type: string
+                    description: Link to get metadata for the collection
+                    example: https://data.lucid.app/collections/3/metadata
+                  metadataType:
+                    type: string
+                    description: If a metadata collection, this specifies what tyep of metadata it contains
+                    example: null
+                  parent:
+                    type: string
+                    description: If a metadata collection, this link will get its parent collection
+                    example: https://data.lucid.app/collections/2
+                  syncStarted:
+                    type: string
+                    description: Represents the sync status of the collection. When it is null, there
+                      is no sync happening. When it has a DateTime value, that value represents the start
+                      time for the sync that is currently happening.
+                    example: '2021-01-01T00:00:00Z'
+                  deleted:
+                    type: string
+                    description: Date the collection was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - dataSource
+                - name
+                - lastSync
+                - versionTimestamp
+                - created
+                - lastModified
+                - items
+                - schema
+                - properties
+                - metadata
+                example:
+                  uri: https://data.lucid.app/collections/3
+                  dataSource: https://data.lucid.app/dataSources/1
+                  name: Collection 1
+                  lastSync: '2021-01-01T00:00:00Z'
+                  versionTimestamp: '2021-01-01T00:00:00Z'
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  items: https://data.lucid.app/collections/3/items
+                  schema: https://data.lucid.app/collections/3/schema
+                  properties: https://data.lucid.app/collections/3/properties
+                  metadata: https://data.lucid.app/collections/3/metadata
+    delete:
+      summary: Delete Collection
+      description: 'This removes the collection and anything that belongs to it (metadata collections,
+        schema, and items). Data sources will not be removed. This action cannot be undone and will only
+        occur if the user has access to the data source.
+
+        '
+      operationId: deleteCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /collections/{collectionId}/metadata:
+    get:
+      summary: Get All Metadata Collections
+      description: 'This endpoint returns a list of Collections for any metadata collections that exist
+        on the requested collection. The return will only occur if the user has access to the data source.
+        Each metadata collection will have a link to its parent collection in the parent field.
+
+        '
+      operationId: getAllMetadataCollections
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to return metadata collections for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Array[Collection]
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: URI of the collection
+                      example: https://data.lucid.app/collections/3
+                    dataSource:
+                      type: string
+                      description: Link to get parent data source
+                      example: https://data.lucid.app/dataSources/1
+                    name:
+                      type: string
+                      description: Name of the collection
+                      example: Collection 1
+                    lastSync:
+                      type: string
+                      description: Date the collection was last synced with upstream source
+                      example: '2021-01-01T00:00:00Z'
+                    versionTimestamp:
+                      type: string
+                      description: Timestamp of the last time the collection, the collection's schema,
+                        the collection's contents, one of its collection properties, or anything in any
+                        of its metadata collections was changed. It can be used to tell if a copy of the
+                        data is out of date and needs to be refreshed.
+                      example: '2021-01-01T00:00:00Z'
+                    created:
+                      type: string
+                      description: Date the collection was created
+                      example: '2021-01-01T00:00:00Z'
+                    lastModified:
+                      type: string
+                      description: Date the collection was last modified
+                      example: '2021-01-01T00:00:00Z'
+                    items:
+                      type: string
+                      description: Link to get items in the collection
+                      example: https://data.lucid.app/collections/3/items
+                    schema:
+                      type: string
+                      description: Link to get schema for the collection
+                      example: https://data.lucid.app/collections/3/schema
+                    properties:
+                      type: string
+                      description: Link to get properties for the collection
+                      example: https://data.lucid.app/collections/3/properties
+                    metadata:
+                      type: string
+                      description: Link to get metadata for the collection
+                      example: https://data.lucid.app/collections/3/metadata
+                    metadataType:
+                      type: string
+                      description: If a metadata collection, this specifies what tyep of metadata it contains
+                      example: null
+                    parent:
+                      type: string
+                      description: If a metadata collection, this link will get its parent collection
+                      example: https://data.lucid.app/collections/2
+                    syncStarted:
+                      type: string
+                      description: Represents the sync status of the collection. When it is null, there
+                        is no sync happening. When it has a DateTime value, that value represents the
+                        start time for the sync that is currently happening.
+                      example: '2021-01-01T00:00:00Z'
+                    deleted:
+                      type: string
+                      description: Date the collection was deleted
+                      example: '2021-01-01T00:00:00Z'
+                  required:
+                  - uri
+                  - dataSource
+                  - name
+                  - lastSync
+                  - versionTimestamp
+                  - created
+                  - lastModified
+                  - items
+                  - schema
+                  - properties
+                  - metadata
+                  example:
+                    uri: https://data.lucid.app/collections/3
+                    dataSource: https://data.lucid.app/dataSources/1
+                    name: Collection 1
+                    lastSync: '2021-01-01T00:00:00Z'
+                    versionTimestamp: '2021-01-01T00:00:00Z'
+                    created: '2021-01-01T00:00:00Z'
+                    lastModified: '2021-01-01T00:00:00Z'
+                    items: https://data.lucid.app/collections/3/items
+                    schema: https://data.lucid.app/collections/3/schema
+                    properties: https://data.lucid.app/collections/3/properties
+                    metadata: https://data.lucid.app/collections/3/metadata
+    post:
+      summary: Create Metadata Collection
+      description: 'Create a new metadata collection for a given collection. The user must have access
+        to the data source in order to create a metadata collection. Metadata collections cannot be updated.
+
+        '
+      operationId: createMetadataCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to add metadata collection to
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the new metadata collection
+                  example: New Metadata Collection
+                metadataType:
+                  type: string
+                  description: Type of metadata this collection contains
+                  example: type1
+                schema:
+                  type: array
+                  description: The schema field takes an array of Field Definition objects
+                  items:
+                    type: object
+                    properties:
+                      uri:
+                        type: string
+                        description: Link to self
+                        example: https://data.lucid.app/collections/2/schema/4
+                      name:
+                        type: string
+                        description: Name of the field
+                        example: Co1B
+                      fieldType:
+                        type: string
+                        description: Stores the type of the field. The type does not affect how the data
+                          is interpreted in the Data Service; it is for use on the client side. Valid
+                          values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                        example: STRING
+                      collection:
+                        type: string
+                        description: Link to the associated collection
+                        example: https://data.lucid.app/collections/2
+                      isPrimary:
+                        type: boolean
+                        description: Denotes whether the specified field is part of the primary key. The
+                          default value is false
+                        example: false
+                      order:
+                        type: string
+                        description: Denotes a default ordering for the fields. This is currently used
+                          by the Lucid client to determine the order in which the fields are displayed,
+                          unless the context suggests a better ordering.
+                        example: '1'
+                      default:
+                        type: string
+                        description: Default value for this field
+                        example: '5'
+                      label:
+                        type: string
+                        description: Override name for field which is used when displaying to users
+                        example: User Friendly Field Name
+                    required:
+                    - uri
+                    - name
+                    - fieldType
+                    - collection
+                    - isPrimary
+                    example:
+                      uri: https://data.lucid.app/collections/2/schema/4
+                      name: Co1B
+                      fieldType: STRING
+                      collection: https://data.lucid.app/collections/2
+                      isPrimary: false
+                      order: '1'
+                      default: '5'
+                      label: User Friendly Field Name
+                properties:
+                  type: object
+                  description: The properties field takes an object of key-value pairs
+                  example:
+                    param1: value1
+                    param2: value2
+              required:
+              - name
+              - metadataType
+              - schema
+              - properties
+              example:
+                name: New Metadata Collection
+                metadataType: TextColor
+                schema:
+                - uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: '5'
+                  label: User Friendly Field Name
+                properties:
+                  fontSize: '12'
+      responses:
+        '200':
+          description: OK with Collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the collection
+                    example: https://data.lucid.app/collections/3
+                  dataSource:
+                    type: string
+                    description: Link to get parent data source
+                    example: https://data.lucid.app/dataSources/1
+                  name:
+                    type: string
+                    description: Name of the collection
+                    example: Collection 1
+                  lastSync:
+                    type: string
+                    description: Date the collection was last synced with upstream source
+                    example: '2021-01-01T00:00:00Z'
+                  versionTimestamp:
+                    type: string
+                    description: Timestamp of the last time the collection, the collection's schema, the
+                      collection's contents, one of its collection properties, or anything in any of its
+                      metadata collections was changed. It can be used to tell if a copy of the data is
+                      out of date and needs to be refreshed.
+                    example: '2021-01-01T00:00:00Z'
+                  created:
+                    type: string
+                    description: Date the collection was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the collection was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  items:
+                    type: string
+                    description: Link to get items in the collection
+                    example: https://data.lucid.app/collections/3/items
+                  schema:
+                    type: string
+                    description: Link to get schema for the collection
+                    example: https://data.lucid.app/collections/3/schema
+                  properties:
+                    type: string
+                    description: Link to get properties for the collection
+                    example: https://data.lucid.app/collections/3/properties
+                  metadata:
+                    type: string
+                    description: Link to get metadata for the collection
+                    example: https://data.lucid.app/collections/3/metadata
+                  metadataType:
+                    type: string
+                    description: If a metadata collection, this specifies what tyep of metadata it contains
+                    example: null
+                  parent:
+                    type: string
+                    description: If a metadata collection, this link will get its parent collection
+                    example: https://data.lucid.app/collections/2
+                  syncStarted:
+                    type: string
+                    description: Represents the sync status of the collection. When it is null, there
+                      is no sync happening. When it has a DateTime value, that value represents the start
+                      time for the sync that is currently happening.
+                    example: '2021-01-01T00:00:00Z'
+                  deleted:
+                    type: string
+                    description: Date the collection was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - dataSource
+                - name
+                - lastSync
+                - versionTimestamp
+                - created
+                - lastModified
+                - items
+                - schema
+                - properties
+                - metadata
+                example:
+                  uri: https://data.lucid.app/collections/3
+                  dataSource: https://data.lucid.app/dataSources/1
+                  name: Collection 1
+                  lastSync: '2021-01-01T00:00:00Z'
+                  versionTimestamp: '2021-01-01T00:00:00Z'
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  items: https://data.lucid.app/collections/3/items
+                  schema: https://data.lucid.app/collections/3/schema
+                  properties: https://data.lucid.app/collections/3/properties
+                  metadata: https://data.lucid.app/collections/3/metadata
+  /collections/{collectionId}/properties:
+    get:
+      summary: Get Collection Properties
+      description: 'Gets all properties for the specified collection if the user has access to the data
+        source.
+
+        '
+      operationId: getCollectionProperties
+      tags:
+      - Collection Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to return properties for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Map[String,JsValue] of properties on the specified collection
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                example:
+                  backgroundColor: blue
+                  font: Times New Roman
+    patch:
+      summary: Update Collection Properties
+      description: 'Allows a user to update the properties on a collection. This endpoint uses the supplied
+        values to either update existing properties or add new properties.
+
+        '
+      operationId: updateCollectionProperties
+      tags:
+      - Collection Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update properties for
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: The properties field takes an object of key-value pairs
+              example:
+                backgroundColor: blue
+                font: Times New Roman
+      responses:
+        '200':
+          description: OK with Map[String,JsValue] of properties on the specified collection
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                example:
+                  backgroundColor: blue
+                  font: Times New Roman
+    delete:
+      summary: Delete Collection Properties
+      description: 'Removes only the properties provided in the query parameter. The deleted properties
+        cannot be undone. The deletion will only occur if the user has access to the collection.
+
+        '
+      operationId: deleteCollectionProperties
+      tags:
+      - Collection Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete properties from
+        required: true
+        schema:
+          type: integer
+      - name: properties
+        in: query
+        description: List of property names to remove from specified collection
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /collections/{collectionId}/schema/{fieldDefinitionId}:
+    get:
+      summary: Get Field Definition
+      description: 'Gets a specific existing field definition for a given collection
+
+        '
+      operationId: getFieldDefinition
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to get field definition for
+        required: true
+        schema:
+          type: integer
+      - name: fieldDefinitionId
+        in: path
+        description: ID of field definition to get
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Field Definition
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: Link to self
+                    example: https://data.lucid.app/collections/2/schema/4
+                  name:
+                    type: string
+                    description: Name of the field
+                    example: Co1B
+                  fieldType:
+                    type: string
+                    description: Stores the type of the field. The type does not affect how the data is
+                      interpreted in the Data Service; it is for use on the client side. Valid values
+                      include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                    example: STRING
+                  collection:
+                    type: string
+                    description: Link to the associated collection
+                    example: https://data.lucid.app/collections/2
+                  isPrimary:
+                    type: boolean
+                    description: Denotes whether the specified field is part of the primary key. The default
+                      value is false
+                    example: false
+                  order:
+                    type: string
+                    description: Denotes a default ordering for the fields. This is currently used by
+                      the Lucid client to determine the order in which the fields are displayed, unless
+                      the context suggests a better ordering.
+                    example: '1'
+                  default:
+                    type: string
+                    description: Default value for this field
+                    example: '5'
+                  label:
+                    type: string
+                    description: Override name for field which is used when displaying to users
+                    example: User Friendly Field Name
+                required:
+                - uri
+                - name
+                - fieldType
+                - collection
+                - isPrimary
+                example:
+                  uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: 'null'
+    patch:
+      summary: Update Field Definition
+      description: 'This endpoint takes a Field Definition, which is used to update the specified field
+        definition. The easiest way to accomplish this is to modify the values in the response from the
+        GET field definition endpoint and send a PATCH request.
+
+        '
+      operationId: updateFieldDefinition
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update field definition for
+        required: true
+        schema:
+          type: integer
+      - name: fieldDefinitionId
+        in: path
+        description: ID of field definition to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the field
+                  example: Co1B
+                fieldType:
+                  type: string
+                  description: Stores the type of the field. The type does not affect how the data is
+                    interpreted in the Data Service; it is for use on the client side. Valid values include
+                    `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                  example: STRING
+                collection:
+                  type: string
+                  description: Link to the associated collection
+                  example: https://data.lucid.app/collections/2
+                isPrimary:
+                  type: boolean
+                  description: Denotes whether the specified field is part of the primary key. The default
+                    value is false
+                  example: false
+                order:
+                  type: string
+                  description: Denotes a default ordering for the fields. This is currently used by the
+                    Lucid client to determine the order in which the fields are displayed, unless the
+                    context suggests a better ordering.
+                  example: '1'
+                default:
+                  type: string
+                  description: Default value for this field
+                  example: '5'
+                label:
+                  type: string
+                  description: Override name for field which is used when displaying to users
+                  example: User Friendly Field Name
+              example:
+                name: Co1B
+                fieldType: STRING
+                collection: https://data.lucid.app/collections/2
+                isPrimary: false
+                order: '1'
+                default: '5'
+                label: User Friendly Field Name
+      responses:
+        '200':
+          description: OK with Field Definition containing new or updated fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: Link to self
+                    example: https://data.lucid.app/collections/2/schema/4
+                  name:
+                    type: string
+                    description: Name of the field
+                    example: Co1B
+                  fieldType:
+                    type: string
+                    description: Stores the type of the field. The type does not affect how the data is
+                      interpreted in the Data Service; it is for use on the client side. Valid values
+                      include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                    example: STRING
+                  collection:
+                    type: string
+                    description: Link to the associated collection
+                    example: https://data.lucid.app/collections/2
+                  isPrimary:
+                    type: boolean
+                    description: Denotes whether the specified field is part of the primary key. The default
+                      value is false
+                    example: false
+                  order:
+                    type: string
+                    description: Denotes a default ordering for the fields. This is currently used by
+                      the Lucid client to determine the order in which the fields are displayed, unless
+                      the context suggests a better ordering.
+                    example: '1'
+                  default:
+                    type: string
+                    description: Default value for this field
+                    example: '5'
+                  label:
+                    type: string
+                    description: Override name for field which is used when displaying to users
+                    example: User Friendly Field Name
+                required:
+                - uri
+                - name
+                - fieldType
+                - collection
+                - isPrimary
+                example:
+                  uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: '5'
+                  label: User Friendly Field Name
+    delete:
+      summary: Delete Field Definition
+      description: 'This removes the field definition from the collection''s schema. This results of this
+        action cannot be undone. The delete will only occur if the user has access to the data source.
+        This action will also remove all data item values associated with the deleted field.
+
+        '
+      operationId: deleteFieldDefinition
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete field definition from
+        required: true
+        schema:
+          type: integer
+      - name: fieldDefinitionId
+        in: path
+        description: ID of field definition to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /collections/{collectionId}/schema:
+    get:
+      summary: Get All Field Definitions
+      description: 'This endpoint returns all field definitions for a given collection if the user has
+        access.
+
+        '
+      operationId: getAllFieldDefinitions
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to get field definitions for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Array[Field Definition]
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: Link to self
+                      example: https://data.lucid.app/collections/2/schema/4
+                    name:
+                      type: string
+                      description: Name of the field
+                      example: Co1B
+                    fieldType:
+                      type: string
+                      description: Stores the type of the field. The type does not affect how the data
+                        is interpreted in the Data Service; it is for use on the client side. Valid values
+                        include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                      example: STRING
+                    collection:
+                      type: string
+                      description: Link to the associated collection
+                      example: https://data.lucid.app/collections/2
+                    isPrimary:
+                      type: boolean
+                      description: Denotes whether the specified field is part of the primary key. The
+                        default value is false
+                      example: false
+                    order:
+                      type: string
+                      description: Denotes a default ordering for the fields. This is currently used by
+                        the Lucid client to determine the order in which the fields are displayed, unless
+                        the context suggests a better ordering.
+                      example: '1'
+                    default:
+                      type: string
+                      description: Default value for this field
+                      example: '5'
+                    label:
+                      type: string
+                      description: Override name for field which is used when displaying to users
+                      example: User Friendly Field Name
+                  required:
+                  - uri
+                  - name
+                  - fieldType
+                  - collection
+                  - isPrimary
+                  example:
+                    uri: https://data.lucid.app/collections/2/schema/4
+                    name: Co1B
+                    fieldType: STRING
+                    collection: https://data.lucid.app/collections/2
+                    isPrimary: false
+                    order: '1'
+                    default: '5'
+                    label: User Friendly Field Name
+    patch:
+      summary: Update Field Definitions
+      description: 'This endpoint allows updating multiple field definitions at once. The easiest way
+        to accomplish this is to modify the values in the response from the get all field definitions
+        endpoint and send a PATCH request. Changing the values will update existing field definitions
+        within the collection''s schema. Any fields sent without a uri field will result in an addition
+        to the schema if the name field is unique within the schema. Fields cannot be deleted with this
+        endpoint.
+
+        '
+      operationId: updateFieldDefinitions
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update field definitions for
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of field definitions to be added or updated for the collection
+              items:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: Link to self
+                    example: https://data.lucid.app/collections/2/schema/4
+                  name:
+                    type: string
+                    description: Name of the field
+                    example: Co1B
+                  fieldType:
+                    type: string
+                    description: Stores the type of the field. The type does not affect how the data is
+                      interpreted in the Data Service; it is for use on the client side. Valid values
+                      include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                    example: STRING
+                  collection:
+                    type: string
+                    description: Link to the associated collection
+                    example: https://data.lucid.app/collections/2
+                  isPrimary:
+                    type: boolean
+                    description: Denotes whether the specified field is part of the primary key. The default
+                      value is false
+                    example: false
+                  order:
+                    type: string
+                    description: Denotes a default ordering for the fields. This is currently used by
+                      the Lucid client to determine the order in which the fields are displayed, unless
+                      the context suggests a better ordering.
+                    example: '1'
+                  default:
+                    type: string
+                    description: Default value for this field
+                    example: '5'
+                  label:
+                    type: string
+                    description: Override name for field which is used when displaying to users
+                    example: User Friendly Field Name
+                required:
+                - uri
+                - name
+                - fieldType
+                - collection
+                - isPrimary
+                example:
+                  uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: '5'
+                  label: User Friendly Field Name
+      responses:
+        '200':
+          description: OK with Array[Field Definition] containing new or updated fields on the collection
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: Link to self
+                      example: https://data.lucid.app/collections/2/schema/4
+                    name:
+                      type: string
+                      description: Name of the field
+                      example: Co1B
+                    fieldType:
+                      type: string
+                      description: Stores the type of the field. The type does not affect how the data
+                        is interpreted in the Data Service; it is for use on the client side. Valid values
+                        include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                      example: STRING
+                    collection:
+                      type: string
+                      description: Link to the associated collection
+                      example: https://data.lucid.app/collections/2
+                    isPrimary:
+                      type: boolean
+                      description: Denotes whether the specified field is part of the primary key. The
+                        default value is false
+                      example: false
+                    order:
+                      type: string
+                      description: Denotes a default ordering for the fields. This is currently used by
+                        the Lucid client to determine the order in which the fields are displayed, unless
+                        the context suggests a better ordering.
+                      example: '1'
+                    default:
+                      type: string
+                      description: Default value for this field
+                      example: '5'
+                    label:
+                      type: string
+                      description: Override name for field which is used when displaying to users
+                      example: User Friendly Field Name
+                  required:
+                  - uri
+                  - name
+                  - fieldType
+                  - collection
+                  - isPrimary
+                  example:
+                    uri: https://data.lucid.app/collections/2/schema/4
+                    name: Co1B
+                    fieldType: STRING
+                    collection: https://data.lucid.app/collections/2
+                    isPrimary: false
+                    order: '1'
+                    default: '5'
+                    label: User Friendly Field Name
+    delete:
+      summary: Delete Field Definitions
+      description: 'This endpoint removes only the field definitions provided in the query parameter.
+        The fields in the query parameter must belong to the collection specified. The results of this
+        deletion cannot be undone. The deletion will only occur if the user has access to the data source.
+
+        NOTE: If the entire schema is removed then all of the values of each data item are also removed.
+
+        '
+      operationId: deleteFieldDefinitions
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete field definitions from
+        required: true
+        schema:
+          type: integer
+      - name: fields
+        in: query
+        description: List of field definition URI's to remove from specified collection
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /collections/{collectionId}/items:
+    head:
+      summary: Get Total Data Items Count
+      description: 'This endpoint returns the number of data items a user has access to. The return value
+        is in the response headers as Lucid-Items-Total
+
+        '
+      operationId: getTotalDataItemsCount
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to get total data items count for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+          headers:
+            Lucid-Items-Total:
+              description: Total number of data items in the collection
+              schema:
+                type: integer
+                example: 17
+    get:
+      summary: Get All Data Items
+      description: 'This endpoint returns all data items within a collection that the user has access
+        to. The results will be paginated. If the number of data items exceeds the pagination limit, links
+        will be provided to get the next set of results or the previous set of results (if applicable).
+        The range of returned values can be determined by optional start and end parameters. If the difference
+        between the end and start values is greater than the pagination limit, the endpoint returns collections
+        in the range from start to start + pagination limit. Items in the response are determined based
+        on their creation order.
+
+
+        This endpoint also supports an optional filter string that can be used to filter down the data
+        items returned based off the items'' fields'' values. If a filter is included, the start and end
+        parameters only refer to items which satisfy the filter; this is also true of the total value
+        in the response. For more details, see Data Item Filters.
+
+        '
+      operationId: getAllDataItems
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to get data items from
+        required: true
+        schema:
+          type: integer
+      - name: start
+        in: query
+        description: Starting 1-based index of the data items to return. Defaults to 1.
+        required: false
+        schema:
+          type: integer
+          example: 1
+      - name: end
+        in: query
+        description: Ending 1-based index of the data items to return. Defaults to 10000.
+        required: false
+        schema:
+          type: integer
+          example: 100
+      - name: filter
+        in: query
+        description: URL encoded filter string. Example unencoded is `filter=age > 16`
+        required: false
+        schema:
+          type: string
+          example: filter=age%20%3E%2016
+      responses:
+        '200':
+          description: OK with paginated list of Data Items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    description: List of data items
+                    items:
+                      type: object
+                      properties:
+                        uri:
+                          type: string
+                          description: Link to self
+                          example: https://data.lucid.app/collections/2/items/4
+                        collection:
+                          type: string
+                          description: Link to the collection the item belongs to
+                          example: https://data.lucid.app/collections/2
+                        fields:
+                          type: object
+                          description: Mapping of field names found in schema to this specific item's
+                            values
+                          example:
+                            Co1B: value1
+                            Co2B: value2
+                      required:
+                      - uri
+                      - collection
+                      - fields
+                      example:
+                        uri: https://data.lucid.app/collections/2/items/4
+                        collection: https://data.lucid.app/collections/2
+                        fields:
+                          Co1B: value1
+                          Co2B: value2
+                  total:
+                    type: integer
+                    description: Total number of data items in the collection
+                    example: 175
+                  prev:
+                    type: string
+                    description: Link to get the previous set of data items
+                    example: https://data.lucid.app/collections/2/items?start=1&end=100
+                  next:
+                    type: string
+                    description: Link to get the next set of data items
+                    example: https://data.lucid.app/collections/2/items?start=201&end=300
+    post:
+      summary: Create Data Items
+      description: 'If the user has access to the collection, new data items are created using the supplied
+        values. Primary key constraints are not enforced. Any field name that is not part of the schema
+        definition is ignored by default. The schema should be created prior to any data items being created.
+
+        '
+      operationId: createDataItems
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to create data items for
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: Field value pairs to create data items from. Each mapping is for a single data
+                item
+              items:
+                type: object
+                additionalProperties:
+                  type: string
+                example:
+                  Co1B: value1
+                  Co2B: value2
+      responses:
+        '200':
+          description: OK with Array[Data Item] containing the newly created data items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: Link to self
+                      example: https://data.lucid.app/collections/2/items/4
+                    collection:
+                      type: string
+                      description: Link to the collection the item belongs to
+                      example: https://data.lucid.app/collections/2
+                    fields:
+                      type: object
+                      description: Mapping of field names found in schema to this specific item's values
+                      example:
+                        Co1B: value1
+                        Co2B: value2
+                  required:
+                  - uri
+                  - collection
+                  - fields
+                  example:
+                    uri: https://data.lucid.app/collections/2/items/4
+                    collection: https://data.lucid.app/collections/2
+                    fields:
+                      Co1B: value1
+                      Co2B: value2
+    patch:
+      summary: Update Data Items
+      description: 'This endpoint allows updating multiple data items at once. The easiest way to accomplish
+        is to modify the values in the response from Get All Data Items and send a PATCH request. Changing
+        the values will update existing data item values. The collection field is ignored as the data
+        item cannot be moved to a different collection. It the new value is null, it means the value is
+        deleted. If the provided field name does not exist in the collection schema, that value is ignored.
+
+        '
+      operationId: updateDataItems
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update data items for
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  description: URI of data item to be updated
+                  example: https://data.lucid.app/collections/2/items/4
+                fields:
+                  type: object
+                  description: Field value pairs to update data items from. Mapping is for a single data
+                    item
+                  example:
+                    Co1B: new column 1b value
+                    Co2B: new column 2b value
+              required:
+              - uri
+              - fields
+              example:
+                uri: https://data.lucid.app/collections/2/items/4
+                fields:
+                  Co1B: new column 1b value
+                  Co2B: new column 2b value
+      responses:
+        '200':
+          description: OK with Array[Data Item] containing the updated data items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: Link to self
+                      example: https://data.lucid.app/collections/2/items/4
+                    collection:
+                      type: string
+                      description: Link to the collection the item belongs to
+                      example: https://data.lucid.app/collections/2
+                    fields:
+                      type: object
+                      description: Mapping of field names found in schema to this specific item's values
+                      example:
+                        Co1B: value1
+                        Co2B: value2
+                  required:
+                  - uri
+                  - collection
+                  - fields
+                  example:
+                    uri: https://data.lucid.app/collections/2/items/4
+                    collection: https://data.lucid.app/collections/2
+                    fields:
+                      Co1B: value1
+                      Co2B: value2
+    delete:
+      summary: Delete Data Items
+      description: 'Removes only the data items provided in the query parameter. The data items in the
+        query parameter must belong to the collection specified. The deletion cannot be undone. The deletion
+        will only occur if the user has access to the data source.
+
+        '
+      operationId: deleteDataItems
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete data items from
+        required: true
+        schema:
+          type: integer
+      - name: items
+        in: query
+        description: List of data item URI's to remove from specified collection
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /collections/{collectionId}/items/{dataItemId}:
+    get:
+      summary: Get Data Item
+      description: 'Gets a specific existing data item from a given collection
+
+        '
+      operationId: getDataItem
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to get data item from
+        required: true
+        schema:
+          type: integer
+      - name: dataItemId
+        in: path
+        description: ID of data item to get
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: Link to self
+                    example: https://data.lucid.app/collections/2/items/4
+                  collection:
+                    type: string
+                    description: Link to the collection the item belongs to
+                    example: https://data.lucid.app/collections/2
+                  fields:
+                    type: object
+                    description: Mapping of field names found in schema to this specific item's values
+                    example:
+                      Co1B: value1
+                      Co2B: value2
+                required:
+                - uri
+                - collection
+                - fields
+                example:
+                  uri: https://data.lucid.app/collections/2/items/4
+                  collection: https://data.lucid.app/collections/2
+                  fields:
+                    Co1B: value1
+                    Co2B: value2
+    post:
+      summary: Get Data Items By Key
+      description: 'Returns all data items in the specified collection whose field values match the values
+        specified in a Data Item By Key Find JSON Object. If necessary, you can paginate this endpoint''s
+        results using query parameters.
+
+        Note: For more complex data item search queries, consider using the filter parameter with Get
+        All Data Items.
+
+        '
+      operationId: getDataItemsByKey
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to get data items from
+        required: true
+        schema:
+          type: integer
+      - name: dataItemId
+        in: path
+        description: ID of data item to get
+        required: true
+        schema:
+          type: integer
+      - name: start
+        in: query
+        description: Starting 1-based index of the data items to return. Defaults to 1.
+        required: false
+        schema:
+          type: integer
+          example: 1
+      - name: end
+        in: query
+        description: Ending 1-based index of the data items to return. Defaults to 10000.
+        required: false
+        schema:
+          type: integer
+          example: 100
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetValues:
+                  type: array
+                  description: List of parameters by which to search for data items
+                  items:
+                    type: object
+                    properties:
+                      fieldValues:
+                        type: array
+                        description: Specifies the actual value that the fields need to have to be found
+                        items:
+                          type: string
+                          example: Ontario
+                keySchemaFields:
+                  type: array
+                  description: Fields used to search for items in the collection. If it is not provided,
+                    primary keys from the schema are used.
+                  items:
+                    type: string
+                    example: Province
+              required:
+              - targetValues
+              example:
+                targetValues:
+                - fieldValues:
+                  - Ontario
+                keySchemaFields:
+                - Province
+      responses:
+        '200':
+          description: OK with paginated list of Data Items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    description: List of data items
+                    items:
+                      type: object
+                      properties:
+                        uri:
+                          type: string
+                          description: Link to self
+                          example: https://data.lucid.app/collections/2/items/4
+                        collection:
+                          type: string
+                          description: Link to the collection the item belongs to
+                          example: https://data.lucid.app/collections/2
+                        fields:
+                          type: object
+                          description: Mapping of field names found in schema to this specific item's
+                            values
+                          example:
+                            Co1B: value1
+                            Co2B: value2
+                      required:
+                      - uri
+                      - collection
+                      - fields
+                      example:
+                        uri: https://data.lucid.app/collections/2/items/4
+                        collection: https://data.lucid.app/collections/2
+                        fields:
+                          Co1B: value1
+                          Co2B: value2
+                  total:
+                    type: integer
+                    description: Total number of data items in the collection
+                    example: 175
+                  prev:
+                    type: string
+                    description: Link to get the previous set of data items
+                    example: https://data.lucid.app/collections/2/items?start=1&end=100
+                  next:
+                    type: string
+                    description: Link to get the next set of data items
+                    example: https://data.lucid.app/collections/2/items?start=201&end=300
+    patch:
+      summary: Update Data Item
+      description: 'Update values for the specified item. The easiest way to accomplish is to modify the
+        values in the response from Get Data Item and send a PATCH request. Changing the values will update
+        existing data item values. The collection field is ignored as the data item cannot be moved to
+        a different collection. It the new value is null, it means the value is deleted. If the provided
+        field name does not exist in the collection schema, that value is ignored.
+
+        '
+      operationId: updateDataItem
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update data item for
+        required: true
+        schema:
+          type: integer
+      - name: dataItemId
+        in: path
+        description: ID of data item to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uri:
+                  type: string
+                  description: URI of data item to be updated
+                  example: https://data.lucid.app/collections/2/items/4
+                fields:
+                  type: object
+                  description: Field value pairs to update data items from. Mapping is for a single data
+                    item
+                  example:
+                    Co1B: new column 1b value
+                    Co2B: new column 2b value
+              required:
+              - uri
+              - fields
+              example:
+                uri: https://data.lucid.app/collections/2/items/4
+                fields:
+                  Co1B: new column 1b value
+                  Co2B: new column 2b value
+      responses:
+        '200':
+          description: OK with Data Item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: Link to self
+                    example: https://data.lucid.app/collections/2/items/4
+                  collection:
+                    type: string
+                    description: Link to the collection the item belongs to
+                    example: https://data.lucid.app/collections/2
+                  fields:
+                    type: object
+                    description: Mapping of field names found in schema to this specific item's values
+                    example:
+                      Co1B: value1
+                      Co2B: value2
+                required:
+                - uri
+                - collection
+                - fields
+                example:
+                  uri: https://data.lucid.app/collections/2/items/4
+                  collection: https://data.lucid.app/collections/2
+                  fields:
+                    Co1B: value1
+                    Co2B: value2
+    delete:
+      summary: Delete Data Item
+      description: 'Removes the specified data item from the collection. This deletion cannot be undone.
+        The deletion will only occur if the user has access to the data source.
+
+        '
+      operationId: deleteDataItem
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete data item from
+        required: true
+        schema:
+          type: integer
+      - name: dataItemId
+        in: path
+        description: ID of data item to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /collections/{collectionId}/itemsByKey:
+    patch:
+      summary: Update Data Items By Key
+      description: 'Find any data items whose fields match specified values and update those items using
+        a patch. If the value of a field in a patch is null, that value will be deleted from the item.
+        If the provided field name does not exist in the collection schema, that value is ignored. Attempts
+        to update the Collection field will be ignored as a data item cannot be moved to a different collection.
+
+        '
+      operationId: updateDataItemsByKey
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update data items for
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patches:
+                  type: array
+                  description: Define what items from the collection you are changing and how to change
+                    them. The order of strings in fieldValues must match that of either keySchemaFields
+                    or of the actual primary keys from the real schema if keySchemaFields is not defined.
+                  items:
+                    type: object
+                    properties:
+                      fieldValues:
+                        type: array
+                        description: Specifies the actual value that the fields need to have to be found
+                        items:
+                          type: string
+                          example: Ontario
+                      patch:
+                        type: object
+                        description: List of field names with the new value that the field should be set
+                          to. Changes will be applied to any matching items and if the value is null,
+                          that field will be deleted from the matching data items.
+                        example:
+                          Co1B: new column 1b value
+                          Co2B: new column 2b value
+                keySchemaFields:
+                  type: array
+                  description: Fields used to search for items in the collection. If it is not provided,
+                    primary keys from the schema are used.
+                  items:
+                    type: string
+                    example: Province
+              required:
+              - patches
+              example:
+                patches:
+                - fieldValues:
+                  - Ontario
+                  patch:
+                    Co1B: new column 1b value
+                    Co2B: new column 2b value
+                keySchemaFields:
+                - Province
+      responses:
+        '200':
+          description: OK with message indicating the number of items updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message indicating the number of items updated
+                    example: Updated 5 item(s)
+    delete:
+      summary: Delete Data Items By Key
+      description: 'Finds all the items whose key values match those specified by the payload and deletes
+        them. The deletion cannot be undone. The deletion will only occur if the user has access to the
+        data source.
+
+        '
+      operationId: deleteDataItemsByKey
+      tags:
+      - Data Item
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete data items from
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                targetValues:
+                  type: array
+                  description: Defines what items within the collection you are searching for. The order
+                    of strings in fieldValues must match that of either keySchemaFields or of the actual
+                    primary keys from the real schema if keySchemaFields is not defined.
+                  items:
+                    type: object
+                    properties:
+                      fieldValues:
+                        type: array
+                        description: Specifies the actual value that the fields need to have to be found
+                        items:
+                          type: string
+                          example: Ontario
+                keySchemaFields:
+                  type: array
+                  description: Fields used to search for items in the collection. If it is not provided,
+                    primary keys from the schema are used.
+                  items:
+                    type: string
+                    example: Province
+              required:
+              - targetValues
+              example:
+                targetValues:
+                - fieldValues:
+                  - Joey
+                  - Ontario
+                keySchemaFields:
+                - first name
+                - last name
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            data-service.admin: Scope needed for access to the Data APIs.

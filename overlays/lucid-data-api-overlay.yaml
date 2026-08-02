@@ -1,0 +1,56 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Lucid Data API
+  version: 1.0.0
+extends: openapi/lucid-data-api-openapi.yml
+x-generated: '2026-08-01'
+x-method: generated
+x-source: api-evangelist enrichment pipeline (all/lucid)
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: lucid
+    x-apievangelist-artifacts:
+      authentication: authentication/lucid-authentication.yml
+      scopes: scopes/lucid-scopes.yml
+      conventions: conventions/lucid-conventions.yml
+      errors: errors/lucid-problem-types.yml
+      lifecycle: lifecycle/lucid-lifecycle.yml
+      conformance: conformance/lucid-conformance.yml
+      data_model: data-model/lucid-data-model.yml
+      mcp: mcp/lucid-mcp.yml
+    x-apievangelist-harvest:
+      method: searched
+      source: https://lucid-developer-docs.readme.io/mcp
+      harvested: '2026-08-01'
+      operations: 50
+    x-apievangelist-gaps:
+    - no idempotency key contract
+    - no RFC 9457 problem+json error envelope
+    - no documented rate-limit response headers
+    - no deprecation/sunset policy
+    - no AsyncAPI or webhook event surface
+- target: $.servers
+  update:
+  - url: https://data.lucid.app
+    description: Lucid Data API production
+- target: $.tags
+  update:
+  - name: Rate Limits
+    x-apievangelist-capability: Rate Limits
+  - name: Data Set
+    x-apievangelist-capability: Data Set
+  - name: Data Set Grant
+    x-apievangelist-capability: Data Set Grant
+  - name: Data Set Properties
+    x-apievangelist-capability: Data Set Properties
+  - name: Data Source
+    x-apievangelist-capability: Data Source
+  - name: Collection
+    x-apievangelist-capability: Collection
+  - name: Collection Properties
+    x-apievangelist-capability: Collection Properties
+  - name: Schema
+    x-apievangelist-capability: Schema
+  - name: Data Item
+    x-apievangelist-capability: Data Item

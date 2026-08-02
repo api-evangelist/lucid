@@ -1,0 +1,46 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Lucid SCIM API
+  version: 1.0.0
+extends: openapi/lucid-scim-api-openapi.yml
+x-generated: '2026-08-01'
+x-method: generated
+x-source: api-evangelist enrichment pipeline (all/lucid)
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: lucid
+    x-apievangelist-artifacts:
+      authentication: authentication/lucid-authentication.yml
+      scopes: scopes/lucid-scopes.yml
+      conventions: conventions/lucid-conventions.yml
+      errors: errors/lucid-problem-types.yml
+      lifecycle: lifecycle/lucid-lifecycle.yml
+      conformance: conformance/lucid-conformance.yml
+      data_model: data-model/lucid-data-model.yml
+      mcp: mcp/lucid-mcp.yml
+    x-apievangelist-harvest:
+      method: searched
+      source: https://lucid-developer-docs.readme.io/mcp
+      harvested: '2026-08-01'
+      operations: 15
+    x-apievangelist-gaps:
+    - no idempotency key contract
+    - no RFC 9457 problem+json error envelope
+    - no documented rate-limit response headers
+    - no deprecation/sunset policy
+    - no AsyncAPI or webhook event surface
+- target: $.servers
+  update:
+  - url: https://users.lucid.app/scim/v2
+    description: Lucid SCIM API production
+- target: $.tags
+  update:
+  - name: Users
+    x-apievangelist-capability: Users
+  - name: Groups
+    x-apievangelist-capability: Groups
+  - name: Schemas
+    x-apievangelist-capability: Schemas
+  - name: Service Provider Config
+    x-apievangelist-capability: Service Provider Config

@@ -1,0 +1,263 @@
+generated: '2026-08-01'
+method: derived
+source: openapi/lucid-rest-api-openapi.yml, openapi/lucid-data-api-openapi.yml, openapi/lucid-scim-api-openapi.yml
+  + https://developer.lucid.co/reference/general-oauth-20-errors
+format: http-status
+note: Lucid does not publish RFC 9457 application/problem+json. Error responses in all three specs are plain HTTP
+  statuses with a prose description per operation; SCIM returns the SCIM 2.0 error schema. This catalog aggregates
+  every distinct 4xx/5xx declared in the harvested specs, with the most common provider wording and the operation
+  count behind it.
+problems:
+- api: REST
+  status: 400
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 76
+  title: Bad Request. Occurs when the job reference ID is malformatted.
+  variants:
+  - description: Bad Request. Occurs when the job reference ID is malformatted.
+    operations: 12
+  - description: Bad Request. Occurs when no file is found or the file is invalid.
+    operations: 8
+  - description: Bad Request. Occurs when the data source ID is malformatted.
+    operations: 6
+  - description: Incorrect format or invalid parameters.
+    operations: 4
+  examples:
+  - SearchAccountDocuments
+  - createLegalHold
+  - addLegalHoldUsers
+  - removeLegalHoldUsers
+  - editLegalHold
+- api: REST
+  status: 401
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 5
+  title: Unauthorized if the client credentials are invalid.
+  variants:
+  - description: Unauthorized if the client credentials are invalid.
+    operations: 3
+  - description: Unauthorized. The token is missing or invalid.
+    operations: 1
+  - description: Access token is missing or invalid.
+    operations: 1
+  examples:
+  - createOrRefreshAccessToken
+  - introspectAccessToken
+  - revokeAccessToken
+  - documentEmbeds
+  - documentEmbedsToken
+- api: REST
+  status: 403
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 124
+  title: Forbidden. Occurs when the job does not exist or the user does not have access to it.
+  variants:
+  - description: Forbidden. Occurs when the job does not exist or the user does not have access to it.
+    operations: 12
+  - description: Forbidden. Occurs when the data source does not exist or the user does not have access to it.
+    operations: 10
+  - description: Account does not have permission to access the API.
+    operations: 8
+  - description: Forbidden if the app making the request does not have permission to the document, or if the document
+      has been deleted, or does not exist.
+    operations: 5
+  examples:
+  - getAccountInformation
+  - getClassifications
+  - SearchAccountDocuments
+  - createLegalHold
+  - getLegalHolds
+- api: REST
+  status: 404
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 25
+  title: The specified legal hold id was not found.
+  variants:
+  - description: The specified legal hold id was not found.
+    operations: 6
+  - description: Not Found if the share link id with the specified document id does not belong to the document,
+      does not exist, or the requesting app did not create the share link.
+    operations: 3
+  - description: Not Found if the share link id with the specified folder id does not belong to the folder, does
+      not exist, or the requesting app did not create the share link.
+    operations: 3
+  - description: Not Found
+    operations: 2
+  examples:
+  - addLegalHoldUsers
+  - removeLegalHoldUsers
+  - editLegalHold
+  - releaseLegalHold
+  - getLegalHoldUsers
+- api: REST
+  status: 406
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 1
+  title: Not Acceptable. The specified image type is not supported for export.
+  variants:
+  - description: Not Acceptable. The specified image type is not supported for export.
+    operations: 1
+  examples:
+  - getOrExportDocument
+- api: REST
+  status: 409
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 18
+  title: Conflict. Occurs when an update job is already in progress for this data source.
+  variants:
+  - description: Conflict. Occurs when an update job is already in progress for this data source.
+    operations: 6
+  - description: Conflict. Occurs when a sync is already in progress for this document.
+    operations: 3
+  - description: Conflict. Occurs if a team already exists with an identical name.
+    operations: 2
+  - description: Conflict. Occurs when the credentials are already in use.
+    operations: 2
+  examples:
+  - updateDocument
+  - createUser
+  - createTeam
+  - updateTeam
+  - createAzureCredential
+- api: REST
+  status: 415
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 2
+  title: Unsupported Media Type. The file type provided is not supported.
+  variants:
+  - description: Unsupported Media Type. The file type provided is not supported.
+    operations: 2
+  examples:
+  - createDocumentWithStandardImport
+  - importDocument
+- api: REST
+  status: 429
+  spec: openapi/lucid-rest-api-openapi.yml
+  operations: 6
+  title: Too Many Requests if the account makes more than 300 requests in 5 seconds.
+  variants:
+  - description: Too Many Requests if the account makes more than 300 requests in 5 seconds.
+    operations: 2
+  - description: Too Many Requests if account makes more than 300 requests in 5 seconds
+    operations: 1
+  - description: Too Many Requests. If the account makes more than 75 requests in 5 seconds.
+    operations: 1
+  - description: Too Many Requests if the account makes more than 100 requests in 5 seconds.
+    operations: 1
+  examples:
+  - SearchAccountDocuments
+  - getOrExportDocument
+  - searchDocuments
+  - getDocumentContent
+  - searchFolders
+- api: Data
+  status: 400
+  spec: openapi/lucid-data-api-openapi.yml
+  operations: 2
+  title: Bad Request if no file provided or unable to read file
+  variants:
+  - description: Bad Request if no file provided or unable to read file
+    operations: 1
+  - description: Bad Request if no file provided, unable to read file, or datasource query parameter is missing
+    operations: 1
+  examples:
+  - createDataSourceFromCSV
+  - updateDataSourceFromCSV
+- api: SCIM
+  status: 400
+  spec: openapi/lucid-scim-api-openapi.yml
+  operations: 8
+  title: Bad Request. Occurs if request body syntax is incorrect.
+  variants:
+  - description: Bad Request. Occurs if request body syntax is incorrect.
+    operations: 3
+  - description: Bad Request. Occurs if an unexpected error prevents user deletion.
+    operations: 1
+  - description: Bad Request. Occurs if the filter parameter has invalid syntax or uses unsupported operators.
+    operations: 1
+  - description: Bad Request. Occurs if the request body syntax is incorrect.
+    operations: 1
+  examples:
+  - modifyUserPut
+  - modifyUserPatch
+  - deleteUser
+  - getAllUsers
+  - createUser
+- api: SCIM
+  status: 401
+  spec: openapi/lucid-scim-api-openapi.yml
+  operations: 15
+  title: Unauthorized. Occurs if bearer token is invalid.
+  variants:
+  - description: Unauthorized. Occurs if bearer token is invalid.
+    operations: 8
+  - description: Unauthorized. Occurs if the bearer token is invalid.
+    operations: 7
+  examples:
+  - getUser
+  - modifyUserPut
+  - modifyUserPatch
+  - deleteUser
+  - getAllUsers
+- api: SCIM
+  status: 404
+  spec: openapi/lucid-scim-api-openapi.yml
+  operations: 9
+  title: Not Found. Occurs if the group was not found.
+  variants:
+  - description: Not Found. Occurs if the group was not found.
+    operations: 4
+  - description: Not Found. Occurs if the user does not exist.
+    operations: 3
+  - description: Not Found. Occurs if the user was not found.
+    operations: 1
+  - description: Not Found. Occurs if the schema was not found.
+    operations: 1
+  examples:
+  - getUser
+  - modifyUserPut
+  - modifyUserPatch
+  - deleteUser
+  - getGroup
+- api: SCIM
+  status: 409
+  spec: openapi/lucid-scim-api-openapi.yml
+  operations: 7
+  title: Conflict. Occurs if the group name already exists on the account. Org group and team namespaces are distinct,
+    though the latter includes archived teams.
+  variants:
+  - description: Conflict. Occurs if the group name already exists on the account. Org group and team namespaces
+      are distinct, though the latter includes archived teams.
+    operations: 2
+  - description: Conflict. Occurs if new username or email already exists.
+    operations: 1
+  - description: Conflict. Occurs if new username or email already exists on account.
+    operations: 1
+  - description: Conflict. Occurs if the user cannot be deleted (e.g., account owner or default document owner).
+    operations: 1
+  examples:
+  - modifyUserPut
+  - modifyUserPatch
+  - deleteUser
+  - createUser
+  - modifyGroupPut
+- api: SCIM
+  status: 424
+  spec: openapi/lucid-scim-api-openapi.yml
+  operations: 1
+  title: Failed Dependency. Occurs if add-on license requires base license to be active.
+  variants:
+  - description: Failed Dependency. Occurs if add-on license requires base license to be active.
+    operations: 1
+  examples:
+  - createUser
+oauth_errors:
+- error: invalid_client
+  source: https://developer.lucid.co/reference/general-oauth-20-errors
+  description: An admin on the Lucid account may have disabled access to your OAuth2 client.
+- error: invalid_scopes
+  source: https://developer.lucid.co/reference/general-oauth-20-errors
+  description: The provided scopes may not be valid for the requested token type.
+references:
+- https://developer.lucid.co/reference/general-oauth-20-errors
+- RFC 6749 §4.1.2.1 and §5.2 (referenced by Lucid for the remaining OAuth error codes)

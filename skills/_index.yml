@@ -1,0 +1,33 @@
+generated: '2026-08-01'
+method: generated
+source: openapi/lucid-rest-api-openapi.yml, openapi/lucid-data-api-openapi.yml, openapi/lucid-scim-api-openapi.yml
+note: >-
+  Packaged Agent Skills for the Lucid Developer Platform. Every step is grounded in an operationId
+  that exists verbatim in the harvested specs. Lucid publishes no AGENTS.md or provider-authored
+  skill files (searched), so these are generated from the specs plus conventions/, scopes/ and
+  errors/.
+skills:
+- file: lucid-create-and-share-a-document.md
+  name: Create and share a Lucid document
+  api: openapi/lucid-rest-api-openapi.yml
+  operations: [createDocument, createDocumentWithStandardImport, copyDocument, putDocumentUserCollaborators, createDocumentShareLink, getOrExportDocument]
+- file: lucid-search-and-export-documents.md
+  name: Search and export Lucid documents
+  api: openapi/lucid-rest-api-openapi.yml
+  operations: [searchDocuments, SearchAccountDocuments, getOrExportDocument, getDocumentContent, describeLink]
+- file: lucid-provision-users-with-scim.md
+  name: Provision Lucid users and groups with SCIM 2.0
+  api: openapi/lucid-scim-api-openapi.yml
+  operations: [getAllUsers, createUser, getUser, modifyUserPut, modifyUserPatch, deleteUser, getAllGroups, createGroup, modifyGroupPatch, deleteGroup, getServiceProviderConfig]
+- file: lucid-sync-external-data-into-diagrams.md
+  name: Sync external data into Lucid diagrams
+  api: openapi/lucid-data-api-openapi.yml
+  operations: [createDataSource, createDataSourceFromCSV, createCollection, updateFieldDefinitions, createDataItems, updateDataItemsByKey, getAllDataItems, getRateLimits]
+- file: lucid-pull-audit-logs.md
+  name: Pull Lucid audit logs
+  api: openapi/lucid-rest-api-openapi.yml
+  operations: [getAuditLogs, queryAuditLogs, getAccountInformation]
+- file: lucid-oauth-token-lifecycle.md
+  name: Run the Lucid OAuth 2.0 token lifecycle
+  api: openapi/lucid-rest-api-openapi.yml
+  operations: [createOrRefreshAccessToken, introspectAccessToken, revokeAccessToken]

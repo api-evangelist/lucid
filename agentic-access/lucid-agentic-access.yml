@@ -1,0 +1,3674 @@
+generated: '2026-08-01'
+method: generated
+source: openapi/lucid-chatgpt-plugin-openapi.yaml, openapi/lucid-data-api-openapi.yml, openapi/lucid-rest-api-openapi.yml,
+  openapi/lucid-scim-api-openapi.yml
+description: Recommended x-agentic-access execution contracts, classified heuristically from
+  the OpenAPI. A governance starting point for exposing this API to AI agents — review and bind
+  audience per deployment. See research/curity/agentic-governance/.
+summary:
+  operations: 220
+  by_action_class:
+    acting: 126
+    connected: 94
+  by_consequence:
+    write: 124
+    read: 94
+    safety-critical: 1
+    physical: 1
+  human_in_the_loop_required: 1
+operations:
+- path: /createDiagram
+  method: post
+  operationId: createDiagram
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /rateLimits
+  method: get
+  operationId: getRateLimits
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSets
+  method: head
+  operationId: getDataSetCount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSets
+  method: get
+  operationId: getAllDataSets
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSets
+  method: post
+  operationId: createDataSet
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSets/{dataSetId}
+  method: get
+  operationId: getDataSet
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSets/{dataSetId}
+  method: patch
+  operationId: updateDataSetName
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSets/{dataSetId}
+  method: delete
+  operationId: deleteDataSet
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSetGrants/{dataSetId}
+  method: get
+  operationId: getDataSetGrant
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSetGrants/{dataSetId}
+  method: delete
+  operationId: deleteDataSetGrant
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSetGrants
+  method: get
+  operationId: getAllDataSetGrants
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSetGrants
+  method: post
+  operationId: createDataSetGrant
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSets/{dataSetId}/properties
+  method: get
+  operationId: getDataSetProperties
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSets/{dataSetId}/properties
+  method: patch
+  operationId: updateDataSetProperties
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSets/{dataSetId}/properties
+  method: delete
+  operationId: deleteDataSetProperties
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSources
+  method: head
+  operationId: getDataSourceCount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSources
+  method: get
+  operationId: getAllDataSources
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSources
+  method: post
+  operationId: createDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSources/{dataSourceId}
+  method: get
+  operationId: getDataSource
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /dataSources/{dataSourceId}
+  method: patch
+  operationId: updateDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /dataSources/{dataSourceId}
+  method: delete
+  operationId: deleteDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /adapter/csv
+  method: post
+  operationId: createDataSourceFromCSV
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /adapter/csv
+  method: put
+  operationId: updateDataSourceFromCSV
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections
+  method: head
+  operationId: getTotalCollectionsCount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections
+  method: get
+  operationId: getAllCollections
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections
+  method: post
+  operationId: createCollection
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}
+  method: get
+  operationId: getCollection
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections/{collectionId}
+  method: patch
+  operationId: updateCollection
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}
+  method: delete
+  operationId: deleteCollection
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/metadata
+  method: get
+  operationId: getAllMetadataCollections
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections/{collectionId}/metadata
+  method: post
+  operationId: createMetadataCollection
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/properties
+  method: get
+  operationId: getCollectionProperties
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections/{collectionId}/properties
+  method: patch
+  operationId: updateCollectionProperties
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/properties
+  method: delete
+  operationId: deleteCollectionProperties
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/schema/{fieldDefinitionId}
+  method: get
+  operationId: getFieldDefinition
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections/{collectionId}/schema/{fieldDefinitionId}
+  method: patch
+  operationId: updateFieldDefinition
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/schema/{fieldDefinitionId}
+  method: delete
+  operationId: deleteFieldDefinition
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/schema
+  method: get
+  operationId: getAllFieldDefinitions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections/{collectionId}/schema
+  method: patch
+  operationId: updateFieldDefinitions
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/schema
+  method: delete
+  operationId: deleteFieldDefinitions
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/items
+  method: head
+  operationId: getTotalDataItemsCount
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections/{collectionId}/items
+  method: get
+  operationId: getAllDataItems
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections/{collectionId}/items
+  method: post
+  operationId: createDataItems
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/items
+  method: patch
+  operationId: updateDataItems
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/items
+  method: delete
+  operationId: deleteDataItems
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/items/{dataItemId}
+  method: get
+  operationId: getDataItem
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - data-service.admin
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /collections/{collectionId}/items/{dataItemId}
+  method: post
+  operationId: getDataItemsByKey
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/items/{dataItemId}
+  method: patch
+  operationId: updateDataItem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/items/{dataItemId}
+  method: delete
+  operationId: deleteDataItem
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/itemsByKey
+  method: patch
+  operationId: updateDataItemsByKey
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /collections/{collectionId}/itemsByKey
+  method: delete
+  operationId: deleteDataItemsByKey
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - data-service.admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/oauth2/token
+  method: post
+  operationId: createOrRefreshAccessToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/oauth2/token/introspect
+  method: post
+  operationId: introspectAccessToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/oauth2/token/revoke
+  method: post
+  operationId: revokeAccessToken
+  x-agentic-access:
+    action-class: acting
+    consequence: safety-critical
+    subject: required
+    audience: null
+    token:
+      max-ttl: 120
+      exchange: true
+      purpose-required: true
+      proof-of-possession: true
+    escalation:
+      human-in-the-loop: required
+    audit: required
+- path: /v1/accounts/me
+  method: get
+  operationId: getAccountInformation
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AccountReadonly
+    - account.info
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/accounts/me/classifications
+  method: get
+  operationId: getClassifications
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AccountReadonly
+    - account.info
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/accounts/me/documents/search
+  method: post
+  operationId: SearchAccountDocuments
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentAdmin
+    - lucidchart.document.content:admin.readonly
+    - lucidscale.document.content:admin.readonly
+    - lucidspark.document.content:admin.readonly
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/accounts/me/legalHolds
+  method: post
+  operationId: createLegalHold
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - LegalHoldEdit
+    - account.legalhold
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/accounts/me/legalHolds
+  method: get
+  operationId: getLegalHolds
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - LegalHoldReadonly
+    - account.legalhold
+    - account.legalhold:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/accounts/me/legalHolds/{legalHoldId}/users/add
+  method: post
+  operationId: addLegalHoldUsers
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - LegalHoldEdit
+    - account.legalhold
+    - account.legalhold.users
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/accounts/me/legalHolds/{legalHoldId}/users/remove
+  method: post
+  operationId: removeLegalHoldUsers
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - LegalHoldEdit
+    - account.legalhold
+    - account.legalhold.users
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/accounts/me/legalHolds/{legalHoldId}
+  method: patch
+  operationId: editLegalHold
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - LegalHoldEdit
+    - account.legalhold
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/accounts/me/legalHolds/{legalHoldId}/release
+  method: post
+  operationId: releaseLegalHold
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - LegalHoldEdit
+    - account.legalhold
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/accounts/me/legalHolds/{legalHoldId}/users
+  method: get
+  operationId: getLegalHoldUsers
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - LegalHoldReadonly
+    - account.legalhold
+    - account.legalhold.users
+    - account.legalhold.users:readonly
+    - account.legalhold:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/accounts/me/legalHoldDocuments/{legalHoldId}
+  method: get
+  operationId: getLegalHoldDocuments
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - LegalHoldReadonly
+    - account.legalhold
+    - account.legalhold:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{id}/shares/users/{userId}
+  method: get
+  operationId: getDocumentUserCollaborators
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - DocumentReadonly
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.collaborator:readonly
+    - lucidchart.document.content.share.collaborator:readonly
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.collaborator:readonly
+    - lucidscale.document.content.share.collaborator:readonly
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.collaborator:readonly
+    - lucidspark.document.content.share.collaborator:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{id}/shares/users/{userId}
+  method: put
+  operationId: putDocumentUserCollaborators
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.collaborator
+    - lucidchart.document.content.share.collaborator
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.collaborator
+    - lucidscale.document.content.share.collaborator
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.collaborator
+    - lucidspark.document.content.share.collaborator
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{id}/shares/users/{userId}
+  method: delete
+  operationId: deleteDocumentUserCollaborators
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.collaborator
+    - lucidchart.document.content.share.collaborator
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.collaborator
+    - lucidscale.document.content.share.collaborator
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.collaborator
+    - lucidspark.document.content.share.collaborator
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{id}/shares/users
+  method: get
+  operationId: listDocumentUserCollaborators
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - DocumentReadonly
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.collaborator:readonly
+    - lucidchart.document.content.share.collaborator:readonly
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.collaborator:readonly
+    - lucidscale.document.content.share.collaborator:readonly
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.collaborator:readonly
+    - lucidspark.document.content.share.collaborator:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{id}/shares/teams/{teamId}
+  method: get
+  operationId: getDocumentTeamCollaborator
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - DocumentReadonly
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.collaborator:readonly
+    - lucidchart.document.content.share.collaborator:readonly
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.collaborator:readonly
+    - lucidscale.document.content.share.collaborator:readonly
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.collaborator:readonly
+    - lucidspark.document.content.share.collaborator:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{id}/shares/teams/{teamId}
+  method: put
+  operationId: putDocumentTeamCollaborator
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.collaborator
+    - lucidchart.document.content.share.collaborator
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.collaborator
+    - lucidscale.document.content.share.collaborator
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.collaborator
+    - lucidspark.document.content.share.collaborator
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{id}/shares/teams/{teamId}
+  method: delete
+  operationId: deleteDocumentTeamCollaborator
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.collaborator
+    - lucidchart.document.content.share.collaborator
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.collaborator
+    - lucidscale.document.content.share.collaborator
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.collaborator
+    - lucidspark.document.content.share.collaborator
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/users/{userId}
+  method: get
+  operationId: getFolderUserCollaborators
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - FolderReadonly
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/{id}/shares/users/{userId}
+  method: put
+  operationId: putFolderUserCollaborator
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/users/{userId}
+  method: delete
+  operationId: deleteFolderUserCollaborator
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/users
+  method: get
+  operationId: listFolderUserCollaborators
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - FolderReadonly
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/{id}/shares/groups/{groupId}
+  method: get
+  operationId: getFolderGroupCollaborator
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - FolderReadonly
+    - folder
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/{id}/shares/groups/{groupId}
+  method: put
+  operationId: updateFolderGroupCollaborator
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/groups/{groupId}
+  method: delete
+  operationId: deleteFolderGroupCollaborator
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/groups
+  method: get
+  operationId: listFolderGroupCollaborators
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - FolderReadonly
+    - folder
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/{id}/shares/teams/{teamId}
+  method: get
+  operationId: getFolderTeamCollaborator
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - FolderReadonly
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/{id}/shares/teams/{teamId}
+  method: put
+  operationId: putFolderTeamCollaborator
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/teams/{teamId}
+  method: delete
+  operationId: deleteFolderTeamCollaborator
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents
+  method: post
+  operationId: createDocument
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.content
+    - lucidspark.document.app.folder
+    - lucidspark.document.content
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/create
+  method: post
+  operationId: createDocumentWithStandardImport
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.content
+    - lucidspark.document.app.folder
+    - lucidspark.document.content
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/import
+  method: post
+  operationId: importDocument
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.content
+    - lucidspark.document.app.folder
+    - lucidspark.document.content
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/copy
+  method: post
+  operationId: copyDocument
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.content
+    - lucidspark.document.app.folder
+    - lucidspark.document.content
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{id}
+  method: get
+  operationId: getOrExportDocument
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - DocumentAdmin
+    - DocumentReadonly
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker:readonly
+    - lucidchart.document.content:admin.readonly
+    - lucidchart.document.content:readonly
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker:readonly
+    - lucidscale.document.content:admin.readonly
+    - lucidscale.document.content:readonly
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker:readonly
+    - lucidspark.document.content:admin.readonly
+    - lucidspark.document.content:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{id}
+  method: patch
+  operationId: updateDocument
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - lucidchart.document.content
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{id}/trash
+  method: post
+  operationId: trashDocument
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucidchart.document.app.folder
+    - lucidchart.document.content
+    - lucidscale.document.app.folder
+    - lucidscale.document.content
+    - lucidspark.document.app.folder
+    - lucidspark.document.content
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/search
+  method: post
+  operationId: searchDocuments
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentReadonly
+    - lucidchart.document.content:readonly
+    - lucidscale.document.content:readonly
+    - lucidspark.document.content:readonly
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{id}/contents
+  method: get
+  operationId: getDocumentContent
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - DocumentReadonly
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker:readonly
+    - lucidchart.document.content:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/embeds
+  method: get
+  operationId: documentEmbeds
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/embeds/token
+  method: post
+  operationId: documentEmbedsToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - lucidchart.document.app.picker.share.embed
+    - lucidscale.document.app.picker.share.embed
+    - lucidspark.document.app.picker.share.embed
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}
+  method: get
+  operationId: getFolder
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - FolderReadonly
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/{id}
+  method: patch
+  operationId: updateFolder
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders
+  method: post
+  operationId: createFolder
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    - lucidchart.document.app.folder
+    - lucidscale.document.app.folder
+    - lucidspark.document.app.folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/trash
+  method: post
+  operationId: trashFolder
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/restore
+  method: post
+  operationId: restoreFolder
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderEdit
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/search
+  method: post
+  operationId: searchFolders
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - FolderAdmin
+    - FolderReadonly
+    - folder:admin.readonly
+    - folder:readonly
+    - lucidchart.document.app.folder
+    - lucidscale.document.app.folder
+    - lucidspark.document.app.folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/contents
+  method: get
+  operationId: listFolderContents
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - FolderReadonly
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/root/contents
+  method: get
+  operationId: listRootFolderContents
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - FolderReadonly
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/app/contents
+  method: get
+  operationId: listAppFolderContents
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - folder:readonly
+    - lucidchart.document.app.folder
+    - lucidscale.document.app.folder
+    - lucidspark.document.app.folder
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{id}/shares/shareLinks/{shareLinkId}
+  method: get
+  operationId: getDocumentShareLink
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.link:readonly
+    - lucidchart.document.content.share.link:readonly
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.link:readonly
+    - lucidscale.document.content.share.link:readonly
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.link:readonly
+    - lucidspark.document.content.share.link:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{id}/shares/shareLinks/{shareLinkId}
+  method: patch
+  operationId: updateDocumentShareLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.link
+    - lucidchart.document.content.share.link
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.link
+    - lucidscale.document.content.share.link
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.link
+    - lucidspark.document.content.share.link
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{id}/shares/shareLinks/{shareLinkId}
+  method: delete
+  operationId: deleteDocumentShareLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.link
+    - lucidchart.document.content.share.link
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.link
+    - lucidscale.document.content.share.link
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.link
+    - lucidspark.document.content.share.link
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{id}/shares/shareLinks
+  method: post
+  operationId: createDocumentShareLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - lucidchart.document.app.folder
+    - lucidchart.document.app.picker.share.link
+    - lucidchart.document.content.share.link
+    - lucidscale.document.app.folder
+    - lucidscale.document.app.picker.share.link
+    - lucidscale.document.content.share.link
+    - lucidspark.document.app.folder
+    - lucidspark.document.app.picker.share.link
+    - lucidspark.document.content.share.link
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/shareLinks/{shareLinkId}
+  method: get
+  operationId: getFolderShareLink
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - folder:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/folders/{id}/shares/shareLinks/{shareLinkId}
+  method: patch
+  operationId: updateFolderShareLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/shareLinks/{shareLinkId}
+  method: delete
+  operationId: deleteFolderShareLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/folders/{id}/shares/shareLinks
+  method: post
+  operationId: createFolderShareLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - folder
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/shareLink/{shareLinkId}/accept
+  method: post
+  operationId: acceptShareLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - invitation.accept
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/transferUserContent
+  method: post
+  operationId: transferUserContent
+  x-agentic-access:
+    action-class: acting
+    consequence: physical
+    subject: required
+    scope:
+    - account.user.transfercontent
+    audience: null
+    token:
+      max-ttl: 300
+      exchange: true
+      purpose-required: true
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/users/{id}
+  method: get
+  operationId: getUser
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AccountReadonly
+    - account.user:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/users
+  method: get
+  operationId: listUsers
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - AccountAdmin
+    - account.user:readonly
+    - account.users:admin.readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/users
+  method: post
+  operationId: createUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - account.user
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/users/searchByEmail
+  method: post
+  operationId: userEmailSearch
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - AccountReadonly
+    - account.user:readonly
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/users/me/profile
+  method: get
+  operationId: getUserProfile
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - User
+    - user.profile
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/describeLink
+  method: post
+  operationId: describeLink
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/embeds/link
+  method: get
+  operationId: directEmbed
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{documentId}/embeds/{embedId}
+  method: get
+  operationId: getEmbedInformation
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - lucidchart.document.app.picker.share.embed:readonly
+    - lucidchart.document.content.share.embed:readonly
+    - lucidscale.document.app.picker.share.embed:readonly
+    - lucidscale.document.content.share.embed:readonly
+    - lucidspark.document.app.picker.share.embed:readonly
+    - lucidspark.document.content.share.embed:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{documentId}/embeds/{embedId}
+  method: delete
+  operationId: deleteEmbed
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - account.info
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{documentId}/embeds/{embedId}/document
+  method: get
+  operationId: getEmbedDocument
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - lucidchart.document.app.picker.share.embed:readonly
+    - lucidchart.document.content.share.embed:readonly
+    - lucidscale.document.app.picker.share.embed:readonly
+    - lucidscale.document.content.share.embed:readonly
+    - lucidspark.document.app.picker.share.embed:readonly
+    - lucidspark.document.content.share.embed:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{id}/embeds
+  method: post
+  operationId: createEmbed
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - lucidchart.document.app.picker.share.embed
+    - lucidchart.document.content.share.embed
+    - lucidscale.document.app.picker.share.embed
+    - lucidscale.document.content.share.embed
+    - lucidspark.document.app.picker.share.embed
+    - lucidspark.document.content.share.embed
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{documentId}/embeds/{embedId}/changeVersion
+  method: post
+  operationId: changeEmbedVersion
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - lucidchart.document.app.picker.share.embed
+    - lucidchart.document.content.share.embed
+    - lucidscale.document.app.picker.share.embed
+    - lucidscale.document.content.share.embed
+    - lucidspark.document.app.picker.share.embed
+    - lucidspark.document.content.share.embed
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/pickerToken
+  method: post
+  operationId: generateDocumentPickerToken
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - lucidchart.document.app.picker
+    - lucidscale.document.app.picker
+    - lucidspark.document.app.picker
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/picker?token=:token
+  method: get
+  operationId: embeddedDocumentPicker
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/auditLogs
+  method: get
+  operationId: getAuditLogs
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - account.audit.logs
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/auditLogs/query
+  method: post
+  operationId: queryAuditLogs
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - account.audit.logs
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/teams
+  method: get
+  operationId: listTeams
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - TeamsAdmin
+    - TeamsReadonly
+    - teams:admin
+    - teams:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/teams
+  method: post
+  operationId: createTeam
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - TeamsAdmin
+    - TeamsEdit
+    - teams
+    - teams:admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/teams/{id}
+  method: get
+  operationId: getTeam
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - TeamsAdmin
+    - TeamsReadonly
+    - teams:admin
+    - teams:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/teams/{id}
+  method: patch
+  operationId: updateTeam
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - TeamsAdmin
+    - TeamsEdit
+    - teams
+    - teams:admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/teams/{id}/users
+  method: get
+  operationId: listUsersOnTeam
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - TeamsAdmin
+    - TeamsReadonly
+    - teams:admin
+    - teams:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/teams/{id}/users/add
+  method: post
+  operationId: addUsersToTeam
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - TeamsAdmin
+    - TeamsEdit
+    - teams
+    - teams:admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/teams/{id}/users/remove
+  method: post
+  operationId: removeUsersFromTeam
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - TeamsAdmin
+    - TeamsEdit
+    - teams
+    - teams:admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/teams/{id}/archive
+  method: post
+  operationId: archiveTeam
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - TeamsAdmin
+    - TeamsEdit
+    - teams
+    - teams:admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/teams/{id}/restore
+  method: post
+  operationId: restoreTeam
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - TeamsAdmin
+    - TeamsEdit
+    - teams
+    - teams:admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/credentials/aws/externalId
+  method: get
+  operationId: getAwsExternalId
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudReadonly
+    - cloud.credential:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/credentials/aws
+  method: post
+  operationId: createAwsCredential
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.credential
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/credentials/aws/{awsCredentialId}
+  method: patch
+  operationId: updateAwsCredential
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.credential
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/credentials/azure
+  method: post
+  operationId: createAzureCredential
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.credential
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/credentials/azure/{azureCredentialId}
+  method: patch
+  operationId: updateAzureCredential
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.credential
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/credentials/googleCloud
+  method: post
+  operationId: createGoogleCloudCredential
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.credential
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/credentials/googleCloud/{googleCloudCredentialId}
+  method: patch
+  operationId: updateGoogleCloudCredential
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.credential
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/credentials
+  method: get
+  operationId: listCredentials
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudReadonly
+    - cloud.credential:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/credentials/{credentialId}
+  method: get
+  operationId: getCredential
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudReadonly
+    - cloud.credential:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/credentials/{credentialId}
+  method: delete
+  operationId: deleteCredential
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.credential
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/aws/resources
+  method: get
+  operationId: getFullySupportedAwsResources
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v2/dataSources/aws/regions
+  method: get
+  operationId: getSupportedAwsRegions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/azure/resources
+  method: get
+  operationId: getFullySupportedAzureResources
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/googleCloud/resources
+  method: get
+  operationId: getFullySupportedGoogleCloudResources
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/aws
+  method: post
+  operationId: createAwsDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/aws/{jobReferenceId}/status
+  method: get
+  operationId: getCreateAwsDataSourceJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/aws/{awsDataSourceId}
+  method: post
+  operationId: updateAwsDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/aws/{awsDataSourceId}
+  method: patch
+  operationId: editAwsDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/aws/{awsDataSourceId}/upload
+  method: post
+  operationId: updateAwsDataSourceFromFile
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/aws/{awsDataSourceId}/{jobReferenceId}/status
+  method: get
+  operationId: getUpdateAwsDataSourceJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/azure
+  method: post
+  operationId: createAzureDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/azure/{jobReferenceId}/status
+  method: get
+  operationId: getCreateAzureDataSourceJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/azure/{azureDataSourceId}
+  method: post
+  operationId: updateAzureDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/azure/{azureDataSourceId}
+  method: patch
+  operationId: editAzureDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/azure/{azureDataSourceId}/upload
+  method: post
+  operationId: updateAzureDataSourceFromFile
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/azure/{azureDataSourceId}/{jobReferenceId}/status
+  method: get
+  operationId: getUpdateAzureDataSourceJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/googleCloud
+  method: post
+  operationId: createGoogleCloudDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/googleCloud/{jobReferenceId}/status
+  method: get
+  operationId: getCreateGoogleCloudDataSourceJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/googleCloud/{googleCloudDataSourceId}
+  method: post
+  operationId: updateGoogleCloudDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/googleCloud/{googleCloudDataSourceId}
+  method: patch
+  operationId: editGoogleCloudDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/googleCloud/{googleCloudDataSourceId}/upload
+  method: post
+  operationId: updateGoogleCloudDataSourceFromFile
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/dataSources/googleCloud/{googleCloudDataSourceId}/{jobReferenceId}/status
+  method: get
+  operationId: getUpdateGoogleCloudDataSourceJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources
+  method: get
+  operationId: listDataSources
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudReadonly
+    - cloud.datasource:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/{dataSourceId}
+  method: get
+  operationId: getDataSource
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudReadonly
+    - cloud.datasource:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/dataSources/{dataSourceId}
+  method: delete
+  operationId: deleteDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.datasource
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/cloud/aws/viewTemplates
+  method: get
+  operationId: getSupportedAwsViewTemplates
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/cloud/azure/viewTemplates
+  method: get
+  operationId: getSupportedAzureViewTemplates
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/cloud/googleCloud/viewTemplates
+  method: get
+  operationId: getSupportedGoogleCloudViewTemplates
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/cloud/aws
+  method: post
+  operationId: createModelFromAwsDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.model
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/cloud/aws/{jobReferenceId}/status
+  method: get
+  operationId: getAwsModelCreationJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.model
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/cloud/aws/{documentId}/sync
+  method: post
+  operationId: syncModelFromAwsDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.model
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/cloud/aws/{documentId}/sync/{jobReferenceId}/status
+  method: get
+  operationId: getAwsModelSyncJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.model
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/cloud/azure
+  method: post
+  operationId: createModelFromAzureDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.model
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/cloud/azure/{jobReferenceId}/status
+  method: get
+  operationId: getAzureModelCreationJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.model
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/cloud/azure/{documentId}/sync
+  method: post
+  operationId: syncModelFromAzureDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.model
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/cloud/azure/{documentId}/sync/{jobReferenceId}/status
+  method: get
+  operationId: getAzureModelSyncJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.model
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/cloud/googleCloud
+  method: post
+  operationId: createModelFromGoogleCloudDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.model
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/cloud/googleCloud/{jobReferenceId}/status
+  method: get
+  operationId: getGoogleCloudModelCreationJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.model
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/cloud/googleCloud/{documentId}/sync
+  method: post
+  operationId: syncModelFromGoogleCloudDataSource
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - CloudEdit
+    - cloud.model
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/cloud/googleCloud/{documentId}/sync/{jobReferenceId}/status
+  method: get
+  operationId: getGoogleCloudModelSyncJobStatus
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - CloudEdit
+    - cloud.model
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/repositories
+  method: get
+  operationId: listRepositories
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - RepositoryRead
+    - repository:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/repositories
+  method: post
+  operationId: createRepository
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - RepositoryEdit
+    - repository
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/repositories/{repositoryId}
+  method: get
+  operationId: getRepository
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - RepositoryRead
+    - repository:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/repositories/{repositoryId}/users
+  method: get
+  operationId: listRepositoryUsers
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - RepositoryRead
+    - repository:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/repositories/{repositoryId}/users/add
+  method: post
+  operationId: addRepositoryUsers
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - RepositoryEdit
+    - repository
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/repositories/{repositoryId}/users/remove
+  method: post
+  operationId: removeRepositoryUsers
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - RepositoryEdit
+    - repository
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/repositories/{repositoryId}/groups
+  method: get
+  operationId: listRepositoryGroups
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - RepositoryRead
+    - repository:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/repositories/{repositoryId}/groups/add
+  method: post
+  operationId: addRepositoryGroups
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - RepositoryEdit
+    - repository
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/repositories/{repositoryId}/groups/remove
+  method: post
+  operationId: removeRepositoryGroups
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - RepositoryEdit
+    - repository
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/documents/{documentId}/threads
+  method: get
+  operationId: listDocumentThreads
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - DocumentReadonly
+    - lucid.document.content:readonly
+    - lucidchart.document.content:readonly
+    - lucidscale.document.content:readonly
+    - lucidspark.document.content:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{documentId}/threads/{threadId}/comments
+  method: get
+  operationId: listDocumentThreadComments
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - DocumentReadonly
+    - lucid.document.content:readonly
+    - lucidchart.document.content:readonly
+    - lucidscale.document.content:readonly
+    - lucidspark.document.content:readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/documents/{documentId}/threads/{threadId}/comments
+  method: post
+  operationId: postDocumentThreadComment
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - DocumentEdit
+    - lucid.document.content
+    - lucidchart.document.content
+    - lucidscale.document.content
+    - lucidspark.document.content
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /v1/subscriptions
+  method: get
+  operationId: listSubscriptions
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - LicensesAdmin
+    - licenses:admin
+    - licenses:admin.readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/subscriptions/{id}
+  method: get
+  operationId: getSubscription
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - LicensesAdmin
+    - licenses:admin
+    - licenses:admin.readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/subscriptions/{id}/licenses
+  method: get
+  operationId: listSubscriptionLicenses
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - LicensesAdmin
+    - licenses:admin
+    - licenses:admin.readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/users/{id}/licenses
+  method: get
+  operationId: listUserLicenses
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    scope:
+    - LicensesAdmin
+    - licenses:admin
+    - licenses:admin.readonly
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /v1/users/{id}/licenses
+  method: post
+  operationId: grantUserLicense
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    scope:
+    - LicensesAdmin
+    - licenses:admin
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Users/{id}
+  method: get
+  operationId: getUser
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /Users/{id}
+  method: put
+  operationId: modifyUserPut
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Users/{id}
+  method: patch
+  operationId: modifyUserPatch
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Users/{id}
+  method: delete
+  operationId: deleteUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Users
+  method: get
+  operationId: getAllUsers
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /Users
+  method: post
+  operationId: createUser
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Groups/{id}
+  method: get
+  operationId: getGroup
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /Groups/{id}
+  method: put
+  operationId: modifyGroupPut
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Groups/{id}
+  method: patch
+  operationId: modifyGroupPatch
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Groups/{id}
+  method: delete
+  operationId: deleteGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Groups
+  method: get
+  operationId: getAllGroups
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /Groups
+  method: post
+  operationId: createGroup
+  x-agentic-access:
+    action-class: acting
+    consequence: write
+    subject: required
+    audience: null
+    token:
+      max-ttl: 900
+    escalation:
+      human-in-the-loop: conditional
+      triggers:
+      - abnormal
+      - high-value
+    audit: required
+- path: /Schemas/{id}
+  method: get
+  operationId: getSchema
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /Schemas
+  method: get
+  operationId: getAllSchemas
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
+- path: /ServiceProviderConfig
+  method: get
+  operationId: getServiceProviderConfig
+  x-agentic-access:
+    action-class: connected
+    consequence: read
+    subject: optional
+    token:
+      max-ttl: 3600
+    audit: none
