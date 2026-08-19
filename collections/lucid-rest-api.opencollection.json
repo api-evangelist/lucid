@@ -1,0 +1,4236 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lucid REST API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "OAuth 2.0 Tokens",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create or Refresh Access Token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/oauth2/token",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Create or Refresh Access Token"
+        },
+        {
+          "info": {
+            "name": "Introspect Access Token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/oauth2/token/introspect",
+            "body": {
+              "type": "form-urlencoded",
+              "data": [
+                {
+                  "name": "client_id",
+                  "value": ""
+                },
+                {
+                  "name": "client_secret",
+                  "value": ""
+                },
+                {
+                  "name": "token",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Introspect Access Token"
+        },
+        {
+          "info": {
+            "name": "Revoke Access Token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/oauth2/token/revoke",
+            "body": {
+              "type": "form-urlencoded",
+              "data": [
+                {
+                  "name": "client_id",
+                  "value": ""
+                },
+                {
+                  "name": "client_secret",
+                  "value": ""
+                },
+                {
+                  "name": "token",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Regardless of which token is revoked, all tokens from that authorization grant will become invalid."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Accounts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Account Information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/accounts/me",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves basic information about the authenticated account."
+        },
+        {
+          "info": {
+            "name": "Get Classifications",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/accounts/me/classifications",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the paginated list of classifications configured for the authenticated account. Deleted classifications are excluded from results."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Document Access",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Search Account Documents",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/accounts/me/documents/search",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a list of all documents belonging to the requesting user's account, sorted by created date. This API is exclusive to Enterprise Shield accounts. The endpoint supports pagination and has a per-account rate limit of 300 requests per 5 seconds."
+        },
+        {
+          "info": {
+            "name": "Create Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new document for the requesting user, with the specified title. Requires `title` and `product`. Optionally, a `parent` folder, `extensionBootstrapData`, or Lucid Standard Import `content` can be provided to customize the new document.\n\n> 📘\n>\n> This endpoint can only create a new Lucidchart or Lucidspark document. It cannot modify an existing document's contents.\n\n> 📘 ##### Document Creation Location\n>\n> When there is no `parent` field on the request, the new document will be created "
+        },
+        {
+          "info": {
+            "name": "Create Document with Standard Import File",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/create",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "type",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "product",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "title",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "parent",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new document from a Lucid Standard Import file (`.zip` archive) uploaded as multipart/form-data. Requires `file`, `type`, and `product`. Optionally, a `title` and `parent` folder can be provided. If no `title` is provided, the new document's title will be the imported filename.\n\n> 📘\n>\n> This endpoint can only create a new Lucidchart or Lucidspark document. It cannot modify an existing document's contents.\n\n> 📘 ##### Document Creation Location\n>\n> When there is no `parent` field on th"
+        },
+        {
+          "info": {
+            "name": "Import Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/import",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "type",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "product",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "title",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "parent",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Imports an external non-Lucid file as a new document within Lucid. The file is uploaded as multipart/form-data. Requires `file`, `type`, and `product`. Optionally, a `title` and `parent` folder can be provided. If no `title` is provided, the new document's title will be the imported filename.\n\n> 📘\n>\n> This endpoint can only create a new Lucidchart or Lucidspark document. It cannot modify an existing document's contents.\n\n> 📘 ##### Document Creation Location\n>\n> When there is no `parent` field "
+        },
+        {
+          "info": {
+            "name": "Copy Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/copy",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Copies one of the requesting user's existing documents, with the specified title. Requires `title` and `template` (the ID of the document to copy). Optionally, a `parent` folder can be provided. Note that collaborator permissions are not transferred to the copied document.\n\n> 📘\n>\n> This endpoint can only create a new Lucidchart or Lucidspark document. It cannot modify an existing document's contents.\n\n> 📘 ##### Document Creation Location\n>\n> When there is no `parent` field on the request, the "
+        },
+        {
+          "info": {
+            "name": "Get/Export Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:id",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              },
+              {
+                "name": "Accept",
+                "value": ""
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document to be retrieved or exported."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "1-based page index of the document to export. Defaults to the first page. Only a single page is allowed. Optional for export operation. Cannot be provided when pageId is provided."
+              },
+              {
+                "name": "pageId",
+                "value": "J~65X_X714o2",
+                "type": "query",
+                "description": "Specific page of the document to export. Only a single page is allowed. Optional for export operation. Cannot be provided when page is provided."
+              },
+              {
+                "name": "crop",
+                "value": "",
+                "type": "query",
+                "description": "Specifies the crop settings for the document export. Optional for export operation. Possible values are\n  * Default (no crop parameter) - Exports the entire page canvas area that contains your content. Automatically adjusts to include all items on the page, including the space between them and maintains the relative positioning and spacing of your document elements\n  * `x, y, width, height` - Crop to the specified region (in pixels) on the page. Example crop=1000,300,30,7\n    * Note: The region (in pixels) is accurate to the number of pixels on the canvas. The number of pixels of the outputted image will only match the crop window at a DPI of 160.\n  * `content` - Crop to page content. Example crop=content"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about the requested document or exports it as an image.\n\n**Get Document:** Requires at least read-only access. Document owner information is only returned if the requesting user has view access and the document is unpublished. If published, the user must be at least a collaborator.\n\n**Export Document:** Exports a given document in a specified image format. When exporting oversized images, the resolution may be automatically scaled down to enable performant API requests.\n\n**"
+        },
+        {
+          "info": {
+            "name": "Update Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/documents/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Updates properties of an existing document. Supports partial updates via JSON for title, parent, and classification.\n\nSupports moving documents into (but not out of) repositories by providing a repo_-prefixed repository ID as the parent.\n"
+        },
+        {
+          "info": {
+            "name": "Trash Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/:id/trash",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document to be moved to the trash."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Moves the specified document to the trash for the requesting user.\n\nIf the document is shared or part of a team folder, other users will still have access to the document. Requires the user to be the owner of the requested document or have the appropriate team folder permissions.\n"
+        },
+        {
+          "info": {
+            "name": "Search Documents",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/search",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Search Documents"
+        },
+        {
+          "info": {
+            "name": "Document Contents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:id/contents",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document to have contents retrieved."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about the contents of the requested Lucidchart or Lucidspark document.\n\nDue to the evolving nature of Lucid documents, an unchanged document may produce varying results over time.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Legal Holds",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Legal Holds",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/accounts/me/legalHolds",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves all legal holds configured for the authenticated account. The results are paginated."
+        },
+        {
+          "info": {
+            "name": "Create Legal Hold",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/accounts/me/legalHolds",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new legal hold on an Enterprise Shield account with specified parameters including title, description, keywords, and start/end times."
+        },
+        {
+          "info": {
+            "name": "Add Legal Hold Users",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/accounts/me/legalHolds/:legalHoldId/users/add",
+            "params": [
+              {
+                "name": "legalHoldId",
+                "value": "",
+                "type": "path",
+                "description": "Unique ID of the legal hold."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds users to a specified legal hold. This action can only be performed for legal holds that have not yet started."
+        },
+        {
+          "info": {
+            "name": "Remove Legal Hold Users",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/accounts/me/legalHolds/:legalHoldId/users/remove",
+            "params": [
+              {
+                "name": "legalHoldId",
+                "value": "",
+                "type": "path",
+                "description": "Unique ID of the legal hold."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Removes users from a specified legal hold. This action can only be performed for legal holds that have not yet started."
+        },
+        {
+          "info": {
+            "name": "Edit Legal Hold",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/accounts/me/legalHolds/:legalHoldId",
+            "params": [
+              {
+                "name": "legalHoldId",
+                "value": "",
+                "type": "path",
+                "description": "Unique ID of the legal hold."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Modifies an existing legal hold, allowing changes to the title, description, and end time. If the legal hold has not yet started, the start time and keywords can also be updated."
+        },
+        {
+          "info": {
+            "name": "Release Legal Hold",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/accounts/me/legalHolds/:legalHoldId/release",
+            "params": [
+              {
+                "name": "legalHoldId",
+                "value": "",
+                "type": "path",
+                "description": "Unique ID of the legal hold."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Releases a legal hold specified by the legalHoldId. Once released, it may take up to 24 hours for the documents to be fully removed from the legal hold restriction."
+        },
+        {
+          "info": {
+            "name": "Get Legal Hold Users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/accounts/me/legalHolds/:legalHoldId/users",
+            "params": [
+              {
+                "name": "legalHoldId",
+                "value": "",
+                "type": "path",
+                "description": "Unique ID of the legal hold."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves a paginated list of all users associated with a specified legal hold."
+        },
+        {
+          "info": {
+            "name": "Get Legal Hold Documents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/accounts/me/legalHoldDocuments/:legalHoldId",
+            "params": [
+              {
+                "name": "legalHoldId",
+                "value": "",
+                "type": "path",
+                "description": "Unique ID of the legal hold."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves a paginated list of all documents associated with a specified legal hold. Documents may continue to appear for up to 24 hours after users are removed from the legal hold, as the system processes the release asynchronously."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Documents Collaboration",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Document User Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/users/:userId",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the user to retrieve collaborator settings for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about a specific user's collaboration access level for a given document, including the sharing permissions and role that the user has been granted."
+        },
+        {
+          "info": {
+            "name": "Create/Update Document User Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/users/:userId",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the user to retrieve collaborator settings for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates the collaborator role for a user on a document. If the user did not previously have access to the document, they will be granted access and a new collaborator record will be created."
+        },
+        {
+          "info": {
+            "name": "Delete Document User Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/users/:userId",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the user to retrieve collaborator settings for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Revokes all collaborator access to a document for the given user. The user may still have access to the document through other means such as shared folders. Cannot be used to remove the document owner's access."
+        },
+        {
+          "info": {
+            "name": "List Document User Collaborators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/users",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the document."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about all collaborators on the provided document. Supports pagination for managing large result sets."
+        },
+        {
+          "info": {
+            "name": "Get Document Team Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/teams/:teamId",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "teamId",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to retrieve collaborator settings for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns information about the given team's collaboration on the given document, including the team's access and collaboration permissions."
+        },
+        {
+          "info": {
+            "name": "Create/Update Document Team Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/teams/:teamId",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "teamId",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to retrieve collaborator settings for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates the details of the given team's collaboration on the given document, or adds the team as a collaborator on the document if it isn't already a collaborator."
+        },
+        {
+          "info": {
+            "name": "Delete Document Team Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/teams/:teamId",
+            "params": [
+              {
+                "name": "id",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "teamId",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to retrieve collaborator settings for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Removes the given team as a collaborator on the given document."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Folders Collaboration",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Folder User Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/users/:userId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the user to retrieve collaborator settings for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about a specific user's direct collaborator access to a given folder. A user having access to a folder through one of the folder's ancestors will not be shown through this API."
+        },
+        {
+          "info": {
+            "name": "Create/Update Folder User Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/users/:userId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the user whose role to create or modify."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates or establishes a user's collaborator access to a given folder. If the user does not already have access, a new Folder User Collaborator Resource is created. Collaborators cannot be given the role \"owner\", and the role of the folder's owner cannot be modified."
+        },
+        {
+          "info": {
+            "name": "Delete Folder User Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/users/:userId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "userId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the user to delete collaborator settings for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Revokes a user's direct collaborator access to a given folder. The user may still have access to the folder through other means such as shared folders. This action cannot be used to revoke access from the folder owner."
+        },
+        {
+          "info": {
+            "name": "List Folder User Collaborators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/users",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves all users who have direct collaborator access to a given folder. A user having access to a folder through one of the folder's ancestors will not be shown through this API. Results are paginated."
+        },
+        {
+          "info": {
+            "name": "Get Folder Group Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/groups/:groupId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Folder ID."
+              },
+              {
+                "name": "groupId",
+                "value": "",
+                "type": "path",
+                "description": "Group ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about a group's direct collaborator access to a given folder. A group having access to a folder through one of the folder's ancestors will not be shown through this API."
+        },
+        {
+          "info": {
+            "name": "Create/Update Folder Group Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/groups/:groupId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Folder ID."
+              },
+              {
+                "name": "groupId",
+                "value": "",
+                "type": "path",
+                "description": "Group ID."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Grants a group direct collaborator access to a given folder, or updates the group's role on the folder if it is already a collaborator."
+        },
+        {
+          "info": {
+            "name": "Delete Folder Group Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/groups/:groupId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Folder ID."
+              },
+              {
+                "name": "groupId",
+                "value": "",
+                "type": "path",
+                "description": "Group ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Revokes any direct collaborator access a group has to the given folder."
+        },
+        {
+          "info": {
+            "name": "List Folder Group Collaborators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/groups",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "Folder ID."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves all groups that have been granted direct collaborator access to a given folder. A group having access to a folder through one of the folder's ancestors will not be shown through this API. Results are paginated."
+        },
+        {
+          "info": {
+            "name": "Get Folder Team Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/teams/:teamId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "teamId",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to retrieve collaborator settings for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns information about the given team's collaboration on the given folder."
+        },
+        {
+          "info": {
+            "name": "Create/Update Folder Team Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/teams/:teamId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "teamId",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team whose role is to be created or modified."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates the details of the given team's collaboration on the given folder, or adds the team as a collaborator on the folder if it is not already a collaborator."
+        },
+        {
+          "info": {
+            "name": "Delete Folder Team Collaborator",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/teams/:teamId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "teamId",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to delete collaborator settings for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Revokes a team's direct collaborator access to the given folder."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Document Embedding",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Embed Viewer",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/embeds",
+            "params": [
+              {
+                "name": "token",
+                "value": "",
+                "type": "query",
+                "description": "The embed session token retrieved from the Generate Embed Session Token endpoint."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Display an embed within an iframe. If no embed id was included when creating the token, the iframe first displays a document picker where the user can create and configure a new embed. If an embed id was included, the iframe displays either an embedded document viewer, an embedded editor, or an embed configuration page depending on the token request body and embed settings."
+        },
+        {
+          "info": {
+            "name": "Generate Embed Session Token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/embeds/token",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Generates a short-lived, limited-scope temporary access token to allow your app to display embedded Lucid documents in an iframe. The token allows the embedding website to load the document picker and document viewer, but does not grant access to any additional resource within Lucid."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Folders",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Folder",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder to be retrieved."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about the requested folder."
+        },
+        {
+          "info": {
+            "name": "Update Folder",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/folders/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder to be updated."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Allows the requester to modify certain fields on a folder.\n\nWhen updating the parent field, the folder moves to the new parent location while its contents remain intact. The requesting user must have both edit and share access to both the old and new parent folders, or the entire update will fail.\n\nIt is not permitted to update the parent field on Team Folders. Moving folders into or out of Team Folders may encounter permission-related errors, but once a folder is within a Team Folder, reorganiz"
+        },
+        {
+          "info": {
+            "name": "Create Folder",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/folders",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new folder."
+        },
+        {
+          "info": {
+            "name": "Trash Folder",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/folders/:id/trash",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder to be moved to the trash."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Moves the given folder and all of its contents into the trash."
+        },
+        {
+          "info": {
+            "name": "Restore Folder",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/folders/:id/restore",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder to be restored from the trash."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Moves a trashed folder and all of its contents back to their original pre-trash locations."
+        },
+        {
+          "info": {
+            "name": "Search Folders",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/folders/search",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about folders the authenticated user has at least read-only access to. Admin requests using the `Lucid-Request-As: admin` header return all account folders; this capability is exclusive to Enterprise Shield accounts. Results are sorted by creation date and paginated. Rate limited to 300 requests per 5 seconds per account."
+        },
+        {
+          "info": {
+            "name": "List Folder Contents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/:id/contents",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder or `root` to retrieve contents of the authenticated user's root directory (\"My Documents\")."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves basic information about the contents of a given folder. Results are paginated."
+        },
+        {
+          "info": {
+            "name": "List Root Folder Contents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/root/contents",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves basic information about the contents of the root folder. Results are paginated."
+        },
+        {
+          "info": {
+            "name": "List App Folder Contents",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/app/contents",
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Lists the contents of the OAuth2 client's app project folder for the authenticated user. The app project folder is automatically resolved from the OAuth2 client ID associated with the access token."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Documents Sharing",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Document Share Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/shareLinks/:shareLinkId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "shareLinkId",
+                "value": "",
+                "type": "path",
+                "description": "Id of the share link to retrieve information for."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Retrieves information about a share link on the specified document. This endpoint will only retrieve information about share links created by the same OAuth2.0 client."
+        },
+        {
+          "info": {
+            "name": "Update Document Share Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/shareLinks/:shareLinkId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "shareLinkId",
+                "value": "",
+                "type": "path",
+                "description": "Id of the share link to retrieve information for."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Updates an existing share link's configuration settings on a document. Share links will only be updatable by the OAuth2.0 client that created them. All fields are optional; omitted settings retain their existing values."
+        },
+        {
+          "info": {
+            "name": "Delete Document Share Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/shareLinks/:shareLinkId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the document."
+              },
+              {
+                "name": "shareLinkId",
+                "value": "",
+                "type": "path",
+                "description": "Id of the share link to retrieve information for."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Deletes a share link on a document. This endpoint will only delete share links that were created by the same OAuth2.0 client making the request."
+        },
+        {
+          "info": {
+            "name": "Create Document Share Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/:id/shares/shareLinks",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the document."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Creates a new share link on the provided document with the provided settings. The linkSecurity parameter is configurable only for enterprise license accounts but remains required for team accounts."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Folders Sharing",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Folder Share Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/shareLinks/:shareLinkId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "shareLinkId",
+                "value": "",
+                "type": "path",
+                "description": "Id of the share link to retrieve information for."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Retrieves information about a share link on a given folder. This endpoint will only retrieve information about share links created by the same OAuth2.0 client."
+        },
+        {
+          "info": {
+            "name": "Update Folder Share Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/shareLinks/:shareLinkId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "shareLinkId",
+                "value": "",
+                "type": "path",
+                "description": "ID of the share link belonging to the folder."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Updates an existing share link to the provided settings. If any settings are omitted, the existing settings are preserved. Share links are only updatable by the OAuth2.0 client that created them. If an expiration is provided outside the account-defined limits, it will be clamped to the maximum allowed time."
+        },
+        {
+          "info": {
+            "name": "Delete Folder Share Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/shareLinks/:shareLinkId",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              },
+              {
+                "name": "shareLinkId",
+                "value": "",
+                "type": "path",
+                "description": "Id of the share link to delete."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Deletes a share link from a folder. This endpoint will only delete share links created by the same OAuth2.0 client."
+        },
+        {
+          "info": {
+            "name": "Create Folder Share Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/folders/:id/shares/shareLinks",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path",
+                "description": "ID of the folder."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Creates a new share link on the provided folder with the provided settings. The `linkSecurity` parameter is only configurable for enterprise license users but is still required for team accounts. If an expiration is provided outside account-defined limits, it will be clamped to the maximum allowed time."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Sharing",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Accept Share Links",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/shareLink/:shareLinkId/accept",
+            "params": [
+              {
+                "name": "shareLinkId",
+                "value": "",
+                "type": "path",
+                "description": "Id of the share link to retrieve information for."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Accepts a share link for a document or folder on behalf of the authenticated user, granting them access to the shared resource."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Transfer Content",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Transfer User Content",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/transferUserContent",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Transfers ownership of a user's Lucid documents, folders, custom shape libraries, and Lucidscale objects to another user on the same account. The recipient gains ownership and edit/share permissions for team folders the original owner could access. Notification emails are sent to both users upon completion."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/users/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "204",
+                "type": "path",
+                "description": "ID of the user to be retrieved."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about the requested user. The requested user must be on the authenticated account."
+        },
+        {
+          "info": {
+            "name": "List Users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/users",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about all users on the authenticated account."
+        },
+        {
+          "info": {
+            "name": "Create User",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Creates a new user and adds them to the authenticated account. Licenses are automatically assigned to the new user based on the account's auto-licensing configuration. Only available to Enterprise accounts."
+        },
+        {
+          "info": {
+            "name": "Search Users By Email",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/users/searchByEmail",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about all users on the authenticated account whose email is provided. Matching is case-insensitive and requires an exact match; emails that do not correspond to a user on the account are excluded from results."
+        },
+        {
+          "info": {
+            "name": "Get Profile",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/users/me/profile",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves basic information about the authenticated user."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Unfurling",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Describe Link",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/describeLink",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieve metadata about a Lucid document from its URL, including the document title, product, and type. Use this to generate rich link previews (unfurling) in external applications.\n"
+        },
+        {
+          "info": {
+            "name": "Direct Embed",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/embeds/link",
+            "params": [
+              {
+                "name": "document",
+                "value": "",
+                "type": "query",
+                "description": "The URL of the Lucid document link or the documentId retrieved from the Describe Link endpoint."
+              },
+              {
+                "name": "clientId",
+                "value": "",
+                "type": "query",
+                "description": "The client ID obtained during App registration."
+              }
+            ]
+          },
+          "docs": "Display an embed within an iframe. If the clientId is valid with the registered embed domain in the developer portal, the iframe will show either a login page or an embedded document viewer depending on the user's authorization status via browser cookies."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Embedding Utils",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Document Embed",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:documentId/embeds/:embedId",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "001bd56d-1b10-4196-8ac6-45e3c22bd1c6",
+                "type": "path",
+                "description": "ID of the embedded document to retrieve."
+              },
+              {
+                "name": "embedId",
+                "value": "ec890631-c150-461c-992f-b96533aa05f4",
+                "type": "path",
+                "description": "ID of the document embed to retrieve."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Retrieves limited metadata about the embedded document. If the embed is a snapshot-version embed, the metadata will be drawn from the state of the document at the time that the snapshot was created."
+        },
+        {
+          "info": {
+            "name": "Delete Document Embed",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/documents/:documentId/embeds/:embedId",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "001bd56d-1b10-4196-8ac6-45e3c22bd1c6",
+                "type": "path",
+                "description": "ID of the embedded document to retrieve."
+              },
+              {
+                "name": "embedId",
+                "value": "298f9a4a-09b5-440c-b95e-4d5c2d1aaf49",
+                "type": "path",
+                "description": "ID of the document embed to retrieve."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Deletes an existing document embed. This will cause the document viewer to fail when attempting to load this document embed."
+        },
+        {
+          "info": {
+            "name": "Get Document Embed Document",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:documentId/embeds/:embedId/document",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "001bd56d-1b10-4196-8ac6-45e3c22bd1c6",
+                "type": "path",
+                "description": "ID of the embedded document to retrieve."
+              },
+              {
+                "name": "embedId",
+                "value": "ec890631-c150-461c-992f-b96533aa05f4",
+                "type": "path",
+                "description": "ID of the document embed to retrieve."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Retrieves limited metadata about an embedded document. If the embed is a snapshot-version embed, the metadata will be drawn from the state of the document at the time that the snapshot was created."
+        },
+        {
+          "info": {
+            "name": "Create Document Embed",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/:id/embeds",
+            "params": [
+              {
+                "name": "id",
+                "value": "001bd56d-1b10-4196-8ac6-45e3c22bd1c6",
+                "type": "path",
+                "description": "ID of the document to be embedded."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Creates an embed resource associated with a particular document. The request must be authenticated with an OAuth 2.0 token that has access to the document being embedded."
+        },
+        {
+          "info": {
+            "name": "Change Document Embed Version",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/:documentId/embeds/:embedId/changeVersion",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "001bd56d-1b10-4196-8ac6-45e3c22bd1c6",
+                "type": "path",
+                "description": "ID of the embedded document to retrieve."
+              },
+              {
+                "name": "embedId",
+                "value": "298f9a4a-09b5-440c-b95e-4d5c2d1aaf49",
+                "type": "path",
+                "description": "ID of the document embed to retrieve."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Updates the version type of an existing document embed. When called with an embedVersion of \"snapshot-version\", the endpoint associates the existing embed with a snapshot of the document's current state. Updating an embed's version to snapshot-version cannot be reversed."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Document Picker",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Generate Document Picker Token",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/pickerToken",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Generates a token that can be used to embed a document picker for the specified product. Only documents for the specified product are shown in the picker."
+        },
+        {
+          "info": {
+            "name": "Embedded Document Picker",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/picker?token=:token",
+            "params": [
+              {
+                "name": "token",
+                "value": "",
+                "type": "query",
+                "description": "The document picker token retrieved from the Generate Document Picker Token endpoint."
+              },
+              {
+                "name": "allowDocumentCreation",
+                "value": "",
+                "type": "query",
+                "description": "Enables the document picker user to create new documents. By default, created documents are not auto selected unless autoSelectCreatedDocument is set to true."
+              },
+              {
+                "name": "autoSelectCreatedDocument",
+                "value": "",
+                "type": "query",
+                "description": "Enables the document picker to automatically select newly created documents."
+              },
+              {
+                "name": "newDocumenbtTitleSuggestion",
+                "value": "",
+                "type": "query",
+                "description": "When create button is enabled, it suggests a default title for the new document."
+              },
+              {
+                "name": "hideCancelButton",
+                "value": "",
+                "type": "query",
+                "description": "Determines whether the document picker hides the cancel button."
+              },
+              {
+                "name": "onErrorRedirectUrl",
+                "value": "",
+                "type": "query",
+                "description": "The URL to redirect the user back to if the document picker raises an error."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Displays an embedded document picker within an iframe, allowing users to browse and select documents. Supports optional document creation and auto-selection of newly created documents."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Audit Logs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Audit Logs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/auditLogs",
+            "params": [
+              {
+                "name": "from",
+                "value": "2021-01-01T00:00:00Z",
+                "type": "query",
+                "description": "The timestamp from which the audit logs will be returned. Defaults to 180 days prior to the current timestamp."
+              },
+              {
+                "name": "to",
+                "value": "2021-01-01T00:00:00Z",
+                "type": "query",
+                "description": "The timestamp to which the logs will be returned. Defaults to the current timestamp."
+              },
+              {
+                "name": "pageSize",
+                "value": "100",
+                "type": "query",
+                "description": "The number of audit logs to return per request."
+              },
+              {
+                "name": "pageToken",
+                "value": "eyJvIjoiMjAyNC0wOS0wNFQxNzoxNDoyOS4zNjA5NzhaXzU4ODk4NTkxNCJ9",
+                "type": "query",
+                "description": "A token used for pagination to retrieve the next page of results when polling audit logs."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Retrieves audit log events for the account. This API is exclusive to Enterprise Shield accounts. This endpoint is paginated."
+        },
+        {
+          "info": {
+            "name": "Query Audit Logs",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/auditLogs/query",
+            "params": [
+              {
+                "name": "pageSize",
+                "value": "100",
+                "type": "query",
+                "description": "The number of audit logs to return per request."
+              },
+              {
+                "name": "pageToken",
+                "value": "eyJvIjoiMjAyNC0wOS0wNFQxNzoxNDoyOS4zNjA5NzhaXzU4ODk4NTkxNCJ9",
+                "type": "query",
+                "description": "A token used for pagination to retrieve the next page of results when polling audit logs."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Queries audit log events for the account using filter criteria specified in the request body. This API is exclusive to Enterprise Shield accounts. This endpoint is paginated."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Teams",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Teams",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/teams",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "params": [
+              {
+                "name": "filter",
+                "value": "include=memberonly",
+                "type": "query",
+                "description": "The filter to apply to the returned teams. The only supported filter is \"include=memberonly\", which returns only teams that the requesting user is a member of. If no filter is provided, all `open` and `closed` teams on the account are returned, along with `hidden` teams that the requesting user is a member of."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about teams the authenticated user has at least read-only access to.\n\nThe list of teams returned depends on whether the request was made using user or admin permissions. User permissions return teams the requesting user has access to. Admin permissions return all teams belonging to the account.\n\nThis endpoint is paginated.\n"
+        },
+        {
+          "info": {
+            "name": "Create Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/teams",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new team for the authenticated user, populated with the given team members. Hidden teams cannot be created via the REST API.\n\nWhether the requesting user is automatically added to the team depends on the permission type. With user permissions, the user is automatically added to the team. With admin permissions, the user is not automatically added.\n"
+        },
+        {
+          "info": {
+            "name": "Get Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/teams/:id",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to get."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves information about a requested team. The response depends on the permission type used: user permissions require that the authenticated user has access to the team, while admin permissions allow access to any team belonging to the account."
+        },
+        {
+          "info": {
+            "name": "Update Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/teams/:id",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to update."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Updates the properties of an existing team, such as its name or type. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, any team belonging to the account can be updated."
+        },
+        {
+          "info": {
+            "name": "List Users on Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/teams/:id/users",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to be queried."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves basic information about users on a specified team. With user permissions, the authenticated user must have access to the team. With admin permissions, users from any team belonging to the account can be retrieved.\n\nThis endpoint is paginated.\n"
+        },
+        {
+          "info": {
+            "name": "Add Users to Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/teams/:id/users/add",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to which to add users."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Adds users to a specified team with assigned roles. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, users can be added to any team belonging to the account."
+        },
+        {
+          "info": {
+            "name": "Remove Users from Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/teams/:id/users/remove",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team from which to remove users."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Removes users from a specified team. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, users can be removed from any team belonging to the account."
+        },
+        {
+          "info": {
+            "name": "Archive Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/teams/:id/archive",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to be archived."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Archives a team, making it inactive. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, any team belonging to the account can be archived."
+        },
+        {
+          "info": {
+            "name": "Restore Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/teams/:id/restore",
+            "headers": [
+              {
+                "name": "Lucid-Request-As",
+                "value": "admin"
+              }
+            ],
+            "params": [
+              {
+                "name": "id",
+                "value": "99",
+                "type": "path",
+                "description": "ID of the team to be restored."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Restores a previously archived team. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, any team belonging to the account can be restored."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Cloud",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get AWS External ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/credentials/aws/externalId",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the user AWS External ID. A user should use this external ID to create a trust relationship with AWS, which is required to create a credential."
+        },
+        {
+          "info": {
+            "name": "Create AWS Credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/credentials/aws",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new credential for AWS. The external ID generated in the request to Get AWS External ID will be retrieved and included in the request to AWS automatically."
+        },
+        {
+          "info": {
+            "name": "Update AWS Credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/credentials/aws/:awsCredentialId",
+            "params": [
+              {
+                "name": "awsCredentialId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the AWS credential to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing credential for AWS."
+        },
+        {
+          "info": {
+            "name": "Create Azure Credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/credentials/azure",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new credential for Azure."
+        },
+        {
+          "info": {
+            "name": "Update Azure Credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/credentials/azure/:azureCredentialId",
+            "params": [
+              {
+                "name": "azureCredentialId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Azure credential to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing credential for Azure."
+        },
+        {
+          "info": {
+            "name": "Create Google Cloud Credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/credentials/googleCloud",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "service-account-key-file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "displayName",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new credential for Google Cloud."
+        },
+        {
+          "info": {
+            "name": "Update Google Cloud Credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/credentials/googleCloud/:googleCloudCredentialId",
+            "params": [
+              {
+                "name": "googleCloudCredentialId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Google Cloud credential to update"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "service-account-key-file",
+                  "type": "text",
+                  "value": ""
+                },
+                {
+                  "name": "displayName",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing credential for Google Cloud."
+        },
+        {
+          "info": {
+            "name": "List Credentials",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/credentials",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List all credentials on your Lucid account."
+        },
+        {
+          "info": {
+            "name": "Get Credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/credentials/:credentialId",
+            "params": [
+              {
+                "name": "credentialId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the credential to retrieve"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get details about a specific credential."
+        },
+        {
+          "info": {
+            "name": "Delete Credential",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/credentials/:credentialId",
+            "params": [
+              {
+                "name": "credentialId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the credential to delete"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete the specified credential."
+        },
+        {
+          "info": {
+            "name": "Get Fully Supported AWS Resources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/aws/resources",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a list of all AWS resources fully supported by Lucid Cloud."
+        },
+        {
+          "info": {
+            "name": "Get Supported AWS Regions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v2/dataSources/aws/regions",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a list of all AWS regions supported by Lucid Cloud."
+        },
+        {
+          "info": {
+            "name": "Get Fully Supported Azure Resources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/azure/resources",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a list of all Azure resources fully supported by Lucid Cloud."
+        },
+        {
+          "info": {
+            "name": "Get Fully Supported Google Cloud Resources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/googleCloud/resources",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a list of all Google Cloud resources fully supported by Lucid Cloud."
+        },
+        {
+          "info": {
+            "name": "Create AWS Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/aws",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new data source from AWS data. Returns a jobId that can be used to retrieve the status from the Get \"Create AWS Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Create AWS Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/aws/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a data source creation request started by Create AWS Data Source."
+        },
+        {
+          "info": {
+            "name": "Update AWS Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/aws/:awsDataSourceId",
+            "params": [
+              {
+                "name": "awsDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the AWS data source to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing AWS data source to reflect the latest state of data in AWS. Optionally updates the resources and regions included in the data source as well. Returns a jobId that can be used to check the status via the Get \"Update AWS Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Edit AWS Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/dataSources/aws/:awsDataSourceId",
+            "params": [
+              {
+                "name": "awsDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the AWS data source to edit"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Edit the metadata of an AWS data source. Metadata refers to any property of the data source that is not related to the data source's cloud data itself."
+        },
+        {
+          "info": {
+            "name": "Update AWS Data Source from File",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/aws/:awsDataSourceId/upload",
+            "params": [
+              {
+                "name": "awsDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the AWS data source to update"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "awsclijson",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing AWS data source to reflect the state represented in a JSON file exported from AWS directly via the AWS CLI. Returns a jobId that can be used to monitor progress through the Get \"Update AWS Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Update AWS Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/aws/:awsDataSourceId/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "awsDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the AWS data source associated with the job"
+              },
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a data source update request started by Update AWS Data Source or Update AWS Data Source from File."
+        },
+        {
+          "info": {
+            "name": "Create Azure Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/azure",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new data source from Azure data. Returns a jobId that can be used to check the status of the operation through the Get \"Create Azure Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Create Azure Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/azure/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a data source creation request started by Create Azure Data Source."
+        },
+        {
+          "info": {
+            "name": "Update Azure Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/azure/:azureDataSourceId",
+            "params": [
+              {
+                "name": "azureDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Azure data source to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing Azure data source to reflect the latest state of data in Azure. Optionally updates the resources included in the data source as well. Returns a jobId that can be used to monitor progress through the Get \"Update Azure Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Edit Azure Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/dataSources/azure/:azureDataSourceId",
+            "params": [
+              {
+                "name": "azureDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Azure data source to edit"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Edit the metadata of an Azure data source. Metadata refers to any property of the data source that is not related to the data source's cloud data itself."
+        },
+        {
+          "info": {
+            "name": "Update Azure Data Source from File",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/azure/:azureDataSourceId/upload",
+            "params": [
+              {
+                "name": "azureDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Azure data source to update"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "azureclijson",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing Azure data source to reflect the state represented in a JSON file exported from Azure directly via the Azure CLI. Returns a jobId that can be used to monitor progress through the Get \"Update Azure Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Update Azure Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/azure/:azureDataSourceId/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "azureDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Azure data source associated with the job"
+              },
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a data source update request started by Update Azure Data Source or Update Azure Data Source from File."
+        },
+        {
+          "info": {
+            "name": "Create Google Cloud Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/googleCloud",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new data source from Google Cloud data. Returns a jobId that can be used to check the status of the operation through the Get \"Create Google Cloud Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Create Google Cloud Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/googleCloud/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a data source creation request started by Create Google Cloud Data Source."
+        },
+        {
+          "info": {
+            "name": "Update Google Cloud Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/googleCloud/:googleCloudDataSourceId",
+            "params": [
+              {
+                "name": "googleCloudDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Google Cloud data source to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing Google Cloud data source to reflect the latest state of data in Google Cloud. Optionally updates the resources included in the data source as well. Returns a jobId that can be used to monitor progress through the Get \"Update Google Cloud Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Edit Google Cloud Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://api.lucid.co/v1/dataSources/googleCloud/:googleCloudDataSourceId",
+            "params": [
+              {
+                "name": "googleCloudDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Google Cloud data source to edit"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Edit the metadata of a Google Cloud data source. Metadata refers to any property of the data source that is not related to the data source's cloud data itself."
+        },
+        {
+          "info": {
+            "name": "Update Google Cloud Data Source from File",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/dataSources/googleCloud/:googleCloudDataSourceId/upload",
+            "params": [
+              {
+                "name": "googleCloudDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Google Cloud data source to update"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "googlecloudclijson",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update an existing Google Cloud data source to reflect the state represented in a JSON file exported from Google Cloud directly via the Google Cloud CLI. Returns a jobId that can be used to monitor progress through the Get \"Update Google Cloud Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Update Google Cloud Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/googleCloud/:googleCloudDataSourceId/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "googleCloudDataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the Google Cloud data source associated with the job"
+              },
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a data source update request started by Update Google Cloud Data Source or Update Google Cloud Data Source from File."
+        },
+        {
+          "info": {
+            "name": "List Data Sources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List all data sources on your Lucid account."
+        },
+        {
+          "info": {
+            "name": "Get Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/dataSources/:dataSourceId",
+            "params": [
+              {
+                "name": "dataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the data source to retrieve"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Gets a specific existing data source. If the creator of the data source is the user making the request, the link parameters will be returned with the data source."
+        },
+        {
+          "info": {
+            "name": "Delete Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.lucid.co/v1/dataSources/:dataSourceId",
+            "params": [
+              {
+                "name": "dataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "The ID of the data source to delete"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete the specified data source and all related data (collections, schema, items, link parameters). Once deleted, none of the information can be recovered."
+        },
+        {
+          "info": {
+            "name": "Get Supported AWS View Templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/aws/viewTemplates",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a list of all AWS view templates fully supported by Lucid Cloud."
+        },
+        {
+          "info": {
+            "name": "Get Supported Azure View Templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/azure/viewTemplates",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a list of all Azure view templates fully supported by Lucid Cloud."
+        },
+        {
+          "info": {
+            "name": "Get Supported Google Cloud View Templates",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/googleCloud/viewTemplates",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get a list of all Google Cloud view templates fully supported by Lucid Cloud."
+        },
+        {
+          "info": {
+            "name": "Create Model from AWS Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/cloud/aws",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new model containing the visualization of data from an AWS data source. Returns a jobId that can be used to retrieve the status from the Get \"Create Model from AWS Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Create Model from AWS Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/aws/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a model creation request started by Create Model from AWS Data Source."
+        },
+        {
+          "info": {
+            "name": "Sync Model with AWS Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/cloud/aws/:documentId/sync",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "",
+                "type": "path",
+                "description": "The document ID of the cloud model to sync"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Sync an existing model containing the visualization of data from an AWS data source, so that it is up-to-date with the data in that data source. Returns a jobId that can be used to get the status from Get \"Sync Model with AWS Data Source\" Job Status."
+        },
+        {
+          "info": {
+            "name": "Get \"Sync Model with AWS Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/aws/:documentId/sync/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "",
+                "type": "path",
+                "description": "The document ID of the cloud model associated with the job"
+              },
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a model sync request started by Sync Model with AWS Data Source."
+        },
+        {
+          "info": {
+            "name": "Create Model from Azure Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/cloud/azure",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new model containing the visualization of data from an Azure data source. Returns a jobId that can be used to retrieve the status from the Get \"Create Model from Azure Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Create Model from Azure Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/azure/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a model creation request started by Create Model from Azure Data Source."
+        },
+        {
+          "info": {
+            "name": "Sync Model with Azure Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/cloud/azure/:documentId/sync",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "",
+                "type": "path",
+                "description": "The document ID of the cloud model to sync"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Sync an existing model containing the visualization of data from an Azure data source, so that it is up-to-date with the data in that data source. Returns a jobId that can be used to get the status from Get \"Sync Model with Azure Data Source\" Job Status."
+        },
+        {
+          "info": {
+            "name": "Get \"Sync Model with Azure Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/azure/:documentId/sync/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "",
+                "type": "path",
+                "description": "The document ID of the cloud model associated with the job"
+              },
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a model sync request started by Sync Model with Azure Data Source."
+        },
+        {
+          "info": {
+            "name": "Create Model from Google Cloud Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/cloud/googleCloud",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create a new model containing the visualization of data from a Google Cloud data source. Returns a jobId that can be used to retrieve the status from the Get \"Create Model from Google Cloud Data Source\" Job Status endpoint."
+        },
+        {
+          "info": {
+            "name": "Get \"Create Model from Google Cloud Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/googleCloud/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a model creation request started by Create Model from Google Cloud Data Source."
+        },
+        {
+          "info": {
+            "name": "Sync Model with Google Cloud Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/cloud/googleCloud/:documentId/sync",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "",
+                "type": "path",
+                "description": "The document ID of the cloud model to sync"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Sync an existing model containing the visualization of data from a Google Cloud data source, so that it is up-to-date with the data in that data source. Returns a jobId that can be used to get the status from Get \"Sync Model with Google Cloud Data Source\" Job Status."
+        },
+        {
+          "info": {
+            "name": "Get \"Sync Model with Google Cloud Data Source\" Job Status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/cloud/googleCloud/:documentId/sync/:jobReferenceId/status",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "",
+                "type": "path",
+                "description": "The document ID of the cloud model associated with the job"
+              },
+              {
+                "name": "jobReferenceId",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get the status of a model sync request started by Sync Model with Google Cloud Data Source."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Repositories",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Repositories",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/repositories",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves basic information for all repositories the authenticated user has permission to view."
+        },
+        {
+          "info": {
+            "name": "Create Repository",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/repositories",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Creates a new repository on the account."
+        },
+        {
+          "info": {
+            "name": "Get Repository",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/repositories/:repositoryId",
+            "params": [
+              {
+                "name": "repositoryId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the repository"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves basic information for the requested repository, provided the user has at least read-only access."
+        },
+        {
+          "info": {
+            "name": "List Repository User Collaborators",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/repositories/:repositoryId/users",
+            "params": [
+              {
+                "name": "repositoryId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the repository"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List users with roles on a repository."
+        },
+        {
+          "info": {
+            "name": "Create or Update Repository User Roles",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/repositories/:repositoryId/users/add",
+            "params": [
+              {
+                "name": "repositoryId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the repository"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Manages user roles on a repository, allowing for updating of existing repository users or adding roles for new users on the repository."
+        },
+        {
+          "info": {
+            "name": "Remove Users from Repository",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/repositories/:repositoryId/users/remove",
+            "params": [
+              {
+                "name": "repositoryId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the repository"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Removes one or more users from a repository."
+        },
+        {
+          "info": {
+            "name": "List Repository Groups",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/repositories/:repositoryId/groups",
+            "params": [
+              {
+                "name": "repositoryId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the repository"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List groups with repository member access."
+        },
+        {
+          "info": {
+            "name": "Add Groups as Members on Repository",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/repositories/:repositoryId/groups/add",
+            "params": [
+              {
+                "name": "repositoryId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the repository"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Add Groups to a repository. Users in the Group will have repository member access to the specified repository."
+        },
+        {
+          "info": {
+            "name": "Remove Groups from Repository",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/repositories/:repositoryId/groups/remove",
+            "params": [
+              {
+                "name": "repositoryId",
+                "value": "",
+                "type": "path",
+                "description": "The unique identifier of the repository"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Removes one or more groups from a restricted repository."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Document Comments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Document Threads",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:documentId/threads",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document to retrieve comment threads for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves all comment threads for the specified document. Each thread includes its ID, creation timestamp, and status (open or closed).\n\n## Valid Authentication Methods\n\n**API Key Grants:**\n- `DocumentReadonly`\n\n**OAuth 2.0 User Token Scopes:**\n- `lucidchart.document.content:readonly`\n- `lucidscale.document.content:readonly`\n- `lucidspark.document.content:readonly`\n- `lucid.document.content:readonly`\n"
+        },
+        {
+          "info": {
+            "name": "List Thread Comments",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/documents/:documentId/threads/:threadId/comments",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document containing the thread."
+              },
+              {
+                "name": "threadId",
+                "value": "abc123",
+                "type": "path",
+                "description": "ID of the comment thread to retrieve comments for."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves all comments within a specific thread of a document. Each comment includes the author, comment text, creation timestamp, and any assigned users.\n\n## Valid Authentication Methods\n\n**API Key Grants:**\n- `DocumentReadonly`\n\n**OAuth 2.0 User Token Scopes:**\n- `lucidchart.document.content:readonly`\n- `lucidscale.document.content:readonly`\n- `lucidspark.document.content:readonly`\n- `lucid.document.content:readonly`\n"
+        },
+        {
+          "info": {
+            "name": "Post Thread Comment",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/documents/:documentId/threads/:threadId/comments",
+            "params": [
+              {
+                "name": "documentId",
+                "value": "110808fd-4553-4316-bccf-4f25ff59a532",
+                "type": "path",
+                "description": "ID of the document containing the thread."
+              },
+              {
+                "name": "threadId",
+                "value": "abc123",
+                "type": "path",
+                "description": "ID of the comment thread to post a comment to."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Posts a new comment to an existing thread on a document. The comment text must be non-empty and cannot exceed 10,000 characters.\n\n## Valid Authentication Methods\n\n**API Key Grants:**\n- `DocumentEdit`\n\n**OAuth 2.0 User Token Scopes:**\n- `lucidchart.document.content`\n- `lucidscale.document.content`\n- `lucidspark.document.content`\n- `lucid.document.content`\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Subscriptions",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Subscriptions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/subscriptions",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lists all subscriptions on the authenticated user's Lucid account. This endpoint is paginated."
+        },
+        {
+          "info": {
+            "name": "Get Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/subscriptions/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "8e8cf611-d74c-4a2f-8b61-754b22328fbb",
+                "type": "path",
+                "description": "Subscription ID"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves details about a specific subscription on the account."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Licenses",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List Licenses for Subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/subscriptions/:id/licenses",
+            "params": [
+              {
+                "name": "id",
+                "value": "8e8cf611-d74c-4a2f-8b61-754b22328fbb",
+                "type": "path",
+                "description": "Subscription ID"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lists all licenses associated with a specific subscription. This endpoint is paginated."
+        },
+        {
+          "info": {
+            "name": "List User Licenses",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lucid.co/v1/users/:id/licenses",
+            "params": [
+              {
+                "name": "id",
+                "value": "123",
+                "type": "path",
+                "description": "User ID"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retrieves all licenses that have been granted to a specific user on the account."
+        },
+        {
+          "info": {
+            "name": "Grant User License",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lucid.co/v1/users/:id/licenses",
+            "params": [
+              {
+                "name": "id",
+                "value": "123",
+                "type": "path",
+                "description": "User ID"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Grants a license to a user from a specified subscription. If the user already has a license on the given subscription, the existing license is returned."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

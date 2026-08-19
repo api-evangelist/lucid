@@ -1,0 +1,4179 @@
+{
+  "item": [
+    {
+      "id": "9614dae5-b494-4aa0-b2be-ea4da256f460",
+      "name": "Users",
+      "description": {
+        "content": "Endpoints that deal with users.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "1aa6c1b1-6566-49f8-a137-0346203ce43b",
+          "name": "Get User",
+          "request": {
+            "name": "Get User",
+            "description": {
+              "content": "Get a specific user on the account.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Users",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to include in the response. The attribute id is always returned. Cannot be used with excludedAttributes.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to include in the response. The attribute id is always returned. Cannot be used with excludedAttributes.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Cannot be used with attributes.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Cannot be used with attributes.\n"
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid user."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "b5b170a2-140e-405f-8f49-e325bb911b30",
+              "name": "OK. Returns a User.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": {},\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"id\": \"lucid-1234\",\n  \"groups\": [\n    {\n      \"value\": \"lucid-group-1234\",\n      \"display\": \"Group A\"\n    },\n    {\n      \"value\": \"lucid-group-1234\",\n      \"display\": \"Group A\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "cbfadce9-a469-442c-ba23-016b7b16ed9f",
+              "name": "Unauthorized. Occurs if bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "915aa482-566b-47ab-bd5c-c9fc92554ca0",
+              "name": "Not Found. Occurs if the user was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1167c3d7-3ada-4164-a463-4cb3aca0ac2f",
+          "name": "Modify User",
+          "request": {
+            "name": "Modify User",
+            "description": {
+              "content": "Modify an existing user. To deactivate a user, set the `active` field to `false`.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Users",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid user."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemas\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"userName\": \"<string>\",\n  \"emails\": [\n    {\n      \"value\": \"<string>\",\n      \"type\": \"<string>\",\n      \"primary\": \"<boolean>\"\n    },\n    {\n      \"value\": \"<string>\",\n      \"type\": \"<string>\",\n      \"primary\": \"<boolean>\"\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"<string>\",\n    \"givenName\": \"<string>\",\n    \"familyName\": \"<string>\"\n  },\n  \"displayName\": \"<string>\",\n  \"active\": \"<boolean>\",\n  \"externalId\": \"<string>\",\n  \"title\": \"<string>\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"value\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"<string>\"\n    },\n    {\n      \"value\": \"<string>\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"<string>\",\n    \"organization\": \"<string>\",\n    \"division\": \"<string>\",\n    \"department\": \"<string>\",\n    \"manager\": {\n      \"value\": \"<string>\"\n    }\n  },\n  \"password\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "be7309ef-1162-4ad9-a339-fba7dbeeb8ef",
+              "name": "OK. Returns the modified User.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"id\": \"lucid-1234\",\n  \"groups\": [\n    {\n      \"value\": \"lucid-group-1234\",\n      \"display\": \"Group A\"\n    },\n    {\n      \"value\": \"lucid-group-1234\",\n      \"display\": \"Group A\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3e1326de-72dc-443d-9761-c88fc0f1a077",
+              "name": "Bad Request. Occurs if request body syntax is incorrect.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "eeb28255-7931-4f40-8f4e-da847d9359cc",
+              "name": "Unauthorized. Occurs if bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "bad30265-923f-42db-a555-2402f8ebcd17",
+              "name": "Not Found. Occurs if the user does not exist.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0a21f907-9b8d-4bea-bbb0-8ca4c87836e7",
+              "name": "Conflict. Occurs if new username or email already exists.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b046bacb-7552-4b01-9089-d8cc56f18956",
+          "name": "Modify User",
+          "request": {
+            "name": "Modify User",
+            "description": {
+              "content": "Modify an existing user. To deactivate a user, set the `active` field to `false`.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Users",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid user."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemas\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"<string>\",\n      \"path\": \"<string>\",\n      \"value\": \"<boolean>\"\n    },\n    {\n      \"op\": \"<string>\",\n      \"path\": \"<string>\",\n      \"value\": \"<boolean>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "9e9a12c6-153c-4378-88e7-24538d47a432",
+              "name": "OK. Returns the modified User.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"id\": \"lucid-1234\",\n  \"groups\": [\n    {\n      \"value\": \"lucid-group-1234\",\n      \"display\": \"Group A\"\n    },\n    {\n      \"value\": \"lucid-group-1234\",\n      \"display\": \"Group A\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "09a139bf-66bc-4b61-a29a-7ff193469896",
+              "name": "Bad Request. Occurs if request body syntax is incorrect.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d8dffacd-b857-473d-b6db-df97b1b7b2eb",
+              "name": "Unauthorized. Occurs if bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "b0db9cc6-8d39-42d6-90f1-d0d9e064c7d3",
+              "name": "Not Found. Occurs if the user does not exist.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "4c92ca85-8478-4e54-a77e-535c0019b29e",
+              "name": "Conflict. Occurs if new username or email already exists on account.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"roles\",\n      \"value\": \"<boolean>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2c745f96-bec7-4226-8a01-0654ea900710",
+          "name": "Delete User",
+          "request": {
+            "name": "Delete User",
+            "description": {
+              "content": "> ❗️ This is a hard delete. We recommend deactivating users instead of deleting them. To deactivate a user, use PUT or PATCH and set the active field to false.\n\nDelete a user from the account. Note that certain users cannot be deleted, such as account owners and default document owners.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Users",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid user."
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "c4fec193-cd20-43be-9e0a-64bc340b2148",
+              "name": "No Content. User was successfully deleted.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "60265d6b-b2ba-41db-ac4e-c318f317233a",
+              "name": "Bad Request. Occurs if an unexpected error prevents user deletion.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "901329e7-e7b8-47ea-abea-d543d3dcd741",
+              "name": "Unauthorized. Occurs if bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "32d09739-24a5-4871-b279-2d76fc82c573",
+              "name": "Not Found. Occurs if the user does not exist.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "55c21821-9a9b-4130-8874-fd69af104c2d",
+              "name": "Conflict. Occurs if the user cannot be deleted (e.g., account owner or default document owner).",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid user."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "2558291d-def9-4952-ac1f-d11e4cbc85da",
+          "name": "Get All Users",
+          "request": {
+            "name": "Get All Users",
+            "description": {
+              "content": "Gets all users on an account.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Users"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "startIndex",
+                  "value": "<number>",
+                  "description": "Index of the first user in the list to return (1 indexed)."
+                },
+                {
+                  "disabled": false,
+                  "key": "count",
+                  "value": "<number>",
+                  "description": "Quantity of users to return from this request."
+                },
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "See SCIM spec and optimization details below:\n* The only operator currently supported is eq\n* Filtered requests will result in a maximum of 10,000 users\n* While filtering should technically work on every attribute of a user, it is a very slow process for non-optimized attributes. We strongly recommend filtering only on the following optimized attributes whenever possible:\n  * email / emails.value / workemail\n  * username / displayname\n  * externalid\n  * urn:ietf:params:scim:schemas:extension:lucid:1.0:User.productLicenses.<name>\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to include in the response. The attribute id is always returned. Cannot be used with excludedAttributes.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to include in the response. The attribute id is always returned. Cannot be used with excludedAttributes.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Cannot be used with attributes.\n"
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Cannot be used with attributes.\n"
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "e6637b49-85e4-4524-b8ed-1d13b63a98b2",
+              "name": "OK. Returns a JSON object containing a list of users. Deactivated users will not be included in the totalResults or the JSON payload of users returned.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "startIndex",
+                      "value": "1"
+                    },
+                    {
+                      "key": "count",
+                      "value": "100"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "email eq someEmail@example.com"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n  ],\n  \"totalResults\": 1,\n  \"startIndex\": 1,\n  \"itemsPerPage\": 100,\n  \"Resources\": [\n    {\n      \"schemas\": [\n        \"urn:ietf:params:scim:schemas:core:2.0:User\",\n        \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n      ],\n      \"userName\": \"john-doe@example.com\",\n      \"name\": {\n        \"formatted\": \"John Doe\",\n        \"givenName\": \"John\",\n        \"familyName\": \"Doe\"\n      },\n      \"displayName\": \"john-doe@example.com\",\n      \"emails\": [\n        {\n          \"value\": \"john-doe@example.com\",\n          \"type\": \"work\",\n          \"primary\": true\n        },\n        {\n          \"value\": \"john-doe@example.com\",\n          \"type\": \"work\",\n          \"primary\": true\n        }\n      ],\n      \"active\": false,\n      \"externalId\": \"external-123\",\n      \"title\": \"Software Engineer\",\n      \"phoneNumbers\": [\n        {\n          \"value\": \"+1-555-123-4567\",\n          \"type\": \"work\"\n        },\n        {\n          \"value\": \"+1-555-123-4567\",\n          \"type\": \"work\"\n        }\n      ],\n      \"meta\": \"<object>\",\n      \"roles\": [\n        {\n          \"value\": \"DocumentAdmin\"\n        },\n        {\n          \"value\": \"DocumentAdmin\"\n        }\n      ],\n      \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n        \"costCenter\": \"CC-100\",\n        \"organization\": \"Engineering\",\n        \"division\": \"Product Development\",\n        \"department\": \"Backend Engineering\",\n        \"manager\": {\n          \"value\": \"lucid-5678\"\n        }\n      },\n      \"id\": \"lucid-1234\",\n      \"groups\": [\n        {\n          \"value\": \"lucid-group-1234\",\n          \"display\": \"Group A\"\n        },\n        {\n          \"value\": \"lucid-group-1234\",\n          \"display\": \"Group A\"\n        }\n      ]\n    },\n    {\n      \"schemas\": [\n        \"urn:ietf:params:scim:schemas:core:2.0:User\",\n        \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n      ],\n      \"userName\": \"john-doe@example.com\",\n      \"name\": {\n        \"formatted\": \"John Doe\",\n        \"givenName\": \"John\",\n        \"familyName\": \"Doe\"\n      },\n      \"displayName\": \"john-doe@example.com\",\n      \"emails\": [\n        {\n          \"value\": \"john-doe@example.com\",\n          \"type\": \"work\",\n          \"primary\": true\n        },\n        {\n          \"value\": \"john-doe@example.com\",\n          \"type\": \"work\",\n          \"primary\": true\n        }\n      ],\n      \"active\": false,\n      \"externalId\": \"external-123\",\n      \"title\": \"Software Engineer\",\n      \"phoneNumbers\": [\n        {\n          \"value\": \"+1-555-123-4567\",\n          \"type\": \"work\"\n        },\n        {\n          \"value\": \"+1-555-123-4567\",\n          \"type\": \"work\"\n        }\n      ],\n      \"meta\": \"<object>\",\n      \"roles\": [\n        {\n          \"value\": \"DocumentAdmin\"\n        },\n        {\n          \"value\": \"DocumentAdmin\"\n        }\n      ],\n      \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n        \"costCenter\": \"CC-100\",\n        \"organization\": \"Engineering\",\n        \"division\": \"Product Development\",\n        \"department\": \"Backend Engineering\",\n        \"manager\": {\n          \"value\": \"lucid-5678\"\n        }\n      },\n      \"id\": \"lucid-1234\",\n      \"groups\": [\n        {\n          \"value\": \"lucid-group-1234\",\n          \"display\": \"Group A\"\n        },\n        {\n          \"value\": \"lucid-group-1234\",\n          \"display\": \"Group A\"\n        }\n      ]\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b5c387be-da1d-430a-b425-7f5fc4352487",
+              "name": "Bad Request. Occurs if the filter parameter has invalid syntax or uses unsupported operators.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "startIndex",
+                      "value": "1"
+                    },
+                    {
+                      "key": "count",
+                      "value": "100"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "email eq someEmail@example.com"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0cf99f95-22e7-4b0f-a136-587df22185f7",
+              "name": "Unauthorized. Occurs if bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "startIndex",
+                      "value": "1"
+                    },
+                    {
+                      "key": "count",
+                      "value": "100"
+                    },
+                    {
+                      "key": "filter",
+                      "value": "email eq someEmail@example.com"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b8a8e96c-54a4-4cb9-ac17-73b3da16a8af",
+          "name": "Create User",
+          "request": {
+            "name": "Create User",
+            "description": {
+              "content": "Create a new user.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Users"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemas\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"userName\": \"<string>\",\n  \"emails\": [\n    {\n      \"value\": \"<string>\",\n      \"type\": \"<string>\",\n      \"primary\": \"<boolean>\"\n    },\n    {\n      \"value\": \"<string>\",\n      \"type\": \"<string>\",\n      \"primary\": \"<boolean>\"\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"<string>\",\n    \"givenName\": \"<string>\",\n    \"familyName\": \"<string>\"\n  },\n  \"displayName\": \"<string>\",\n  \"active\": \"<boolean>\",\n  \"externalId\": \"<string>\",\n  \"title\": \"<string>\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"<string>\",\n      \"type\": \"<string>\"\n    },\n    {\n      \"value\": \"<string>\",\n      \"type\": \"<string>\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"<string>\"\n    },\n    {\n      \"value\": \"<string>\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"<string>\",\n    \"organization\": \"<string>\",\n    \"division\": \"<string>\",\n    \"department\": \"<string>\",\n    \"manager\": {\n      \"value\": \"<string>\"\n    }\n  },\n  \"password\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "eeaa50a0-f291-466a-9cd9-9761a8f2780f",
+              "name": "OK. Returns the created User.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"id\": \"lucid-1234\",\n  \"groups\": [\n    {\n      \"value\": \"lucid-group-1234\",\n      \"display\": \"Group A\"\n    },\n    {\n      \"value\": \"lucid-group-1234\",\n      \"display\": \"Group A\"\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "511b1586-0ea1-40af-b5d6-1de582be6dbd",
+              "name": "Bad Request. Occurs if request body syntax is incorrect.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "0b4f89d1-a66d-48d0-9cf9-db7a4214a30a",
+              "name": "Unauthorized. Occurs if bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "d63c3f3b-8259-40cf-adcf-bc46643276fc",
+              "name": "Conflict. if username or email already exists on the account.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "9ffc57ea-edf1-4b4b-9b96-828811dbdfd4",
+              "name": "Failed Dependency. Occurs if add-on license requires base license to be active.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Users"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:User\",\n    \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\n  ],\n  \"userName\": \"john-doe@example.com\",\n  \"emails\": [\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    },\n    {\n      \"value\": \"john-doe@example.com\",\n      \"type\": \"work\",\n      \"primary\": true\n    }\n  ],\n  \"name\": {\n    \"formatted\": \"John Doe\",\n    \"givenName\": \"John\",\n    \"familyName\": \"Doe\"\n  },\n  \"displayName\": \"john-doe@example.com\",\n  \"active\": false,\n  \"externalId\": \"external-123\",\n  \"title\": \"Software Engineer\",\n  \"phoneNumbers\": [\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    },\n    {\n      \"value\": \"+1-555-123-4567\",\n      \"type\": \"work\"\n    }\n  ],\n  \"meta\": \"<object>\",\n  \"roles\": [\n    {\n      \"value\": \"DocumentAdmin\"\n    },\n    {\n      \"value\": \"DocumentAdmin\"\n    }\n  ],\n  \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\": {\n    \"costCenter\": \"CC-100\",\n    \"organization\": \"Engineering\",\n    \"division\": \"Product Development\",\n    \"department\": \"Backend Engineering\",\n    \"manager\": {\n      \"value\": \"lucid-5678\"\n    }\n  },\n  \"password\": \"password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Failed Dependency (WebDAV) (RFC 4918)",
+              "code": 424,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "c75b0fbd-6ff9-493d-bc93-be01aab22691",
+      "name": "Groups",
+      "description": {
+        "content": "Endpoints that deal with org groups or teams (dependent on which bearer token is used).",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "6ace04b2-4555-4f05-8cfb-f48705798803",
+          "name": "Get Group or Team",
+          "request": {
+            "name": "Get Group or Team",
+            "description": {
+              "content": "Get a specific org group or team on the account.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Groups",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid group."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "27839f90-7ea3-41b5-962a-7d6bc35e591e",
+              "name": "OK. Returns a group or team.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"lucid-group-1234\",\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"Group A\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"display\": \"User 1\"\n    },\n    {\n      \"value\": \"lucid-5678\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-group-9012\",\n      \"display\": \"Subgroup A\"\n    }\n  ],\n  \"meta\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "50ad9b68-0bbb-4772-b465-0d01cfad883f",
+              "name": "Unauthorized. Occurs if the bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "071a862f-6b51-4ef7-8a12-a598140b92b6",
+              "name": "Not Found. Occurs if the group was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "1d9cd39d-2a2b-4350-8077-40c211bc186b",
+          "name": "Modify Group or Team",
+          "request": {
+            "name": "Modify Group or Team",
+            "description": {
+              "content": "Modify an existing org group or team.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Groups",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid group."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PUT",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemas\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"displayName\": \"<string>\",\n  \"members\": [\n    {\n      \"value\": \"<string>\",\n      \"$ref\": \"<string>\",\n      \"display\": \"<string>\"\n    },\n    {\n      \"value\": \"<string>\",\n      \"$ref\": \"<string>\",\n      \"display\": \"<string>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "5ec20218-5e94-4e4e-8082-e80d34119768",
+              "name": "OK. Returns the modified group or team.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"My Group\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"lucid-group-1234\",\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"Group A\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"display\": \"User 1\"\n    },\n    {\n      \"value\": \"lucid-5678\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-group-9012\",\n      \"display\": \"Subgroup A\"\n    }\n  ],\n  \"meta\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "6807ecf5-8f66-45b1-914f-aa8d5b152e18",
+              "name": "Unauthorized. Occurs if the bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"My Group\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "b57fe52d-3428-487c-964f-562d78835df6",
+              "name": "Not Found. Occurs if the group was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"My Group\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "9979e4f8-06c5-4a57-ad9d-36f0a2a74911",
+              "name": "Conflict. Occurs if the group name already exists on the account. Org group and team namespaces are distinct, though the latter includes archived teams.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"My Group\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "c2c38be1-e76a-4739-a885-b7c82e9cc6a7",
+          "name": "Modify Group or Team",
+          "request": {
+            "name": "Modify Group or Team",
+            "description": {
+              "content": "Modify an existing org group or team.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Groups",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                }
+              ],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid group."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "PATCH",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemas\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"<string>\",\n      \"path\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"op\": \"<string>\",\n      \"path\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "170ce5cc-2c9a-4666-99d9-7cfb61b94203",
+              "name": "OK. Returns the modified group or team.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"lucid-group-1234\",\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"Group A\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"display\": \"User 1\"\n    },\n    {\n      \"value\": \"lucid-5678\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-group-9012\",\n      \"display\": \"Subgroup A\"\n    }\n  ],\n  \"meta\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e30e75ab-02a6-4171-958f-01eca2505725",
+              "name": "Bad Request. Occurs if the request body syntax is incorrect.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "1987473c-aa90-4831-9fa0-f1e9d4778ce5",
+              "name": "Unauthorized. Occurs if bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "9d22883c-7197-4310-ba28-a2b76fef6027",
+              "name": "Not Found. Occurs if the group was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "00cb453a-3b78-4cab-a592-49f480c2e151",
+              "name": "Conflict. Occurs if the group name already exists on the account. Org group and team namespaces are distinct, though the latter includes archived teams.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "PATCH",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"Operations\": [\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"op\": \"add\",\n      \"path\": \"members\",\n      \"value\": \"<string>\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "3e4a552a-8ac6-4ec5-b1f0-dd548b8cd308",
+          "name": "Delete Group or Team",
+          "request": {
+            "name": "Delete Group or Team",
+            "description": {
+              "content": "Delete an existing org group or archive an existing team.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Groups",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid group."
+                }
+              ]
+            },
+            "method": "DELETE",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "0ae58ed8-7757-48bd-b565-532296d5e73d",
+              "name": "No Content. Occurs if the delete was successful.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "No Content",
+              "code": 204,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2578766f-1b93-4a9c-b127-801de62d152f",
+              "name": "Bad Request. May occur if an org group still has members.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "5eca3001-6900-4388-9cf7-ac84d5457a43",
+              "name": "Unauthorized. Occurs if the bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "2146b376-bbff-4e01-9f56-53f72b611e54",
+              "name": "Not Found. Occurs if the group was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid group."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "DELETE",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "304ce4d6-f665-4d93-a2cf-db83a4c909a3",
+          "name": "Get All Groups or Teams",
+          "request": {
+            "name": "Get All Groups or Teams",
+            "description": {
+              "content": "Gets all org groups or teams on an account. Supports pagination and filtering.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Groups"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "filter",
+                  "value": "<string>",
+                  "description": "Filter groups/teams using SCIM filter syntax. Only single filter queries are supported. Currently supports filtering by displayName (case-sensitive exact match)."
+                },
+                {
+                  "disabled": false,
+                  "key": "count",
+                  "value": "100",
+                  "description": "Maximum number of groups/teams to return per page for pagination. Negative values are interpreted as 0."
+                },
+                {
+                  "disabled": false,
+                  "key": "startIndex",
+                  "value": "1",
+                  "description": "The 1-based index of the first result to return for pagination. Values less than 1 are interpreted as 1."
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "7ca20475-ae2d-48e1-add8-80896182fb63",
+              "name": "OK. Returns a list of org groups or teams.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "displayName eq \"Engineering\""
+                    },
+                    {
+                      "key": "count",
+                      "value": "50"
+                    },
+                    {
+                      "key": "startIndex",
+                      "value": "1"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n  ],\n  \"totalResults\": 42,\n  \"startIndex\": 1,\n  \"itemsPerPage\": 100,\n  \"Resources\": [\n    {\n      \"id\": \"lucid-group-1234\",\n      \"schemas\": [\n        \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n      ],\n      \"displayName\": \"Group A\",\n      \"members\": [\n        {\n          \"value\": \"lucid-1433\",\n          \"display\": \"User 1\"\n        },\n        {\n          \"value\": \"lucid-5678\",\n          \"display\": \"User 2\"\n        },\n        {\n          \"value\": \"lucid-group-9012\",\n          \"display\": \"Subgroup A\"\n        }\n      ],\n      \"meta\": {}\n    },\n    {\n      \"id\": \"lucid-group-1234\",\n      \"schemas\": [\n        \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n      ],\n      \"displayName\": \"Group A\",\n      \"members\": [\n        {\n          \"value\": \"lucid-1433\",\n          \"display\": \"User 1\"\n        },\n        {\n          \"value\": \"lucid-5678\",\n          \"display\": \"User 2\"\n        },\n        {\n          \"value\": \"lucid-group-9012\",\n          \"display\": \"Subgroup A\"\n        }\n      ],\n      \"meta\": {}\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "d5e83591-c8a5-46b2-b9b1-6155498e9edc",
+              "name": "Unauthorized. Occurs if bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "filter",
+                      "value": "displayName eq \"Engineering\""
+                    },
+                    {
+                      "key": "count",
+                      "value": "50"
+                    },
+                    {
+                      "key": "startIndex",
+                      "value": "1"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "51568fc3-95c5-4604-af3e-6cdbabcf32e4",
+          "name": "Create Group or Team",
+          "request": {
+            "name": "Create Group or Team",
+            "description": {
+              "content": "Create a new org group or team, or restore a matching archived, closed team.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Groups"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "attributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                },
+                {
+                  "disabled": false,
+                  "key": "excludedAttributes",
+                  "value": "<string>",
+                  "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+                }
+              ],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemas\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"displayName\": \"<string>\",\n  \"members\": [\n    {\n      \"value\": \"<string>\",\n      \"$ref\": \"<string>\",\n      \"display\": \"<string>\"\n    },\n    {\n      \"value\": \"<string>\",\n      \"$ref\": \"<string>\",\n      \"display\": \"<string>\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "c642bd21-ee7d-4bd6-865c-2424ec6df968",
+              "name": "Created. Returns the created group or team.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"My Group\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"lucid-group-1234\",\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"Group A\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"display\": \"User 1\"\n    },\n    {\n      \"value\": \"lucid-5678\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-group-9012\",\n      \"display\": \"Subgroup A\"\n    }\n  ],\n  \"meta\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "3536fb9c-c898-46cc-ab8d-71b98bb44d90",
+              "name": "Bad Request. Occurs if the group was not created.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"My Group\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "8765550c-beaa-4539-af12-eef57c6802f2",
+              "name": "Unauthorized. Occurs if the bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"My Group\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "89dee828-975f-4fcc-aeaa-7c54b63fc294",
+              "name": "Conflict. Occurs if the group name already exists on the account.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Groups"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "attributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    },
+                    {
+                      "key": "excludedAttributes",
+                      "value": "<string>"
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Group\"\n  ],\n  \"displayName\": \"My Group\",\n  \"members\": [\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    },\n    {\n      \"value\": \"lucid-1433\",\n      \"$ref\": \"https://users.lucid.app/scim/v2/Users/lucid-1433\",\n      \"display\": \"User 2\"\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "efbd6741-68be-4541-9239-2a5418ebfd5e",
+      "name": "Schemas",
+      "description": {
+        "content": "Endpoints that deal with lucid resource schemas.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "54d3f65f-5db9-4ec2-b7aa-f24acdad0aa0",
+          "name": "Get Schema",
+          "request": {
+            "name": "Get Schema",
+            "description": {
+              "content": "Get a specific Lucid resource schema.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Schemas",
+                ":id"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": [
+                {
+                  "disabled": false,
+                  "type": "any",
+                  "value": "<string>",
+                  "key": "id",
+                  "description": "(Required) ID of the Lucid resource schema to get."
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "784a950b-bd9c-444a-a39d-e2e02eca8a36",
+              "name": "OK. Returns a Schema.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Schemas",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid resource schema to get."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:Schema\"\n  ],\n  \"id\": \"urn:ietf:params:scim:schemas:core:2.0:Group\",\n  \"name\": \"Group\",\n  \"description\": \"A group of users\",\n  \"attributes\": [\n    {\n      \"name\": \"id\",\n      \"type\": \"string\",\n      \"multiValued\": false,\n      \"description\": \"A way to identify the user\",\n      \"required\": false,\n      \"caseExact\": false,\n      \"mutability\": \"readOnly\",\n      \"returned\": \"default\",\n      \"uniqueness\": \"global\",\n      \"subAttributes\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"string\",\n          \"multiValued\": false,\n          \"description\": \"A way to identify the user\",\n          \"required\": false,\n          \"caseExact\": false,\n          \"mutability\": \"readOnly\",\n          \"returned\": \"always\",\n          \"uniqueness\": \"none\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"string\",\n          \"multiValued\": false,\n          \"description\": \"A way to identify the user\",\n          \"required\": false,\n          \"caseExact\": false,\n          \"mutability\": \"writeOnly\",\n          \"returned\": \"default\",\n          \"uniqueness\": \"none\"\n        }\n      ]\n    },\n    {\n      \"name\": \"id\",\n      \"type\": \"string\",\n      \"multiValued\": false,\n      \"description\": \"A way to identify the user\",\n      \"required\": false,\n      \"caseExact\": false,\n      \"mutability\": \"readOnly\",\n      \"returned\": \"always\",\n      \"uniqueness\": \"global\",\n      \"subAttributes\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"string\",\n          \"multiValued\": false,\n          \"description\": \"A way to identify the user\",\n          \"required\": false,\n          \"caseExact\": false,\n          \"mutability\": \"immutable\",\n          \"returned\": \"request\",\n          \"uniqueness\": \"none\"\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"string\",\n          \"multiValued\": false,\n          \"description\": \"A way to identify the user\",\n          \"required\": false,\n          \"caseExact\": false,\n          \"mutability\": \"writeOnly\",\n          \"returned\": \"request\",\n          \"uniqueness\": \"server\"\n        }\n      ]\n    }\n  ],\n  \"meta\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9ea4b549-5a98-48f5-a342-ac04fe0c7b60",
+              "name": "Unauthorized. Occurs if the bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Schemas",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid resource schema to get."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "3f9a8a88-1ee7-4509-bbff-c1991dc8194e",
+              "name": "Not Found. Occurs if the schema was not found.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Schemas",
+                    ":id"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "disabled": false,
+                      "type": "any",
+                      "value": "<string>",
+                      "key": "id",
+                      "description": "(Required) ID of the Lucid resource schema to get."
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "64bd794a-06bb-40d8-86fb-dfb834a72377",
+          "name": "Get All Schemas",
+          "request": {
+            "name": "Get All Schemas",
+            "description": {
+              "content": "Gets all Lucid resource schemas.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "Schemas"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "80817924-aa25-42f6-9353-4a48d6408ca9",
+              "name": "OK. Returns a JSON object containing a list of Schemas.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Schemas"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:api:messages:2.0:ListResponse\"\n  ],\n  \"totalResults\": 1,\n  \"startIndex\": 1,\n  \"itemsPerPage\": 50,\n  \"Resources\": [\n    {\n      \"schemas\": [\n        \"urn:ietf:params:scim:schemas:core:2.0:Schema\"\n      ],\n      \"id\": \"urn:ietf:params:scim:schemas:core:2.0:Group\",\n      \"name\": \"Group\",\n      \"description\": \"A group of users\",\n      \"attributes\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"string\",\n          \"multiValued\": false,\n          \"description\": \"A way to identify the user\",\n          \"required\": false,\n          \"caseExact\": false,\n          \"mutability\": \"immutable\",\n          \"returned\": \"default\",\n          \"uniqueness\": \"server\",\n          \"subAttributes\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"string\",\n          \"multiValued\": false,\n          \"description\": \"A way to identify the user\",\n          \"required\": false,\n          \"caseExact\": false,\n          \"mutability\": \"readWrite\",\n          \"returned\": \"always\",\n          \"uniqueness\": \"server\",\n          \"subAttributes\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      ],\n      \"meta\": {}\n    },\n    {\n      \"schemas\": [\n        \"urn:ietf:params:scim:schemas:core:2.0:Schema\"\n      ],\n      \"id\": \"urn:ietf:params:scim:schemas:core:2.0:Group\",\n      \"name\": \"Group\",\n      \"description\": \"A group of users\",\n      \"attributes\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"string\",\n          \"multiValued\": false,\n          \"description\": \"A way to identify the user\",\n          \"required\": false,\n          \"caseExact\": false,\n          \"mutability\": \"readOnly\",\n          \"returned\": \"never\",\n          \"uniqueness\": \"server\",\n          \"subAttributes\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        },\n        {\n          \"name\": \"id\",\n          \"type\": \"string\",\n          \"multiValued\": false,\n          \"description\": \"A way to identify the user\",\n          \"required\": false,\n          \"caseExact\": false,\n          \"mutability\": \"immutable\",\n          \"returned\": \"request\",\n          \"uniqueness\": \"server\",\n          \"subAttributes\": [\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            },\n            {\n              \"value\": \"<Error: Too many levels of nesting to fake this schema>\"\n            }\n          ]\n        }\n      ],\n      \"meta\": {}\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "b412c320-8a12-4bac-b414-0df4f348af95",
+              "name": "Unauthorized. Occurs if the bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "Schemas"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "082fe836-d1a1-49db-9f0b-50f0149995ed",
+      "name": "Service Provider Config",
+      "description": {
+        "content": "Retrieve the SCIM service provider configuration, describing supported operations, authentication schemes, and bulk/filter capabilities.",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "17352b72-e9bf-4a76-88f7-985bc646a919",
+          "name": "Get Service Provider Config",
+          "request": {
+            "name": "Get Service Provider Config",
+            "description": {
+              "content": "Get the service provider configuration.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "ServiceProviderConfig"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "02551be2-20b9-4b2b-97f4-49cc8b2e66ba",
+              "name": "OK. Returns a ServiceProviderConfig.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "ServiceProviderConfig"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"schemas\": [\n    \"urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig\"\n  ],\n  \"documentationUri\": \"https://lucidco.zendesk.com/hc/articles/360049427352-SCIM-Overview\",\n  \"patch\": {\n    \"supported\": true\n  },\n  \"bulk\": {\n    \"supported\": false\n  },\n  \"filter\": {\n    \"supported\": true,\n    \"maxResults\": 100\n  },\n  \"changePassword\": {\n    \"supported\": false\n  },\n  \"sort\": {\n    \"supported\": false\n  },\n  \"etag\": {\n    \"supported\": true\n  },\n  \"authenticationSchemes\": [\n    {\n      \"name\": \"OAuth Bearer Token\",\n      \"description\": \"Authentication scheme using the OAuth Bearer Token Standard\",\n      \"specUri\": \"http://www.rfc-editor.org/info/rfc6750\",\n      \"documentationUri\": \"https://developer.lucid.co/reference/overview-scim#bearer-token-authorization\",\n      \"type\": \"oauthbearertoken\",\n      \"primary\": true\n    },\n    {\n      \"name\": \"OAuth Bearer Token\",\n      \"description\": \"Authentication scheme using the OAuth Bearer Token Standard\",\n      \"specUri\": \"http://www.rfc-editor.org/info/rfc6750\",\n      \"documentationUri\": \"https://developer.lucid.co/reference/overview-scim#bearer-token-authorization\",\n      \"type\": \"oauthbearertoken\",\n      \"primary\": true\n    }\n  ],\n  \"meta\": {}\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "9b8f61c3-9505-4a55-b0de-d9f6bf8a5fc8",
+              "name": "Unauthorized. Occurs if the bearer token is invalid.",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "ServiceProviderConfig"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://users.lucid.app/scim/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "dee42280-f473-4ab8-a84d-5943da8d486f",
+    "name": "Lucid SCIM API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "The Lucid SCIM 2.0 API enables identity providers to automatically provision and deprovision users and groups in a Lucid account. Supports standard SCIM operations for user lifecycle management.\n\nContact Support:\n Name: Lucid Developer Platform",
+      "type": "text/plain"
+    }
+  }
+}

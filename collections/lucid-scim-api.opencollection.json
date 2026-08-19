@@ -1,0 +1,391 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lucid SCIM API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Users",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get User",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://users.lucid.app/scim/v2/Users/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "lucid-1234",
+                "type": "path",
+                "description": "ID of the Lucid user."
+              },
+              {
+                "name": "attributes",
+                "value": "userName,emails,active",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to include in the response. The attribute id is always returned. Cannot be used with excludedAttributes.\n"
+              },
+              {
+                "name": "excludedAttributes",
+                "value": "groups,roles",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Cannot be used with attributes.\n"
+              }
+            ]
+          },
+          "docs": "Get a specific user on the account."
+        },
+        {
+          "info": {
+            "name": "Modify User",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://users.lucid.app/scim/v2/Users/:id",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modify an existing user. To deactivate a user, set the `active` field to `false`.\n"
+        },
+        {
+          "info": {
+            "name": "Modify User",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://users.lucid.app/scim/v2/Users/:id",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modify an existing user. To deactivate a user, set the `active` field to `false`.\n"
+        },
+        {
+          "info": {
+            "name": "Delete User",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://users.lucid.app/scim/v2/Users/:id"
+          },
+          "docs": "> ❗️ This is a hard delete. We recommend deactivating users instead of deleting them. To deactivate a user, use PUT or PATCH and set the active field to false.\n\nDelete a user from the account. Note that certain users cannot be deleted, such as account owners and default document owners.\n"
+        },
+        {
+          "info": {
+            "name": "Get All Users",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://users.lucid.app/scim/v2/Users",
+            "params": [
+              {
+                "name": "startIndex",
+                "value": "1",
+                "type": "query",
+                "description": "Index of the first user in the list to return (1 indexed)."
+              },
+              {
+                "name": "count",
+                "value": "100",
+                "type": "query",
+                "description": "Quantity of users to return from this request."
+              },
+              {
+                "name": "filter",
+                "value": "email eq someEmail@example.com",
+                "type": "query",
+                "description": "See SCIM spec and optimization details below:\n* The only operator currently supported is eq\n* Filtered requests will result in a maximum of 10,000 users\n* While filtering should technically work on every attribute of a user, it is a very slow process for non-optimized attributes. We strongly recommend filtering only on the following optimized attributes whenever possible:\n  * email / emails.value / workemail\n  * username / displayname\n  * externalid\n  * urn:ietf:params:scim:schemas:extension:lucid:1.0:User.productLicenses.<name>\n"
+              },
+              {
+                "name": "attributes",
+                "value": "userName,emails,active",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to include in the response. The attribute id is always returned. Cannot be used with excludedAttributes.\n"
+              },
+              {
+                "name": "excludedAttributes",
+                "value": "groups,roles",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Cannot be used with attributes.\n"
+              }
+            ]
+          },
+          "docs": "Gets all users on an account."
+        },
+        {
+          "info": {
+            "name": "Create User",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://users.lucid.app/scim/v2/Users",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new user."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Groups",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Group or Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://users.lucid.app/scim/v2/Groups/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "lucid-group-1234",
+                "type": "path",
+                "description": "ID of the Lucid group."
+              },
+              {
+                "name": "attributes",
+                "value": "displayName,members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+              },
+              {
+                "name": "excludedAttributes",
+                "value": "members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+              }
+            ]
+          },
+          "docs": "Get a specific org group or team on the account."
+        },
+        {
+          "info": {
+            "name": "Modify Group or Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://users.lucid.app/scim/v2/Groups/:id",
+            "params": [
+              {
+                "name": "attributes",
+                "value": "displayName,members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+              },
+              {
+                "name": "excludedAttributes",
+                "value": "members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modify an existing org group or team."
+        },
+        {
+          "info": {
+            "name": "Modify Group or Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://users.lucid.app/scim/v2/Groups/:id",
+            "params": [
+              {
+                "name": "attributes",
+                "value": "displayName,members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+              },
+              {
+                "name": "excludedAttributes",
+                "value": "members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Modify an existing org group or team."
+        },
+        {
+          "info": {
+            "name": "Delete Group or Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://users.lucid.app/scim/v2/Groups/:id"
+          },
+          "docs": "Delete an existing org group or archive an existing team."
+        },
+        {
+          "info": {
+            "name": "Get All Groups or Teams",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://users.lucid.app/scim/v2/Groups",
+            "params": [
+              {
+                "name": "filter",
+                "value": "displayName eq \"Engineering\"",
+                "type": "query",
+                "description": "Filter groups/teams using SCIM filter syntax. Only single filter queries are supported. Currently supports filtering by displayName (case-sensitive exact match)."
+              },
+              {
+                "name": "count",
+                "value": "50",
+                "type": "query",
+                "description": "Maximum number of groups/teams to return per page for pagination. Negative values are interpreted as 0."
+              },
+              {
+                "name": "startIndex",
+                "value": "1",
+                "type": "query",
+                "description": "The 1-based index of the first result to return for pagination. Values less than 1 are interpreted as 1."
+              },
+              {
+                "name": "attributes",
+                "value": "displayName,members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+              },
+              {
+                "name": "excludedAttributes",
+                "value": "members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+              }
+            ]
+          },
+          "docs": "Gets all org groups or teams on an account. Supports pagination and filtering.\n"
+        },
+        {
+          "info": {
+            "name": "Create Group or Team",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://users.lucid.app/scim/v2/Groups",
+            "params": [
+              {
+                "name": "attributes",
+                "value": "displayName,members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to return in the response. The attribute id is always returned. Available attributes are schemas, displayName, members, and meta. Cannot be used with excludedAttributes."
+              },
+              {
+                "name": "excludedAttributes",
+                "value": "members",
+                "type": "query",
+                "description": "Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Can exclude schemas, displayName, members, or meta. Cannot be used with attributes."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Create a new org group or team, or restore a matching archived, closed team."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Schemas",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Schema",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://users.lucid.app/scim/v2/Schemas/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "/v2/Schemas/urn:ietf:params:scim:schemas:core:2.0:Group",
+                "type": "path",
+                "description": "ID of the Lucid resource schema to get."
+              }
+            ]
+          },
+          "docs": "Get a specific Lucid resource schema."
+        },
+        {
+          "info": {
+            "name": "Get All Schemas",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://users.lucid.app/scim/v2/Schemas"
+          },
+          "docs": "Gets all Lucid resource schemas."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Service Provider Config",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Service Provider Config",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://users.lucid.app/scim/v2/ServiceProviderConfig"
+          },
+          "docs": "Get the service provider configuration."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

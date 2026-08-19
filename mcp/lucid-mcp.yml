@@ -2,12 +2,9 @@ generated: '2026-08-01'
 method: searched
 status: published
 source: https://developer.lucid.co/docs/mcp
-notes: >-
-  Lucid publishes TWO distinct remote MCP servers. The product server (mcp.lucid.app) is
-  OAuth-gated and its tools/list could not be enumerated anonymously; the developer-documentation
-  server (lucid-developer-docs.readme.io) is anonymous and its real tool set — including
-  inputSchema per tool — was captured verbatim to lucid-docs-mcp-tools.json.
-
+notes: Lucid publishes TWO distinct remote MCP servers. The product server (mcp.lucid.app) is OAuth-gated
+  and its tools/list could not be enumerated anonymously; the developer-documentation server (lucid-developer-docs.readme.io)
+  is anonymous and its real tool set — including inputSchema per tool — was captured verbatim to lucid-docs-mcp-tools.json.
 servers:
 - name: lucid
   label: Lucid MCP Server
@@ -25,7 +22,8 @@ servers:
     token_endpoint: https://mcp.lucid.app/oauth/token
     revocation_endpoint: https://mcp.lucid.app/oauth/revoke
     dynamic_client_registration: https://mcp.lucid.app/oauth/register
-    pkce: [S256]
+    pkce:
+    - S256
     client_id_metadata_document_supported: true
     scopes_supported: []
   tools_list:
@@ -33,18 +31,16 @@ servers:
     http_status: 401
     body: '{"error": "unauthorized", "error_description": "Invalid or expired access token"}'
     result: gated
-    note: >-
-      tools/list requires an authenticated OAuth token, so the live tool schemas were not
-      captured. Lucid's own description of the surface (blog + docs): search, retrieve, edit,
-      summarize and create Lucid documents from an AI client. Do not treat that prose as a
-      tool manifest — the authoritative schemas require authenticated introspection.
+    note: 'tools/list requires an authenticated OAuth token, so the live tool schemas were not captured.
+      Lucid''s own description of the surface (blog + docs): search, retrieve, edit, summarize and create
+      Lucid documents from an AI client. Do not treat that prose as a tool manifest — the authoritative
+      schemas require authenticated introspection.'
   clients:
   - ChatGPT (connector)
   - Claude (connector)
   - Microsoft Copilot
   - Cursor
   - Microsoft Power Platform connector (learn.microsoft.com/connectors/lucidmcpserver)
-
 - name: lucid-developer-docs
   label: Lucid Developer Documentation MCP Server
   transport: streamable-http
@@ -64,14 +60,22 @@ servers:
     description: Lists all available OpenAPI specs. Use the title to select a spec.
     input: {}
   - name: list-endpoints
-    description: Lists all API paths and their HTTP methods with summaries, organized by path. Results can be passed directly into 'get-endpoint'.
-    input: {title: string (required)}
+    description: Lists all API paths and their HTTP methods with summaries, organized by path. Results
+      can be passed directly into 'get-endpoint'.
+    input:
+      title: string (required)
   - name: get-endpoint
-    description: Gets detailed information about a specific API endpoint, including security schemes and servers.
-    input: {path: string (required), method: string (required), title: string (required)}
+    description: Gets detailed information about a specific API endpoint, including security schemes and
+      servers.
+    input:
+      path: string (required)
+      method: string (required)
+      title: string (required)
   - name: search-endpoints
-    description: Performs a deep search through paths, operations, and parameters to discover relevant API endpoints.
-    input: {pattern: string (required)}
+    description: Performs a deep search through paths, operations, and parameters to discover relevant
+      API endpoints.
+    input:
+      pattern: string (required)
   - name: extension-sdk
     description: Modify an existing Lucid editor extension or use the lucid-extension-sdk.
     input: {}
@@ -82,13 +86,28 @@ servers:
   - Lucid Rest API
   - Lucid Data API
   - Lucid SCIM API
-  provenance_note: >-
-    This server is what produced openapi/lucid-rest-api-openapi.yml,
-    openapi/lucid-data-api-openapi.yml and openapi/lucid-scim-api-openapi.yml — each operation
-    was read back verbatim from Lucid's uploaded specs via get-endpoint.
-
+  provenance_note: This server is what produced openapi/lucid-rest-api-openapi.yml, openapi/lucid-data-api-openapi.yml
+    and openapi/lucid-scim-api-openapi.yml — each operation was read back verbatim from Lucid's uploaded
+    specs via get-endpoint.
 x-evidence:
-- {fetched: '2026-08-01', url: 'https://mcp.lucid.app/mcp', method: 'POST tools/list', http_status: 401}
-- {fetched: '2026-08-01', url: 'https://mcp.lucid.app/.well-known/oauth-protected-resource', http_status: 200}
-- {fetched: '2026-08-01', url: 'https://mcp.lucid.app/.well-known/oauth-authorization-server', http_status: 200}
-- {fetched: '2026-08-01', url: 'https://lucid-developer-docs.readme.io/mcp', method: 'POST tools/list', http_status: 200}
+- fetched: '2026-08-01'
+  url: https://mcp.lucid.app/mcp
+  method: POST tools/list
+  http_status: 401
+- fetched: '2026-08-01'
+  url: https://mcp.lucid.app/.well-known/oauth-protected-resource
+  http_status: 200
+- fetched: '2026-08-01'
+  url: https://mcp.lucid.app/.well-known/oauth-authorization-server
+  http_status: 200
+- fetched: '2026-08-01'
+  url: https://lucid-developer-docs.readme.io/mcp
+  method: POST tools/list
+  http_status: 200
+deployment:
+  mode: remote
+  endpoint: https://mcp.lucid.app/mcp
+  verified: probed
+  probe: gated
+  checked: '2026-08-12'
+  source: catalog MCP census

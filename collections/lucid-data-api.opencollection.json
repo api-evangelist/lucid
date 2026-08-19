@@ -1,0 +1,1672 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lucid Data API",
+    "version": "1.0"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Rate Limits",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Rate Limits",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/rateLimits",
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "See what your current rate limits are.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Data Set",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get All Data Sets",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/dataSets",
+            "params": [
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Starting 1-based index of data sets to retreive. Defaults to 1."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "Ending index of data sets to retreive. Defaults to 100."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns all data sets that the user has access to. The results will be paginated. If the number of data sets exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns data sets in the range from start to start + pagin"
+        },
+        {
+          "info": {
+            "name": "Create Data Set",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://data.lucid.app/dataSets",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Creates a new data set and a corresponding new data set grant for the user. Note that a data set cannot be created with data sources already inside it, so data sources must be added to a data set through either the Create Data Source endpoint or the Update Data Source endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Get Total Data Sets Count",
+            "type": "http"
+          },
+          "http": {
+            "method": "HEAD",
+            "url": "https://data.lucid.app/dataSets",
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns the number of data sets a user has access to. The return value is in the response headers as `Lucid-DataSets-Total`\n"
+        },
+        {
+          "info": {
+            "name": "Get Data Set",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/dataSets/:dataSetId",
+            "params": [
+              {
+                "name": "dataSetId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data set to return"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Gets a specific existing data set from Lucid.\n"
+        },
+        {
+          "info": {
+            "name": "Update Data Set Name",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/dataSets/:dataSetId",
+            "params": [
+              {
+                "name": "dataSetId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data set to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint takes the payload specified below and updates the data set name. Updates will only occur if the user has access to the data set. Note that the other fields in a dataset cannot be updated through this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Data Set",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/dataSets/:dataSetId",
+            "params": [
+              {
+                "name": "dataSetId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data set to delete"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This removes the specified data set and its associated properties. Once deleted, none of the information can be recovered. The data sources in the set will be removed from the data set but otherwise they will not be deleted or altered.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Data Set Grant",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Data Set Grant",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/dataSetGrants/:dataSetId",
+            "params": [
+              {
+                "name": "dataSetId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data set to return grant for"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Gets the requested data set grant if the access tokens are valid and the user has access to the data set. Note that the id in the URI is the number at the end of the data set grant's uri, not the identifier field of the object.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Data Set Grant",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/dataSetGrants/:dataSetId",
+            "params": [
+              {
+                "name": "dataSetId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data set grant to delete"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Removes the specified data set grant ONLY if it's not the last data set grant. There must always be at least one data set grant for a given data set, therefore the last data set grant cannot be deleted. A response message is returned with the result of the deletion. Note that the id in the URI is the number at the end of the data set grant's URI, not the identifier field of the Data Set Grant.\n"
+        },
+        {
+          "info": {
+            "name": "Get All Data Set Grants",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/dataSetGrants",
+            "params": [
+              {
+                "name": "dataSet",
+                "value": "",
+                "type": "query",
+                "description": "Data set to get grants for"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Finds and returns all data set grants for the queried data set if the user has access to the data set.\n"
+        },
+        {
+          "info": {
+            "name": "Create Data Set Grant",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://data.lucid.app/dataSetGrants",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Creates a new data set grant for the specified data set. The requesting user must have access to the data set in order for it to succeed.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Data Set Properties",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Data Set Properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/dataSets/:dataSetId/properties",
+            "params": [
+              {
+                "name": "dataSetId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data set to return properties for"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Gets all properties for the specified data set if the user has access to the data set.\n"
+        },
+        {
+          "info": {
+            "name": "Update Data Set Properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/dataSets/:dataSetId/properties",
+            "params": [
+              {
+                "name": "dataSetId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data set to update properties for"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Allows a user to update the properties on a data set. This endpoint uses the supplied values to either update existing properties or add new properties.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Data Set Properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/dataSets/:dataSetId/properties",
+            "params": [
+              {
+                "name": "dataSetId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data set to delete properties for"
+              },
+              {
+                "name": "properties",
+                "value": "",
+                "type": "query",
+                "description": "List of properties to remove from specified data set"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Removes only the properties provided in the query parameter. The deleted properties cannot be undone. The deletion will only occur if the user has access to the data set.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Data Source",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get All Data Sources",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/dataSources",
+            "params": [
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Starting 1-based index of data sources to retreive. Defaults to 1."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "Ending index of data sources to retreive. Defaults to 100."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns all data sources that the user has access to. The results will be paginated. If the number of data sources exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns data sources in the range from start to star"
+        },
+        {
+          "info": {
+            "name": "Create Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://data.lucid.app/dataSources",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Creates a new data source and a corresponding new data source grant for the user.\n"
+        },
+        {
+          "info": {
+            "name": "Get Total Data Sources Count",
+            "type": "http"
+          },
+          "http": {
+            "method": "HEAD",
+            "url": "https://data.lucid.app/dataSources",
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns the number of data sources a user has access to. The return value is in the response headers as `Lucid-DataSources-Total`\n"
+        },
+        {
+          "info": {
+            "name": "Get Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/dataSources/:dataSourceId",
+            "params": [
+              {
+                "name": "dataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data source to return"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Gets a specific existing data source from Lucid. If the creator of the data source is the user making the request, the link parameters will be returned with the data source.\n"
+        },
+        {
+          "info": {
+            "name": "Update Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/dataSources/:dataSourceId",
+            "params": [
+              {
+                "name": "dataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data source to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint takes a JSON object and uses it to update the data source's name and/or adapter type. The JSON object of the updated data source is returned. Updates will only occur if the user has access to the data source.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Data Source",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/dataSources/:dataSourceId",
+            "params": [
+              {
+                "name": "dataSourceId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data source to delete"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This removes the specified data source and anything related to it (collections, schema, items, link parameters). Once deleted, none of the information can be recovered.\n"
+        },
+        {
+          "info": {
+            "name": "Create Data Source from CSV",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://data.lucid.app/adapter/csv",
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "If able to successfully parse the attached file as a CSV file, a new data source with be created (with the same name as the attached file) that includes a single collection. The single collection in the newly created data source will contain the data from the CSV file. Each row will be an item, and each column will be labelled A, B, C, …, AA, AB, AC, .. in the order in which they were in the original file. There will be a single metadata collection created which represents the mapping between th"
+        },
+        {
+          "info": {
+            "name": "Update Data Source from CSV",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://data.lucid.app/adapter/csv",
+            "params": [
+              {
+                "name": "dataSource",
+                "value": "",
+                "type": "query",
+                "description": "URI of Data source to update"
+              },
+              {
+                "name": "collection",
+                "value": "",
+                "type": "query",
+                "description": "URI of Collection to update"
+              }
+            ],
+            "body": {
+              "type": "multipart-form",
+              "data": [
+                {
+                  "name": "file",
+                  "type": "text",
+                  "value": ""
+                }
+              ]
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "If able to successfully parse the attached file as a CSV file, the endpoint will overwrite the contents of the single collection with the new data. The collection reference is left unchanged, but will have new items.\n\nA specific collection in a data source can be replaced by including both the data source and collection query parameters. In this case, the items in that single collection will be overwritten with the values from the CSV. The target collection's id will remain the same, i.e., the o"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Collection",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get All Collections",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/collections",
+            "params": [
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Starting 1-based index of collections to retreive. Defaults to 1."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "Ending index of collections to retreive. Defaults to 1000."
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns all collections that the user has access to. The results will be paginated. If the number of collections exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns collections in the range from start to start +"
+        },
+        {
+          "info": {
+            "name": "Create Collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://data.lucid.app/collections",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Creates a new collection for the specified data source. Only succeeds if the user has access to the data source.\n"
+        },
+        {
+          "info": {
+            "name": "Get Total Collections Count",
+            "type": "http"
+          },
+          "http": {
+            "method": "HEAD",
+            "url": "https://data.lucid.app/collections",
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns the number of collections a user has access to. The return value is in the response headers as Lucid-Collections-Total.\n"
+        },
+        {
+          "info": {
+            "name": "Get Collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/collections/:collectionId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to return"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Gets a specific existing collection from Lucid.\n"
+        },
+        {
+          "info": {
+            "name": "Update Collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/collections/:collectionId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint takes a JSON object and uses it to update the collection's name and/or data source. The JSON object of the updated collection is returned. Updates will only occur if the user has access to the data source. Only top level collections can be updated. Metadata collections cannot be updated.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/collections/:collectionId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to delete"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This removes the collection and anything that belongs to it (metadata collections, schema, and items). Data sources will not be removed. This action cannot be undone and will only occur if the user has access to the data source.\n"
+        },
+        {
+          "info": {
+            "name": "Get All Metadata Collections",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/collections/:collectionId/metadata",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to return metadata collections for"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns a list of Collections for any metadata collections that exist on the requested collection. The return will only occur if the user has access to the data source. Each metadata collection will have a link to its parent collection in the parent field.\n"
+        },
+        {
+          "info": {
+            "name": "Create Metadata Collection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://data.lucid.app/collections/:collectionId/metadata",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to add metadata collection to"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Create a new metadata collection for a given collection. The user must have access to the data source in order to create a metadata collection. Metadata collections cannot be updated.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Collection Properties",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Collection Properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/collections/:collectionId/properties",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to return properties for"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Gets all properties for the specified collection if the user has access to the data source.\n"
+        },
+        {
+          "info": {
+            "name": "Update Collection Properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/collections/:collectionId/properties",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to update properties for"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Allows a user to update the properties on a collection. This endpoint uses the supplied values to either update existing properties or add new properties.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Collection Properties",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/collections/:collectionId/properties",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to delete properties from"
+              },
+              {
+                "name": "properties",
+                "value": "",
+                "type": "query",
+                "description": "List of property names to remove from specified collection"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Removes only the properties provided in the query parameter. The deleted properties cannot be undone. The deletion will only occur if the user has access to the collection.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Schema",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get Field Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/collections/:collectionId/schema/:fieldDefinitionId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to get field definition for"
+              },
+              {
+                "name": "fieldDefinitionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of field definition to get"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Gets a specific existing field definition for a given collection\n"
+        },
+        {
+          "info": {
+            "name": "Update Field Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/collections/:collectionId/schema/:fieldDefinitionId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to update field definition for"
+              },
+              {
+                "name": "fieldDefinitionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of field definition to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint takes a Field Definition, which is used to update the specified field definition. The easiest way to accomplish this is to modify the values in the response from the GET field definition endpoint and send a PATCH request.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Field Definition",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/collections/:collectionId/schema/:fieldDefinitionId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to delete field definition from"
+              },
+              {
+                "name": "fieldDefinitionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of field definition to delete"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This removes the field definition from the collection's schema. This results of this action cannot be undone. The delete will only occur if the user has access to the data source. This action will also remove all data item values associated with the deleted field.\n"
+        },
+        {
+          "info": {
+            "name": "Get All Field Definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/collections/:collectionId/schema",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to get field definitions for"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns all field definitions for a given collection if the user has access.\n"
+        },
+        {
+          "info": {
+            "name": "Update Field Definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/collections/:collectionId/schema",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to update field definitions for"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint allows updating multiple field definitions at once. The easiest way to accomplish this is to modify the values in the response from the get all field definitions endpoint and send a PATCH request. Changing the values will update existing field definitions within the collection's schema. Any fields sent without a uri field will result in an addition to the schema if the name field is unique within the schema. Fields cannot be deleted with this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Field Definitions",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/collections/:collectionId/schema",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to delete field definitions from"
+              },
+              {
+                "name": "fields",
+                "value": "",
+                "type": "query",
+                "description": "List of field definition URI's to remove from specified collection"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint removes only the field definitions provided in the query parameter. The fields in the query parameter must belong to the collection specified. The results of this deletion cannot be undone. The deletion will only occur if the user has access to the data source.\nNOTE: If the entire schema is removed then all of the values of each data item are also removed.\n"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Data Item",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get All Data Items",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/collections/:collectionId/items",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to get data items from"
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Starting 1-based index of the data items to return. Defaults to 1."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "Ending 1-based index of the data items to return. Defaults to 10000."
+              },
+              {
+                "name": "filter",
+                "value": "",
+                "type": "query",
+                "description": "URL encoded filter string. Example unencoded is `filter=age > 16`"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns all data items within a collection that the user has access to. The results will be paginated. If the number of data items exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns collections in the range fro"
+        },
+        {
+          "info": {
+            "name": "Create Data Items",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://data.lucid.app/collections/:collectionId/items",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to create data items for"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "If the user has access to the collection, new data items are created using the supplied values. Primary key constraints are not enforced. Any field name that is not part of the schema definition is ignored by default. The schema should be created prior to any data items being created.\n"
+        },
+        {
+          "info": {
+            "name": "Update Data Items",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/collections/:collectionId/items",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to update data items for"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint allows updating multiple data items at once. The easiest way to accomplish is to modify the values in the response from Get All Data Items and send a PATCH request. Changing the values will update existing data item values. The collection field is ignored as the data item cannot be moved to a different collection. It the new value is null, it means the value is deleted. If the provided field name does not exist in the collection schema, that value is ignored.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Data Items",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/collections/:collectionId/items",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to delete data items from"
+              },
+              {
+                "name": "items",
+                "value": "",
+                "type": "query",
+                "description": "List of data item URI's to remove from specified collection"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Removes only the data items provided in the query parameter. The data items in the query parameter must belong to the collection specified. The deletion cannot be undone. The deletion will only occur if the user has access to the data source.\n"
+        },
+        {
+          "info": {
+            "name": "Get Total Data Items Count",
+            "type": "http"
+          },
+          "http": {
+            "method": "HEAD",
+            "url": "https://data.lucid.app/collections/:collectionId/items",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to get total data items count for"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "This endpoint returns the number of data items a user has access to. The return value is in the response headers as Lucid-Items-Total\n"
+        },
+        {
+          "info": {
+            "name": "Get Data Item",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://data.lucid.app/collections/:collectionId/items/:dataItemId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to get data item from"
+              },
+              {
+                "name": "dataItemId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data item to get"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Gets a specific existing data item from a given collection\n"
+        },
+        {
+          "info": {
+            "name": "Get Data Items By Key",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://data.lucid.app/collections/:collectionId/items/:dataItemId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to get data items from"
+              },
+              {
+                "name": "dataItemId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data item to get"
+              },
+              {
+                "name": "start",
+                "value": "",
+                "type": "query",
+                "description": "Starting 1-based index of the data items to return. Defaults to 1."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "Ending 1-based index of the data items to return. Defaults to 10000."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Returns all data items in the specified collection whose field values match the values specified in a Data Item By Key Find JSON Object. If necessary, you can paginate this endpoint's results using query parameters.\nNote: For more complex data item search queries, consider using the filter parameter with Get All Data Items.\n"
+        },
+        {
+          "info": {
+            "name": "Update Data Item",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/collections/:collectionId/items/:dataItemId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to update data item for"
+              },
+              {
+                "name": "dataItemId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data item to update"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Update values for the specified item. The easiest way to accomplish is to modify the values in the response from Get Data Item and send a PATCH request. Changing the values will update existing data item values. The collection field is ignored as the data item cannot be moved to a different collection. It the new value is null, it means the value is deleted. If the provided field name does not exist in the collection schema, that value is ignored.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Data Item",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/collections/:collectionId/items/:dataItemId",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to delete data item from"
+              },
+              {
+                "name": "dataItemId",
+                "value": "",
+                "type": "path",
+                "description": "ID of data item to delete"
+              }
+            ],
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Removes the specified data item from the collection. This deletion cannot be undone. The deletion will only occur if the user has access to the data source.\n"
+        },
+        {
+          "info": {
+            "name": "Update Data Items By Key",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "https://data.lucid.app/collections/:collectionId/itemsByKey",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to update data items for"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Find any data items whose fields match specified values and update those items using a patch. If the value of a field in a patch is null, that value will be deleted from the item. If the provided field name does not exist in the collection schema, that value is ignored. Attempts to update the Collection field will be ignored as a data item cannot be moved to a different collection.\n"
+        },
+        {
+          "info": {
+            "name": "Delete Data Items By Key",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://data.lucid.app/collections/:collectionId/itemsByKey",
+            "params": [
+              {
+                "name": "collectionId",
+                "value": "",
+                "type": "path",
+                "description": "ID of collection to delete data items from"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "oauth2",
+              "flow": "authorization_code",
+              "authorizationUrl": "https://lucid.app/oauth2/authorize",
+              "accessTokenUrl": "https://api.lucid.co/oauth2/token",
+              "credentials": {
+                "clientId": "{{clientId}}",
+                "clientSecret": "{{clientSecret}}"
+              }
+            }
+          },
+          "docs": "Finds all the items whose key values match those specified by the payload and deletes them. The deletion cannot be undone. The deletion will only occur if the user has access to the data source.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
