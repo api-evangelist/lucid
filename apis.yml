@@ -15,7 +15,7 @@ description: >-
   edit and create Lucid documents. Lucid is privately held and trades on secondary markets.
 x-type: company
 x-source: harvest:secondary-market
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/lucidchart.png
 created: '2026-08-01'
 modified: '2026-08-01'
