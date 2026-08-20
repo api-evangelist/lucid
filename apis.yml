@@ -24,6 +24,17 @@ tags:
 - Diagramming
 - Whiteboarding
 - Productivity
+- Software-as-a-Service
+- Cloud Visualization
+- SCIM
+- Identity
+- Data
+- MCP
+tags_raw:
+- Visual Collaboration
+- Diagramming
+- Whiteboarding
+- Productivity
 - SaaS
 - Cloud Visualization
 - SCIM
@@ -51,6 +62,14 @@ apis:
   - Documents
   - Folders
   - Sharing
+  - User
+  - Team
+  - Audit Logs
+  - Cloud
+  tags_raw:
+  - Documents
+  - Folders
+  - Sharing
   - Users
   - Teams
   - Audit Logs
@@ -75,6 +94,11 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://data.lucid.app
   tags:
+  - Data
+  - Collection
+  - Schemas
+  - Datasets
+  tags_raw:
   - Data
   - Collections
   - Schemas
@@ -117,6 +141,10 @@ apis:
   tags:
   - MCP
   - Agents
+  - Artificial Intelligence
+  tags_raw:
+  - MCP
+  - Agents
   - AI
   properties:
   - type: MCPServer
@@ -134,6 +162,10 @@ apis:
   humanURL: https://lucid.app/.well-known/ai-plugin.json
   baseURL: https://mlai.lucid.app
   tags:
+  - Artificial Intelligence
+  - Mermaid
+  - Diagramming
+  tags_raw:
   - AI
   - Mermaid
   - Diagramming
