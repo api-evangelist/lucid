@@ -47,95 +47,13 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 apis:
-- aid: lucid:lucid-rest-api
-  name: Lucid REST API
-  description: >-
-    The Lucid REST API provides programmatic access to manage documents, users, folders, sharing,
-    licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale).
-    154 operations across 125 paths, covering document create/import/copy/search/export, folder
-    trees, user and team collaborators, share links, embeds and the document picker, comments,
-    repositories, legal holds, subscriptions and licenses, audit logs, and the Lucidscale cloud
-    surfaces for AWS, Azure and Google Cloud. Authenticate via OAuth 2.0 or API key.
-  humanURL: https://developer.lucid.co/reference/api
-  baseURL: https://api.lucid.co
-  tags:
-  - Documents
-  - Folders
-  - Sharing
-  - User
-  - Team
-  - Audit Logs
-  - Cloud
-  tags_raw:
-  - Documents
-  - Folders
-  - Sharing
-  - Users
-  - Teams
-  - Audit Logs
-  - Cloud
-  properties:
-  - type: OpenAPI
-    url: openapi/lucid-rest-api-openapi.yml
-  - type: Documentation
-    url: https://developer.lucid.co/docs/welcome
-  - type: APIReference
-    url: https://developer.lucid.co/reference/api
-  - type: Overlay
-    url: overlays/lucid-rest-api-overlay.yaml
-- aid: lucid:lucid-data-api
-  name: Lucid Data API
-  description: >-
-    The Lucid Data API enables external applications to create, read, update, and delete
-    structured data linked to Lucid documents. 50 operations across data sets, data set grants
-    and properties, data sources (including a CSV adapter), collections, field-definition
-    schemas, and data items addressed by id or by key. Authenticate via OAuth 2.0 with the
-    data-service.admin scope.
-  humanURL: https://developer.lucid.co/reference/api
-  baseURL: https://data.lucid.app
-  tags:
-  - Data
-  - Collection
-  - Schemas
-  - Datasets
-  tags_raw:
-  - Data
-  - Collections
-  - Schemas
-  - Data Sets
-  properties:
-  - type: OpenAPI
-    url: openapi/lucid-data-api-openapi.yml
-  - type: APIReference
-    url: https://developer.lucid.co/reference/api
-  - type: Overlay
-    url: overlays/lucid-data-api-overlay.yaml
-- aid: lucid:lucid-scim-api
-  name: Lucid SCIM API
-  description: >-
-    The Lucid SCIM 2.0 API enables identity providers to automatically provision and deprovision
-    users and groups in a Lucid account. 15 operations over /Users, /Groups, /Schemas and
-    /ServiceProviderConfig, available to Enterprise accounts with bearer-token auth.
-  humanURL: https://developer.lucid.co/reference/overview-scim
-  baseURL: https://users.lucid.app/scim/v2
-  tags:
-  - SCIM
-  - Identity
-  - Provisioning
-  properties:
-  - type: OpenAPI
-    url: openapi/lucid-scim-api-openapi.yml
-  - type: APIReference
-    url: https://developer.lucid.co/reference/overview-scim
-  - type: Overlay
-    url: overlays/lucid-scim-api-overlay.yaml
 - aid: lucid:lucid-mcp-server
   name: Lucid MCP Server
   description: >-
-    Lucid's remote Model Context Protocol server. Connects AI clients (ChatGPT, Claude, Microsoft
-    Copilot, Cursor) to Lucid documents so they can be searched, retrieved, edited, summarized
-    and created in natural language. OAuth 2.0 protected, with RFC 9728 protected-resource
-    metadata, RFC 8414 authorization-server metadata and RFC 7591 dynamic client registration.
+    Lucid's remote Model Context Protocol server. Connects AI clients (ChatGPT, Claude, Microsoft Copilot,
+    Cursor) to Lucid documents so they can be searched, retrieved, edited, summarized and created in natural
+    language. OAuth 2.0 protected, with RFC 9728 protected-resource metadata, RFC 8414 authorization-server
+    metadata and RFC 7591 dynamic client registration.
   humanURL: https://developer.lucid.co/docs/mcp
   baseURL: https://mcp.lucid.app/mcp
   tags:
@@ -153,26 +71,634 @@ apis:
     url: mcp/lucid-tool-crosswalk.yml
   - type: Documentation
     url: https://developer.lucid.co/docs/mcp
-- aid: lucid:lucid-chatgpt-plugin-api
-  name: Lucid ChatGPT Plugin API
-  description: >-
-    The API behind Lucid's ChatGPT plugin — accepts Mermaid diagram source and returns a rendered
-    image link plus, for flowcharts, an editable Lucidchart link. Described by the OpenAPI that
-    Lucid's /.well-known/ai-plugin.json manifest points at.
-  humanURL: https://lucid.app/.well-known/ai-plugin.json
-  baseURL: https://mlai.lucid.app
+- aid: lucid:lucid-accounts-api
+  name: Lucid Accounts API
+  description: Retrieve information about the authenticated Lucid account.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
   tags:
-  - Artificial Intelligence
-  - Mermaid
-  - Diagramming
-  tags_raw:
-  - AI
-  - Mermaid
-  - Diagramming
+  - Accounts
   properties:
   - type: OpenAPI
-    url: openapi/lucid-chatgpt-plugin-openapi.yaml
+    url: openapi/lucid-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-audit-logs-api
+  name: Lucid Audit Logs API
+  description: Retrieve audit log events that record user and admin activity across the Lucid account.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Audit Logs
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-audit-logs-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-cloud-api
+  name: Lucid Cloud API
+  description: >-
+    Manage cloud infrastructure credentials, data sources, and architecture diagrams for AWS, Azure, and
+    Google Cloud.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Cloud
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-cloud-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-collection-api
+  name: Lucid Collection API
+  description: >-
+    Create, retrieve, update, and delete collections within a data source. A collection is a named group
+    of data items that share a common schema (similar to a database table).
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Collection
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-collection-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-collection-properties-api
+  name: Lucid Collection Properties API
+  description: >-
+    Read and update metadata properties on a collection, such as display name and configuration.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Collection Properties
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-collection-properties-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-creatediagram-api
+  name: Lucid Create Diagram API
+  description: The CreateDiagram API from Lucid — 1 operation(s) for creatediagram.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - CreateDiagram
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-creatediagram-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-data-item-api
+  name: Lucid Data Item API
+  description: >-
+    Create, retrieve, update, and delete individual data items within a collection. A data item is a single
+    record conforming to the collection's schema.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Data Item
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-data-item-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-data-set-api
+  name: Lucid Data Set API
+  description: >-
+    Create, retrieve, update, and delete data sets. A data set is a top-level container that groups related
+    data sources and their collections.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Data Set
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-data-set-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-data-set-grant-api
+  name: Lucid Data Set Grant API
+  description: >-
+    Manage access grants on data sets to control which users or applications can read or write data.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Data Set Grant
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-data-set-grant-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-data-set-properties-api
+  name: Lucid Data Set Properties API
+  description: >-
+    Read and update metadata properties on a data set, such as display name and configuration.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Data Set Properties
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-data-set-properties-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-data-source-api
+  name: Lucid Data Source API
+  description: >-
+    Create, retrieve, update, and delete data sources within a data set. A data source represents an external
+    system whose data is synced into Lucid.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Data Source
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-data-source-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-document-access-api
+  name: Lucid Document Access API
+  description: >-
+    Create, import, copy, retrieve, update, search, export, and trash documents across the Lucid Suite,
+    and access their contents.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Document Access
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-document-access-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-document-comments-api
+  name: Lucid Document Comments API
+  description: >-
+    Retrieve comment threads on a document, list comments within a thread, and post new comments to an
+    existing thread.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Document Comments
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-document-comments-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-document-embedding-api
+  name: Lucid Document Embedding API
+  description: >-
+    Generate session tokens and render the embedded viewer iframe used to display Lucid documents in external
+    applications.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Document Embedding
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-document-embedding-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-document-picker-api
+  name: Lucid Document Picker API
+  description: >-
+    Generate tokens and render an embedded document picker that lets users select Lucid documents from
+    within your application.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Document Picker
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-document-picker-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-documents-collaboration-api
+  name: Lucid Documents Collaboration API
+  description: >-
+    Manage user and team collaborator access on individual documents, including granting, updating, and
+    revoking collaboration roles.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Documents Collaboration
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-documents-collaboration-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-documents-sharing-api
+  name: Lucid Documents Sharing API
+  description: >-
+    Create, retrieve, update, and delete share links for documents to control external access.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Documents Sharing
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-documents-sharing-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-embedding-utils-api
+  name: Lucid Embedding Utils API
+  description: Create, retrieve, delete, and change the version of embed instances on a document.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Embedding Utils
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-embedding-utils-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-folders-api
+  name: Lucid Folders API
+  description: >-
+    Create, retrieve, update, search, trash, and restore folders. Includes listing folder contents and
+    root folder navigation.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Folders
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-folders-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-folders-collaboration-api
+  name: Lucid Folders Collaboration API
+  description: >-
+    Manage user, group, and team collaborator access on folders, including granting, updating, and revoking
+    collaboration roles.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Folders Collaboration
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-folders-collaboration-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-folders-sharing-api
+  name: Lucid Folders Sharing API
+  description: Create, retrieve, update, and delete share links for folders to control external access.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Folders Sharing
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-folders-sharing-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-groups-api
+  name: Lucid Groups API
+  description: Endpoints that deal with org groups or teams (dependent on which bearer token is used).
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Groups
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-groups-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-legal-holds-api
+  name: Lucid Legal Holds API
+  description: >-
+    Create and manage legal holds on a Lucid account. Legal holds prevent documents from being permanently
+    deleted for users placed on hold.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Legal Holds
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-legal-holds-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-licenses-api
+  name: Lucid Licenses API
+  description: View and manage product licenses assigned to users within a subscription.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Licenses
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-licenses-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-oauth-2-0-tokens-api
+  name: Lucid OAuth 2.0 Tokens API
+  description: >-
+    Create, refresh, introspect, and revoke OAuth 2.0 access tokens used to authenticate API requests
+    on behalf of a user.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - OAuth 2.0 Tokens
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-oauth-2-0-tokens-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-rate-limits-api
+  name: Lucid Rate Limits API
+  description: Retrieve current rate limit thresholds and quotas for the authenticated user.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Rate Limits
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-rate-limits-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-repositories-api
+  name: Lucid Repositories API
+  description: >-
+    Create and manage shared document repositories. Control repository membership by adding and removing
+    users and groups.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Repositories
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-repositories-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-schema-api
+  name: Lucid Schema API
+  description: >-
+    Define and retrieve the schema for a collection, specifying the fields, types, and constraints for
+    its data items.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Schema
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-schema-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-schemas-api
+  name: Lucid Schemas API
+  description: Endpoints that deal with lucid resource schemas.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Schemas
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-schemas-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-service-provider-config-api
+  name: Lucid Service Provider Config API
+  description: >-
+    Retrieve the SCIM service provider configuration, describing supported operations, authentication
+    schemes, and bulk/filter capabilities.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Service Provider Config
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-service-provider-config-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-sharing-api
+  name: Lucid Sharing API
+  description: The Sharing API from Lucid — 1 operation(s) for sharing.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Sharing
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-sharing-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-subscriptions-api
+  name: Lucid Subscriptions API
+  description: List and retrieve product subscriptions on the account.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Subscriptions
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-subscriptions-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-teams-api
+  name: Lucid Teams API
+  description: >-
+    Create, retrieve, update, archive, and restore teams. Manage team membership by adding and removing
+    users.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Teams
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-teams-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-transfer-content-api
+  name: Lucid Transfer Content API
+  description: >-
+    Transfer ownership of a user's documents, folders, custom shape libraries, and Lucidscale objects
+    to another user within the same account.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Transfer Content
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-transfer-content-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-unfurling-api
+  name: Lucid Unfurling API
+  description: >-
+    Retrieve metadata for Lucid document links to power rich previews, and serve direct iframe embeds
+    for Lucid documents in external applications.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Unfurling
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-unfurling-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-users-api
+  name: Lucid Users API
+  description: >-
+    Retrieve, create, and search for users within the authenticated account. Includes user profile access.
+  humanURL: https://developer.lucid.co/reference/api
+  baseURL: https://api.lucid.co
+  tags:
+  - Users
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-users-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
 common:
+- type: Overlay
+  url: overlays/lucid-rest-api-overlay.yaml
+- type: Overlay
+  url: overlays/lucid-data-api-overlay.yaml
+- type: Overlay
+  url: overlays/lucid-scim-api-overlay.yaml
 - type: AgenticAccess
   url: agentic-access/lucid-agentic-access.yml
 - type: TrustCenter
