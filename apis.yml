@@ -89,6 +89,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - Account
+  tags_raw:
   - Accounts
   properties:
   - type: OpenAPI
@@ -210,6 +212,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - Dataset
+  tags_raw:
   - Data Set
   properties:
   - type: OpenAPI
@@ -262,6 +266,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - DataSource
+  tags_raw:
   - Data Source
   properties:
   - type: OpenAPI
@@ -453,6 +459,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - Group
+  tags_raw:
   - Groups
   properties:
   - type: OpenAPI
@@ -623,6 +631,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - Subscription
+  tags_raw:
   - Subscriptions
   properties:
   - type: OpenAPI
@@ -641,6 +651,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - Team
+  tags_raw:
   - Teams
   properties:
   - type: OpenAPI
@@ -694,6 +706,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - User
+  tags_raw:
   - Users
   properties:
   - type: OpenAPI
