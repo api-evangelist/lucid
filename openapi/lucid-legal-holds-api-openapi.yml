@@ -1,0 +1,821 @@
+openapi: 3.2.0
+info:
+  title: Lucid REST Legal Holds API
+  version: '1.0'
+  description: The Lucid REST API provides programmatic access to manage documents, users, folders, sharing, licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale). Authenticate via OAuth 2.0 or API key.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/api
+servers:
+- url: https://api.lucid.co
+tags:
+- name: Legal Holds
+  description: Create and manage legal holds on a Lucid account. Legal holds prevent documents from being permanently deleted for users placed on hold.
+paths:
+  /v1/accounts/me/legalHolds:
+    post:
+      summary: Create Legal Hold
+      description: Creates a new legal hold on an Enterprise Shield account with specified parameters including title, description, keywords, and start/end times.
+      operationId: createLegalHold
+      tags:
+      - Legal Holds
+      security:
+      - ApiKey:
+        - LegalHoldEdit
+      - OAuth2:
+        - account.legalhold
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Title:
+                  type: string
+                  description: Title that should be given to the newly created legal hold. Max length of title is 80 characters.
+                StartTime:
+                  type: string
+                  format: date-time
+                  description: Time that the legal hold should start. Must not be in the past.
+                EndTime:
+                  type: string
+                  format: date-time
+                  description: Time that the legal hold should end. End time must be greater than or equal to 24 hours after the start time.
+                Description:
+                  type: string
+                  description: Description that should be given to the newly created legal hold. Max length of description is 256 characters.
+                Keywords:
+                  type: string
+                  description: 'Keyword(s) to search against document content and titles. Note: When provided, only relevant results will be added to the legal hold. Empty strings will be treated the same as when no keywords are provided. Max length of keywords is 400 characters.'
+              required:
+              - Title
+              - StartTime
+              - EndTime
+      responses:
+        '201':
+          description: With the newly created legal hold.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalHold'
+        '400':
+          description: Incorrect format or invalid parameters.
+        '403':
+          description: Account does not have permission to access the API.
+    get:
+      summary: Get Legal Holds
+      description: Retrieves all legal holds configured for the authenticated account. The results are paginated.
+      operationId: getLegalHolds
+      tags:
+      - Legal Holds
+      security:
+      - ApiKey:
+        - LegalHoldReadonly
+      - OAuth2:
+        - account.legalhold
+        - account.legalhold:readonly
+      responses:
+        '200':
+          description: With paginated list of legal holds.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LegalHold'
+        '403':
+          description: Account does not have permission to access the API.
+  /v1/accounts/me/legalHolds/{legalHoldId}/users/add:
+    post:
+      summary: Add Legal Hold Users
+      description: Adds users to a specified legal hold. This action can only be performed for legal holds that have not yet started.
+      operationId: addLegalHoldUsers
+      tags:
+      - Legal Holds
+      security:
+      - ApiKey:
+        - LegalHoldEdit
+      - OAuth2:
+        - account.legalhold
+        - account.legalhold.users
+      parameters:
+      - $ref: '#/components/parameters/LegalHoldIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Users:
+                  type: array
+                  items:
+                    type: number
+                  description: List of user ids for users to be put on the specified legal hold. Users must belong to the admin’s account. Max number of users per request is 200.
+              required:
+              - Users
+      responses:
+        '204':
+          description: Users were correctly added to the legal hold.
+        '400':
+          description: Incorrect format or invalid parameters.
+        '403':
+          description: Account does not have permission to access the API.
+        '404':
+          description: The specified legal hold id was not found.
+  /v1/accounts/me/legalHolds/{legalHoldId}/users/remove:
+    post:
+      summary: Remove Legal Hold Users
+      description: Removes users from a specified legal hold. This action can only be performed for legal holds that have not yet started.
+      operationId: removeLegalHoldUsers
+      tags:
+      - Legal Holds
+      security:
+      - ApiKey:
+        - LegalHoldEdit
+      - OAuth2:
+        - account.legalhold
+        - account.legalhold.users
+      parameters:
+      - $ref: '#/components/parameters/LegalHoldIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Users:
+                  type: array
+                  items:
+                    type: number
+                  description: List of user ids for users to be removed from the specified legal hold. Users must belong to the admin’s account. Max number of users per request is 200.
+              required:
+              - Users
+      responses:
+        '204':
+          description: Users were correctly removed from the legal hold.
+        '400':
+          description: Incorrect format or invalid parameters.
+        '403':
+          description: Account does not have permission to access the API.
+        '404':
+          description: The specified legal hold id was not found.
+  /v1/accounts/me/legalHolds/{legalHoldId}:
+    patch:
+      summary: Edit Legal Hold
+      description: Modifies an existing legal hold, allowing changes to the title, description, and end time. If the legal hold has not yet started, the start time and keywords can also be updated.
+      operationId: editLegalHold
+      tags:
+      - Legal Holds
+      security:
+      - ApiKey:
+        - LegalHoldEdit
+      - OAuth2:
+        - account.legalhold
+      parameters:
+      - $ref: '#/components/parameters/LegalHoldIdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Title:
+                  type: string
+                  description: The new title for the legal hold (the existing one will be replaced). Max length of title is 80 characters.
+                StartTime:
+                  type: string
+                  format: date-time
+                  description: The new time that the legal hold will begin. Must be at least 24 hours before the end time and cannot be in the past. Cannot be changed if the legal hold has already started.
+                EndTime:
+                  type: string
+                  format: date-time
+                  description: The new time that the legal hold will end and documents on the legal hold will be released. Must be at least 24 hours after the start time and cannot be in the past.
+                Description:
+                  type: string
+                  description: The new description for the legal hold (the existing one will be replaced). Max length of description is 256 characters.
+                Keywords:
+                  type: string
+                  description: The new keywords for the legal hold (any existing ones will be replaced). Max length of keywords is 400 characters. Cannot be changed if the legal hold has already started.
+      responses:
+        '200':
+          description: With the legal hold that was successfully modified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalHold'
+        '400':
+          description: Incorrect format or invalid parameters.
+        '403':
+          description: Account does not have permission to access the API.
+        '404':
+          description: The specified legal hold id was not found.
+  /v1/accounts/me/legalHolds/{legalHoldId}/release:
+    post:
+      summary: Release Legal Hold
+      description: Releases a legal hold specified by the legalHoldId. Once released, it may take up to 24 hours for the documents to be fully removed from the legal hold restriction.
+      operationId: releaseLegalHold
+      tags:
+      - Legal Holds
+      security:
+      - ApiKey:
+        - LegalHoldEdit
+      - OAuth2:
+        - account.legalhold
+      parameters:
+      - $ref: '#/components/parameters/LegalHoldIdPath'
+      responses:
+        '200':
+          description: With the legal hold that was released.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LegalHold'
+        '403':
+          description: Account does not have permission to access the API.
+        '404':
+          description: The specified legal hold id was not found.
+  /v1/accounts/me/legalHolds/{legalHoldId}/users:
+    get:
+      summary: Get Legal Hold Users
+      description: Retrieves a paginated list of all users associated with a specified legal hold.
+      operationId: getLegalHoldUsers
+      tags:
+      - Legal Holds
+      security:
+      - ApiKey:
+        - LegalHoldReadonly
+      - OAuth2:
+        - account.legalhold
+        - account.legalhold:readonly
+        - account.legalhold.users
+        - account.legalhold.users:readonly
+      parameters:
+      - $ref: '#/components/parameters/LegalHoldIdPath'
+      responses:
+        '200':
+          description: With paginated list of Users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '403':
+          description: Account does not have permission to access the API.
+        '404':
+          description: The specified legal hold id was not found.
+  /v1/accounts/me/legalHoldDocuments/{legalHoldId}:
+    get:
+      summary: Get Legal Hold Documents
+      description: Retrieves a paginated list of all documents associated with a specified legal hold. Documents may continue to appear for up to 24 hours after users are removed from the legal hold, as the system processes the release asynchronously.
+      operationId: getLegalHoldDocuments
+      tags:
+      - Legal Holds
+      security:
+      - ApiKey:
+        - LegalHoldReadonly
+      - OAuth2:
+        - account.legalhold
+        - account.legalhold:readonly
+      parameters:
+      - $ref: '#/components/parameters/LegalHoldIdPath'
+      responses:
+        '200':
+          description: With paginated list of Documents.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+        '403':
+          description: Account does not have permission to access the API.
+        '404':
+          description: The specified legal hold id was not found.
+components:
+  schemas:
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
+    User:
+      type: object
+      properties:
+        accountId:
+          type: number
+          example: 100
+          description: The unique ID for the user's account.
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the user can authenticate to Lucid. Corresponds to the SCIM active attribute.
+        email:
+          type: string
+          example: john-doe@example.com
+          description: The user's email.
+        name:
+          type: string
+          example: John Doe
+          description: The user's full name.
+        userId:
+          type: number
+          example: 101
+          description: The unique ID for the user.
+        username:
+          type: string
+          example: johndoe
+          description: The user's username.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          example:
+          - billing-admin
+          - team-admin
+          description: A list of administrative roles assigned to the user.
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+          description: A reference to the user's avatar image, falling back to their Gravatar image.
+      description: A standard representation of a user.
+    LegalHold:
+      type: object
+      properties:
+        LegalHoldId:
+          type: string
+          format: uuid
+          description: Unique ID of the legal hold.
+          example: 110808fd-4553-4316-bccf-4f25ff59a532
+        AccountId:
+          type: number
+          description: Unique ID for the creating admin’s account.
+          example: 100
+        StartTime:
+          type: string
+          format: date-time
+          description: Start time of the legal hold.
+          example: '2025-01-01T16:18:26Z'
+        EndTime:
+          type: string
+          format: date-time
+          description: End time of the legal hold.
+          example: '2025-12-01T16:18:26Z'
+        Title:
+          type: string
+          description: Title of the legal hold.
+          example: New Legal Hold
+        Description:
+          type: string
+          description: Description of the legal hold.
+          example: Legal hold example
+        Keywords:
+          type: string
+          description: Keyword(s) of the legal hold.
+          example: alpha
+        Created:
+          type: string
+          format: date-time
+          description: Time that the legal hold was created.
+          example: '2024-12-01T16:25:44Z'
+        Modified:
+          type: string
+          format: date-time
+          description: Time that the legal hold was last modified.
+          example: '2024-12-01T16:25:44Z'
+      required:
+      - LegalHoldId
+      - AccountId
+      - StartTime
+      - EndTime
+      - Title
+      - Created
+      - Modified
+    UserRole:
+      type: string
+      enum:
+      - account-owner
+      - billing-admin
+      - enterprise-shield-admin
+      - developer
+      - document-admin
+      - group-admin
+      - organizational-group-admin
+      - team-admin
+      - team-manager
+      - template-admin
+      - unknown-role
+      description: Allows various administrative actions.
+    CustomAttribute:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - singleLineText
+          - multiLineText
+          - singleSelectDropdown
+          - multiSelectDropdown
+          - webLink
+          - numericalRange
+          - hierarchicalDropdown
+          description: The custom attribute type
+          example: singleLineText
+        name:
+          type: string
+          description: Title of the custom attribute. hierarchicalDropdown attributes do not have names.
+          example: Sample Label
+        value:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              oneOf:
+              - $ref: '#/components/schemas/DataPair'
+              - type: string
+          description: The value assigned to the custom attribute. The type of this value is determined by the Attribute Type.
+          example: null
+      description: Object representing a custom attribute value for a document.
+      required:
+      - type
+    DataPair:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Custom data key
+        value:
+          type: string
+          description: Custom data value
+      description: Object representing a key-value pair of data.
+      required:
+      - name
+      - value
+      example:
+        name: City
+        value: New York
+    Document:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          description: Unique ID of the document
+          example: 110808fd-4553-4316-bccf-4f25ff59a532
+        title:
+          type: string
+          description: Title of the document
+          example: document title
+        editUrl:
+          type: string
+          format: uri
+          description: Link to edit the document
+          example: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/edit
+        viewUrl:
+          type: string
+          format: uri
+          description: Link to view the document
+          example: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/view
+        version:
+          type: integer
+          description: Most recent version
+          example: 101
+        pageCount:
+          type: integer
+          description: Number of pages within the document
+          example: 5
+        canEdit:
+          type: boolean
+          description: If requesting user can edit the document
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: Date and time of when the document was created
+          example: '2019-04-22T13:47:23Z'
+        creatorId:
+          type: integer
+          description: ID of user who created and owns the document
+          example: 12345
+        lastModified:
+          type: string
+          format: date-time
+          description: Date and time of when the document was last modified
+          example: '2020-06-26T16:29:37Z'
+        lastModifiedUserId:
+          type: integer
+          description: ID of user who most recently modified the document
+          example: 54321
+        customAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomAttribute'
+          description: List of any custom attributes belonging to the document. Populated for Enterprise Accounts only.
+          example: []
+        customTags:
+          type: array
+          items:
+            type: string
+          description: List of any custom tags assigned to the document
+          example:
+          - in progress
+        product:
+          $ref: '#/components/schemas/Product'
+        status:
+          type:
+          - string
+          - 'null'
+          description: Current assigned status of the document
+          example: Complete
+        classification:
+          type:
+          - string
+          - 'null'
+          description: Current assigned classification of the document
+          example: Private
+        classificationId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: Current assigned classification ID of the document.
+          example: b7db4f07-5225-4a0c-8313-0fe199eec844
+        trashed:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: If defined, the timestamp when the document was moved to the trash
+          example: null
+        parent:
+          type:
+          - integer
+          - 'null'
+          description: ID of the parent folder
+          example: null
+        repository:
+          allOf:
+          - $ref: '#/components/schemas/Repository'
+        accountId:
+          type:
+          - integer
+          - 'null'
+          description: ID of Lucid account that owns the document
+        owner:
+          $ref: '#/components/schemas/DocumentOwner'
+      required:
+      - documentId
+      - title
+      - editUrl
+      - viewUrl
+      - version
+      - pageCount
+      - canEdit
+      - created
+      - creatorId
+      - lastModified
+      - lastModifiedUserId
+      - customAttributes
+      - customTags
+      - product
+      - accountId
+      example:
+        documentId: 110808fd-4553-4316-bccf-4f25ff59a532
+        title: document title
+        editUrl: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/edit
+        viewUrl: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/view
+        version: 101
+        pageCount: 5
+        canEdit: false
+        created: '2019-04-22T13:47:23Z'
+        creatorId: 12345
+        lastModified: '2020-06-26T16:29:37Z'
+        lastModifiedUserId: 54321
+        customAttributes: []
+        customTags:
+        - in progress
+        product: lucidchart
+        status: Complete
+        classification: Private
+        trashed: null
+        parent: null
+        repository: null
+        owner:
+          id: 123456
+          type: user
+          name: John Doe
+        accountId: 1234
+    DocumentOwner:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Id of either the user or the account, depending on the type of the document user resource.
+          example: 123456
+        type:
+          type: string
+          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
+          example: user
+        name:
+          type: string
+          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
+          example: John Doe
+    Repository:
+      type: object
+      properties:
+        repositoryId:
+          type: string
+          description: the ID of the repository
+          example: repo_2000008
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
+  parameters:
+    LegalHoldIdPath:
+      in: path
+      name: legalHoldId
+      required: true
+      description: Unique ID of the legal hold.
+      schema:
+        type: string
+        format: uuid
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            account.audit.logs: View audit logs on your account.
+            account.info: View basic information about your account (e.g., account ID and account name) .
+            account.user: Create, view, edit, and delete users on your account.
+            account.user:readonly: View users on your account.
+            account.users:admin.readonly: View all users and their roles on your account.
+            account.user.transfercontent: Transfer ownership of a user's resources to another user on your account.
+            account.settings:readonly: View settings on your account.
+            account.legalhold: Create, view, and expire legal holds on your account.
+            account.legalhold:readonly: View legal holds on your account.
+            account.legalhold.users: Manage legal hold users on your account.
+            account.legalhold.users:readonly: View legal hold users on your account.
+            folder: Create, view, edit, share, and delete your folders. Organize your folders and their contents.
+            folder:readonly: View any of your folders and list their contents.
+            folder:admin: Perform admin actions on folders belonging to the account.
+            folder:admin.readonly: View all folders belonging to the account with admin permissions.
+            invitation: Accept document and folder share links.
+            invitation.accept: Accept document and folder share links.
+            cloud.credential: Manage cloud credentials.
+            cloud.credential:readonly: View cloud credentials.
+            cloud.datasource: Manage cloud data sources.
+            cloud.datasource:readonly: View cloud data sources.
+            cloud.model: Manage cloud models.
+            repository: Manage repositories.
+            repository:readonly: View repositories.
+            repository:admin: Perform admin actions on repositories.
+            lucid.document.content: Create, view, edit, and delete any Lucid document accessible by the user.
+            lucid.document.content:readonly: View and download any Lucid document accessible by the user.
+            lucid.document.content:admin: Perform admin actions on Lucid documents belonging to the account.
+            lucid.document.content:admin.readonly: View all Lucid documents belonging to the account with admin permissions.
+            lucid.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share:readonly: View document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator:readonly: View document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.embed: Create, view, edit, and delete document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.embed:readonly: View document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.link: Create, view, edit, and delete share links for any Lucid document accessible by the user.
+            lucid.document.content.share.link:readonly: View share links for any Lucid document accessible by the user.
+            lucid.document.storage:admin.readonly: Perform admin actions backing up Lucid documents belonging to the account.
+            lucid.document.app: View, edit, create, and manage folders and documents within an app.
+            lucid.document.app.folder: Create, view, edit, and manage any Lucid document within its app-specific folder.
+            lucid.document.app.picker: View, edit, and manage any Lucid document selected within an app.
+            lucid.document.app.picker:readonly: View and download any Lucid document selected within an app.
+            lucid.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator:readonly: View document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed: Create, view, edit, and delete document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed:readonly: View document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link: Create, view, edit, and delete share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link:readonly: View share links for any Lucid document selected within an app.
+            lucid.document.accessRequest: Request access to Lucid documents.
+            licenses:admin: Perform admin actions on licenses and subscriptions belonging to the account.
+            licenses:admin.readonly: View licenses and subscriptions belonging to the account with admin permissions.
+            teams: Create, view, and edit, archive, and restore any teams on your account. Control which users belong to teams.
+            teams:readonly: View any teams on your account and list which users belong to them.
+            teams:admin: Manage teams on your account.
+            lucidchart.document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed:readonly: View embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            lucidchart.document.content:readonly: View and download any Lucidchart document on your account.
+            lucidchart.document.content:admin: Perform admin actions on Lucidchart documents belonging to the account.
+            lucidchart.document.content:admin.readonly: View all Lucidchart documents belonging to the account with admin permissions.
+            lucidchart.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed:readonly: View embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link:readonly: View the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.storage:admin.readonly: Perform admin actions backing up Lucidchart documents belonging to the account.
+            lucidchart.document.accessRequest: Request access to Lucidchart documents.
+            lucidspark.document.app: View, edit, and manage any Lucidspark board selected for this third-party application. Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.folder: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.picker: View, edit, and manage any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker:readonly: View and download any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed:readonly: View embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.content: Create, view, edit, and delete any Lucidspark board on your account.
+            lucidspark.document.content:readonly: View and download any Lucidspark board on your account.
+            lucidspark.document.content:admin: Perform admin actions on Lucidspark boards belonging to the account.
+            lucidspark.document.content:admin.readonly: View all Lucidspark boards belonging to the account with admin permissions.
+            lucidspark.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed:readonly: View embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link:readonly: View the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.storage:admin.readonly: Perform admin actions backing up Lucidspark boards belonging to the account.
+            lucidspark.document.accessRequest: Request access to Lucidspark boards.
+            lucidscale.document.app: View, edit, and manage any Lucidscale model selected for this third-party application. Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.folder: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.picker: View, edit, and manage any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker:readonly: View and download any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed:readonly: View embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.content: Create, view, edit, and delete any Lucidscale model on your account.
+            lucidscale.document.content:readonly: View and download any Lucidscale model on your account.
+            lucidscale.document.content:admin: Perform admin actions on Lucidscale models belonging to the account.
+            lucidscale.document.content:admin.readonly: View all Lucidscale models belonging to the account with admin permissions.
+            lucidscale.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed:readonly: View embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link:readonly: View the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.storage:admin.readonly: Perform admin actions backing up Lucidscale models belonging to the account.
+            lucidscale.document.accessRequest: Request access to Lucidscale models.
+            offline_access: Continue to perform authorized actions when you're not logged in (required to refresh tokens).
+            user.profile: Allow applications to view basic information about you (e.g., full name, username, and email).
+            document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            document.content:readonly: View and download any Lucidchart document on your account.
+    ApiKey:
+      type: http
+      scheme: bearer
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-rest-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

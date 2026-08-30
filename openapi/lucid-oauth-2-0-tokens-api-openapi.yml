@@ -1,0 +1,410 @@
+openapi: 3.2.0
+info:
+  title: Lucid REST OAuth 2.0 Tokens API
+  version: '1.0'
+  description: The Lucid REST API provides programmatic access to manage documents, users, folders, sharing, licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale). Authenticate via OAuth 2.0 or API key.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/api
+servers:
+- url: https://api.lucid.co
+tags:
+- name: OAuth 2.0 Tokens
+  description: Create, refresh, introspect, and revoke OAuth 2.0 access tokens used to authenticate API requests on behalf of a user.
+paths:
+  /v1/oauth2/token:
+    post:
+      summary: Create or Refresh Access Token
+      operationId: createOrRefreshAccessToken
+      tags:
+      - OAuth 2.0 Tokens
+      security:
+      - OAuth2: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+              - type: object
+                required:
+                - code
+                - client_id
+                - client_secret
+                - grant_type
+                - redirect_uri
+                properties:
+                  code:
+                    type: string
+                    description: The authorization code.
+                  client_id:
+                    type: string
+                    description: The client ID.
+                  client_secret:
+                    type: string
+                    description: The client secret.
+                  grant_type:
+                    type: string
+                    description: Value is always "authorization_code".
+                  redirect_uri:
+                    type: string
+                    description: The redirect URI used to get the authorization code.
+              - type: object
+                required:
+                - refresh_token
+                - client_id
+                - client_secret
+                - grant_type
+                properties:
+                  refresh_token:
+                    type: string
+                    description: The current refresh token.
+                  client_id:
+                    type: string
+                    description: The client ID.
+                  client_secret:
+                    type: string
+                    description: The client secret.
+                  grant_type:
+                    type: string
+                    description: Value is always "refresh_token".
+      responses:
+        '200':
+          description: OK application/json with the access token and refresh token (if the offline_access scope was included for creating access token).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuth2Token'
+        '401':
+          description: Unauthorized if the client credentials are invalid.
+  /v1/oauth2/token/introspect:
+    post:
+      summary: Introspect Access Token
+      operationId: introspectAccessToken
+      tags:
+      - OAuth 2.0 Tokens
+      security:
+      - OAuth2: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - client_id
+              - client_secret
+              - token
+              properties:
+                client_id:
+                  type: string
+                  description: The client ID.
+                client_secret:
+                  type: string
+                  description: The client secret.
+                token:
+                  type: string
+                  description: The token to inspect.
+      responses:
+        '200':
+          description: OK with information about the token, as specified in OAuth2 Introspect Token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuth2IntrospectToken'
+        '401':
+          description: Unauthorized if the client credentials are invalid.
+  /v1/oauth2/token/revoke:
+    post:
+      summary: Revoke Access Token
+      description: Regardless of which token is revoked, all tokens from that authorization grant will become invalid.
+      operationId: revokeAccessToken
+      tags:
+      - OAuth 2.0 Tokens
+      security:
+      - OAuth2: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+              - client_id
+              - client_secret
+              - token
+              properties:
+                client_id:
+                  type: string
+                  description: The client ID.
+                client_secret:
+                  type: string
+                  description: The client secret.
+                token:
+                  type: string
+                  description: The token to revoke.
+      responses:
+        '200':
+          description: OK if the client credentials are valid.
+        '401':
+          description: Unauthorized if the client credentials are invalid.
+components:
+  schemas:
+    OAuth2Token:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: Token to be used when making requests with OAuth 2.0 authentication.
+          example: oauth2-Yzh4Y2Q3ZTVhY2FjYjkwOGJlZGNjNjU5NDM2NjgzZmUwMmNmMjkzM...
+        client_id:
+          type: string
+          description: The client ID.
+          example: 30VYbvlkqZv-SmJd7fTdpH9B9et2yqZA6Wvi5NY_
+        expires_in:
+          type: number
+          description: The lifetime in seconds of the access token.
+          example: 3600
+        expires:
+          type: number
+          format: int64
+          description: Time until this token expires (expressed in milliseconds since Unix epoch).
+          example: 1605732868411
+        refresh_token:
+          type: string
+          description: If the token includes the scope `offline_access`, then a refresh token will be provided.
+          example: oauth2-AVU=-yPcwtzLkusIEnT7D9slQH4g8Ur0MdpUmpT0Z6BSMf6lmesRpTTSBGNniKd
+        scopes:
+          type: array
+          items:
+            type: string
+          description: Scopes granted on this token.
+          example:
+          - lucidchart.document.app
+          - offline_access
+        token_type:
+          type: string
+          description: Value is always "bearer".
+          example: bearer
+        user_id:
+          type: number
+          description: ID of the user this token is on behalf of. Only returned when the token was granted on behalf of a user. Mutually exclusive with `account_id`.
+          example: 341
+        account_id:
+          type: number
+          description: ID of the account this token is on behalf of. Only returned when the token was granted on behalf of an account. Mutually exclusive with `user_id`.
+          example: 52
+      required:
+      - access_token
+      - user_id
+      - account_id
+      - client_id
+      - expires_in
+      - expires
+      - scopes
+      - token_type
+    OAuth2IntrospectToken:
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: A boolean value indicating whether or not the token is active.
+          example: true
+        client_id:
+          type: string
+          description: The client ID.
+          example: 30VYbvlkqZv-SmJd7fTdpH9B9et2yqZA6Wvi5NY_
+        expires_in:
+          type: number
+          description: The remaining lifetime in seconds of the access token.
+          example: 3500
+        expires:
+          type: number
+          format: int64
+          description: Timestamp for when this token expires (expressed in milliseconds since Unix epoch).
+          example: 1605732868411
+        scope:
+          type: string
+          description: Space-separated list of scopes allowed on this token.
+          example: document.app offline_access
+        token_type:
+          type: string
+          description: The type of token returned (currently, always "bearer").
+          example: bearer
+        user_id:
+          type: number
+          description: ID of the user this token is on behalf of. Only returned when the token was granted on behalf of a user. Mutually exclusive with `account_id`.
+          example: 1001
+        account_id:
+          type: number
+          description: ID of the account this token is on behalf of. Only returned when the token was granted on behalf of an account. Mutually exclusive with `user_id`.
+          example: 52
+      required:
+      - active
+      - user_id
+      - account_id
+      - client_id
+      - token_type
+      - scope
+      - expires_in
+      - expires
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            account.audit.logs: View audit logs on your account.
+            account.info: View basic information about your account (e.g., account ID and account name) .
+            account.user: Create, view, edit, and delete users on your account.
+            account.user:readonly: View users on your account.
+            account.users:admin.readonly: View all users and their roles on your account.
+            account.user.transfercontent: Transfer ownership of a user's resources to another user on your account.
+            account.settings:readonly: View settings on your account.
+            account.legalhold: Create, view, and expire legal holds on your account.
+            account.legalhold:readonly: View legal holds on your account.
+            account.legalhold.users: Manage legal hold users on your account.
+            account.legalhold.users:readonly: View legal hold users on your account.
+            folder: Create, view, edit, share, and delete your folders. Organize your folders and their contents.
+            folder:readonly: View any of your folders and list their contents.
+            folder:admin: Perform admin actions on folders belonging to the account.
+            folder:admin.readonly: View all folders belonging to the account with admin permissions.
+            invitation: Accept document and folder share links.
+            invitation.accept: Accept document and folder share links.
+            cloud.credential: Manage cloud credentials.
+            cloud.credential:readonly: View cloud credentials.
+            cloud.datasource: Manage cloud data sources.
+            cloud.datasource:readonly: View cloud data sources.
+            cloud.model: Manage cloud models.
+            repository: Manage repositories.
+            repository:readonly: View repositories.
+            repository:admin: Perform admin actions on repositories.
+            lucid.document.content: Create, view, edit, and delete any Lucid document accessible by the user.
+            lucid.document.content:readonly: View and download any Lucid document accessible by the user.
+            lucid.document.content:admin: Perform admin actions on Lucid documents belonging to the account.
+            lucid.document.content:admin.readonly: View all Lucid documents belonging to the account with admin permissions.
+            lucid.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share:readonly: View document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator:readonly: View document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.embed: Create, view, edit, and delete document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.embed:readonly: View document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.link: Create, view, edit, and delete share links for any Lucid document accessible by the user.
+            lucid.document.content.share.link:readonly: View share links for any Lucid document accessible by the user.
+            lucid.document.storage:admin.readonly: Perform admin actions backing up Lucid documents belonging to the account.
+            lucid.document.app: View, edit, create, and manage folders and documents within an app.
+            lucid.document.app.folder: Create, view, edit, and manage any Lucid document within its app-specific folder.
+            lucid.document.app.picker: View, edit, and manage any Lucid document selected within an app.
+            lucid.document.app.picker:readonly: View and download any Lucid document selected within an app.
+            lucid.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator:readonly: View document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed: Create, view, edit, and delete document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed:readonly: View document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link: Create, view, edit, and delete share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link:readonly: View share links for any Lucid document selected within an app.
+            lucid.document.accessRequest: Request access to Lucid documents.
+            licenses:admin: Perform admin actions on licenses and subscriptions belonging to the account.
+            licenses:admin.readonly: View licenses and subscriptions belonging to the account with admin permissions.
+            teams: Create, view, and edit, archive, and restore any teams on your account. Control which users belong to teams.
+            teams:readonly: View any teams on your account and list which users belong to them.
+            teams:admin: Manage teams on your account.
+            lucidchart.document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed:readonly: View embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            lucidchart.document.content:readonly: View and download any Lucidchart document on your account.
+            lucidchart.document.content:admin: Perform admin actions on Lucidchart documents belonging to the account.
+            lucidchart.document.content:admin.readonly: View all Lucidchart documents belonging to the account with admin permissions.
+            lucidchart.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed:readonly: View embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link:readonly: View the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.storage:admin.readonly: Perform admin actions backing up Lucidchart documents belonging to the account.
+            lucidchart.document.accessRequest: Request access to Lucidchart documents.
+            lucidspark.document.app: View, edit, and manage any Lucidspark board selected for this third-party application. Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.folder: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.picker: View, edit, and manage any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker:readonly: View and download any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed:readonly: View embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.content: Create, view, edit, and delete any Lucidspark board on your account.
+            lucidspark.document.content:readonly: View and download any Lucidspark board on your account.
+            lucidspark.document.content:admin: Perform admin actions on Lucidspark boards belonging to the account.
+            lucidspark.document.content:admin.readonly: View all Lucidspark boards belonging to the account with admin permissions.
+            lucidspark.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed:readonly: View embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link:readonly: View the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.storage:admin.readonly: Perform admin actions backing up Lucidspark boards belonging to the account.
+            lucidspark.document.accessRequest: Request access to Lucidspark boards.
+            lucidscale.document.app: View, edit, and manage any Lucidscale model selected for this third-party application. Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.folder: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.picker: View, edit, and manage any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker:readonly: View and download any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed:readonly: View embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.content: Create, view, edit, and delete any Lucidscale model on your account.
+            lucidscale.document.content:readonly: View and download any Lucidscale model on your account.
+            lucidscale.document.content:admin: Perform admin actions on Lucidscale models belonging to the account.
+            lucidscale.document.content:admin.readonly: View all Lucidscale models belonging to the account with admin permissions.
+            lucidscale.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed:readonly: View embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link:readonly: View the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.storage:admin.readonly: Perform admin actions backing up Lucidscale models belonging to the account.
+            lucidscale.document.accessRequest: Request access to Lucidscale models.
+            offline_access: Continue to perform authorized actions when you're not logged in (required to refresh tokens).
+            user.profile: Allow applications to view basic information about you (e.g., full name, username, and email).
+            document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            document.content:readonly: View and download any Lucidchart document on your account.
+    ApiKey:
+      type: http
+      scheme: bearer
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-rest-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

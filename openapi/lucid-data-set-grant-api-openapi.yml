@@ -1,0 +1,256 @@
+openapi: 3.2.0
+info:
+  title: Lucid Data Data Set Grant API
+  version: '1.0'
+  description: The Lucid Data API enables external applications to create, read, update, and delete structured data linked to Lucid documents. Use it to sync data sets, collections, and schemas between your data sources and Lucid diagrams. Authenticate via OAuth 2.0.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/data-api
+servers:
+- url: https://data.lucid.app
+tags:
+- name: Data Set Grant
+  description: Manage access grants on data sets to control which users or applications can read or write data.
+paths:
+  /dataSetGrants/{dataSetId}:
+    get:
+      summary: Get Data Set Grant
+      description: 'Gets the requested data set grant if the access tokens are valid and the user has access to the data set. Note that the id in the URI is the number at the end of the data set grant''s uri, not the identifier field of the object.
+
+        '
+      operationId: getDataSetGrant
+      tags:
+      - Data Set Grant
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to return grant for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Set Grant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set grant
+                    example: https://data.lucid.app/dataSetGrants/435
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the grant
+                    example: https://data.lucid.app/dataSets/8
+                  permissionType:
+                    type: string
+                    description: Type of permission granted
+                    example: account
+                  identifier:
+                    type: string
+                    description: The document id, account id, or user id matching the permission type
+                    example: '1234'
+                  role:
+                    type: string
+                    description: 'Available types are: ''edit'' and ''view'''
+                    example: edit
+                required:
+                - uri
+                - dataSet
+                - permissionType
+                - identifier
+                - role
+                example:
+                  uri: https://data.lucid.app/dataSetGrants/435
+                  dataSet: https://data.lucid.app/dataSets/8
+                  permissionType: account
+                  identifier: '1234'
+                  role: edit
+    delete:
+      summary: Delete Data Set Grant
+      description: 'Removes the specified data set grant ONLY if it''s not the last data set grant. There must always be at least one data set grant for a given data set, therefore the last data set grant cannot be deleted. A response message is returned with the result of the deletion. Note that the id in the URI is the number at the end of the data set grant''s URI, not the identifier field of the Data Set Grant.
+
+        '
+      operationId: deleteDataSetGrant
+      tags:
+      - Data Set Grant
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set grant to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /dataSetGrants:
+    get:
+      summary: Get All Data Set Grants
+      description: 'Finds and returns all data set grants for the queried data set if the user has access to the data set.
+
+        '
+      operationId: getAllDataSetGrants
+      tags:
+      - Data Set Grant
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSet
+        in: query
+        description: Data set to get grants for
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK with array of Data Set Grant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: URI of the data set grant
+                      example: https://data.lucid.app/dataSetGrants/435
+                    dataSet:
+                      type: string
+                      description: Link to get the data set for the grant
+                      example: https://data.lucid.app/dataSets/8
+                    permissionType:
+                      type: string
+                      description: Type of permission granted
+                      example: account
+                    identifier:
+                      type: string
+                      description: The document id, account id, or user id matching the permission type
+                      example: '1234'
+                    role:
+                      type: string
+                      description: 'Available types are: ''edit'' and ''view'''
+                      example: edit
+                  required:
+                  - uri
+                  - dataSet
+                  - permissionType
+                  - identifier
+                  - role
+                  example:
+                    uri: https://data.lucid.app/dataSetGrants/435
+                    dataSet: https://data.lucid.app/dataSets/8
+                    permissionType: account
+                    identifier: '1234'
+                    role: edit
+    post:
+      summary: Create Data Set Grant
+      description: 'Creates a new data set grant for the specified data set. The requesting user must have access to the data set in order for it to succeed.
+
+        '
+      operationId: createDataSetGrant
+      tags:
+      - Data Set Grant
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSet:
+                  type: string
+                  description: Link to the data set to grant access to
+                  example: https://data.lucid.app/dataSets/8
+                permissionType:
+                  type: string
+                  description: Type of permission to grant
+                  example: account
+                identifier:
+                  type: string
+                  description: The document id, account id, or user id matching the permission type
+                  example: '1234'
+                role:
+                  type: string
+                  description: 'Available types are: ''edit'' and ''view'''
+                  example: edit
+              required:
+              - dataSet
+              - permissionType
+              - identifier
+              - role
+              example:
+                dataSet: https://data.lucid.app/dataSets/8
+                permissionType: account
+                identifier: '1234'
+                role: edit
+      responses:
+        '200':
+          description: OK with Data Set Grant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set grant
+                    example: https://data.lucid.app/dataSetGrants/435
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the grant
+                    example: https://data.lucid.app/dataSets/8
+                  permissionType:
+                    type: string
+                    description: Type of permission granted
+                    example: account
+                  identifier:
+                    type: string
+                    description: The document id, account id, or user id matching the permission type
+                    example: '1234'
+                  role:
+                    type: string
+                    description: 'Available types are: ''edit'' and ''view'''
+                    example: edit
+                required:
+                - uri
+                - dataSet
+                - permissionType
+                - identifier
+                - role
+                example:
+                  uri: https://data.lucid.app/dataSetGrants/435
+                  dataSet: https://data.lucid.app/dataSets/8
+                  permissionType: account
+                  identifier: '1234'
+                  role: edit
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            data-service.admin: Scope needed for access to the Data APIs.
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

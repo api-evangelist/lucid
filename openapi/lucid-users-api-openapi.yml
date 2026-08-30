@@ -1,0 +1,914 @@
+openapi: 3.2.0
+info:
+  title: Lucid Users API
+  version: '1.0'
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-refined-note:
+  - x-documentation differs across the merged source definitions and was not carried
+  description: 'Operations tagged Users across 2 of this provider''s published API definitions: lucid-rest-api-openapi.yml, lucid-scim-api-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://api.lucid.co
+- url: https://users.lucid.app/scim/v2
+tags:
+- name: Users
+  description: Retrieve, create, and search for users within the authenticated account. Includes user profile access.
+paths:
+  /v1/users/{id}:
+    get:
+      summary: Get User
+      description: Retrieves information about the requested user. The requested user must be on the authenticated account.
+      operationId: getUser
+      tags:
+      - Users
+      security:
+      - ApiKey:
+        - AccountReadonly
+      - OAuth2:
+        - account.user:readonly
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the user to be retrieved.
+        example: 204
+      responses:
+        '200':
+          description: OK. Returns with a User resource containing information about the user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '403':
+          description: Forbidden. Occurs if the user does not belong to the authenticated account or if the user does not exist.
+    servers:
+    - url: https://api.lucid.co
+  /v1/users:
+    get:
+      summary: List Users
+      description: Retrieves information about all users on the authenticated account.
+      operationId: listUsers
+      tags:
+      - Users
+      security:
+      - ApiKey:
+        - AccountAdmin
+      - OAuth2:
+        - account.user:readonly
+        - account.users:admin.readonly
+      responses:
+        '200':
+          description: OK. Returns a list of User resources containing information about users on the account.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: Not Found
+    post:
+      summary: Create User
+      description: Creates a new user and adds them to the authenticated account. Licenses are automatically assigned to the new user based on the account's auto-licensing configuration. Only available to Enterprise accounts.
+      operationId: createUser
+      tags:
+      - Users
+      security:
+      - OAuth2:
+        - account.user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserBody'
+      responses:
+        '201':
+          description: Created. Returns a User resource containing information about the created user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request. Occurs if any input field is invalid.
+        '403':
+          description: Forbidden. Occurs if the app making the request does not have permission to create users, if the email domain is under domain control by a different account, or if the token requesting to create a user is not on an Enterprise account.
+        '409':
+          description: Conflict. Occurs if a user with the same email or username already exists.
+    servers:
+    - url: https://api.lucid.co
+  /v1/users/searchByEmail:
+    post:
+      summary: Search Users By Email
+      description: Retrieves information about all users on the authenticated account whose email is provided. Matching is case-insensitive and requires an exact match; emails that do not correspond to a user on the account are excluded from results.
+      operationId: userEmailSearch
+      tags:
+      - Users
+      security:
+      - ApiKey:
+        - AccountReadonly
+      - OAuth2:
+        - account.user:readonly
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                emails:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: OK. Returns a list of Profile resources containing information about users on the account. Emails that could not be matched are not included.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
+        '400':
+          description: Bad Request. Occurs if the request body emails exceed 200 items or if any of the strings in the request body can not be parsed into the email format.
+    servers:
+    - url: https://api.lucid.co
+  /v1/users/me/profile:
+    get:
+      summary: Get Profile
+      description: Retrieves basic information about the authenticated user.
+      operationId: getUserProfile
+      tags:
+      - Users
+      security:
+      - ApiKey:
+        - User
+      - OAuth2:
+        - user.profile
+      responses:
+        '200':
+          description: OK. Returns a Profile resource containing information about the requesting user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '404':
+          description: Not Found
+    servers:
+    - url: https://api.lucid.co
+  /Users/{id}:
+    get:
+      summary: Get User
+      description: Get a specific user on the account.
+      operationId: getUser
+      tags:
+      - Users
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ID of the Lucid user.
+        example: lucid-1234
+      - $ref: '#/paths/~1Users/get/parameters/3'
+      - $ref: '#/paths/~1Users/get/parameters/4'
+      responses:
+        '200':
+          description: OK. Returns a User.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User_2'
+        '401':
+          description: Unauthorized. Occurs if bearer token is invalid.
+        '404':
+          description: Not Found. Occurs if the user was not found.
+      security:
+      - Bearer: []
+    put:
+      summary: Modify User
+      description: 'Modify an existing user. To deactivate a user, set the `active` field to `false`.
+
+        '
+      operationId: modifyUserPut
+      tags:
+      - Users
+      parameters:
+      - $ref: '#/paths/~1Users~1%7Bid%7D/get/parameters/0'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        '200':
+          description: OK. Returns the modified User.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User_2'
+        '400':
+          description: Bad Request. Occurs if request body syntax is incorrect.
+        '401':
+          description: Unauthorized. Occurs if bearer token is invalid.
+        '404':
+          description: Not Found. Occurs if the user does not exist.
+        '409':
+          description: Conflict. Occurs if new username or email already exists.
+      security:
+      - Bearer: []
+    patch:
+      summary: Modify User
+      description: 'Modify an existing user. To deactivate a user, set the `active` field to `false`.
+
+        '
+      operationId: modifyUserPatch
+      tags:
+      - Users
+      parameters:
+      - $ref: '#/paths/~1Users~1%7Bid%7D/get/parameters/0'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - schemas
+              - Operations
+              properties:
+                schemas:
+                  type: array
+                  items:
+                    type: string
+                  example:
+                  - urn:ietf:params:scim:schemas:core:2.0:User
+                Operations:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserOperation'
+      responses:
+        '200':
+          description: OK. Returns the modified User.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User_2'
+        '400':
+          description: Bad Request. Occurs if request body syntax is incorrect.
+        '401':
+          description: Unauthorized. Occurs if bearer token is invalid.
+        '404':
+          description: Not Found. Occurs if the user does not exist.
+        '409':
+          description: Conflict. Occurs if new username or email already exists on account.
+      security:
+      - Bearer: []
+    delete:
+      summary: Delete User
+      description: '> ❗️ This is a hard delete. We recommend deactivating users instead of deleting them. To deactivate a user, use PUT or PATCH and set the active field to false.
+
+
+        Delete a user from the account. Note that certain users cannot be deleted, such as account owners and default document owners.
+
+        '
+      operationId: deleteUser
+      tags:
+      - Users
+      parameters:
+      - $ref: '#/paths/~1Users~1%7Bid%7D/get/parameters/0'
+      responses:
+        '204':
+          description: No Content. User was successfully deleted.
+        '400':
+          description: Bad Request. Occurs if an unexpected error prevents user deletion.
+        '401':
+          description: Unauthorized. Occurs if bearer token is invalid.
+        '404':
+          description: Not Found. Occurs if the user does not exist.
+        '409':
+          description: Conflict. Occurs if the user cannot be deleted (e.g., account owner or default document owner).
+      security:
+      - Bearer: []
+    servers:
+    - url: https://users.lucid.app/scim/v2
+  /Users:
+    get:
+      summary: Get All Users
+      description: Gets all users on an account.
+      operationId: getAllUsers
+      tags:
+      - Users
+      parameters:
+      - name: startIndex
+        in: query
+        required: false
+        schema:
+          type: number
+        description: Index of the first user in the list to return (1 indexed).
+        example: 1
+      - name: count
+        in: query
+        required: false
+        schema:
+          type: number
+        description: Quantity of users to return from this request.
+        example: 100
+      - name: filter
+        in: query
+        required: false
+        schema:
+          type: string
+        description: "See SCIM spec and optimization details below:\n* The only operator currently supported is eq\n* Filtered requests will result in a maximum of 10,000 users\n* While filtering should technically work on every attribute of a user, it is a very slow process for non-optimized attributes. We strongly recommend filtering only on the following optimized attributes whenever possible:\n  * email / emails.value / workemail\n  * username / displayname\n  * externalid\n  * urn:ietf:params:scim:schemas:extension:lucid:1.0:User.productLicenses.<name>\n"
+        example: email eq someEmail@example.com
+      - name: attributes
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: 'Comma-separated list of attribute names to include in the response. The attribute id is always returned. Cannot be used with excludedAttributes.
+
+          '
+        example: userName,emails,active
+      - name: excludedAttributes
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        description: 'Comma-separated list of attribute names to exclude from the response. The attribute id is always returned and cannot be excluded. Cannot be used with attributes.
+
+          '
+        example: groups,roles
+      responses:
+        '200':
+          description: OK. Returns a JSON object containing a list of users. Deactivated users will not be included in the totalResults or the JSON payload of users returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllUsers'
+        '400':
+          description: Bad Request. Occurs if the filter parameter has invalid syntax or uses unsupported operators.
+        '401':
+          description: Unauthorized. Occurs if bearer token is invalid.
+      security:
+      - Bearer: []
+    post:
+      summary: Create User
+      description: Create a new user.
+      operationId: createUser
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+      responses:
+        '201':
+          description: OK. Returns the created User.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User_2'
+        '400':
+          description: Bad Request. Occurs if request body syntax is incorrect.
+        '401':
+          description: Unauthorized. Occurs if bearer token is invalid.
+        '409':
+          description: Conflict. if username or email already exists on the account.
+        '424':
+          description: Failed Dependency. Occurs if add-on license requires base license to be active.
+      security:
+      - Bearer: []
+    servers:
+    - url: https://users.lucid.app/scim/v2
+components:
+  schemas:
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
+    CreateUserBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: john-doe@example.com
+          description: The user's email.
+        firstName:
+          type: string
+          example: John
+          description: The user's first name.
+        lastName:
+          type: string
+          example: Doe
+          description: The user's last name.
+        username:
+          type: string
+          example: john-doe@example.com
+          description: The user's username. If not provided the email will be used as the username.
+        password:
+          type: string
+          example: '`.~b"J<CA95m`bV@'
+          description: The user's password.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          example:
+          - billing-admin
+          - team-admin
+          description: A list of roles assigned to the user.
+      required:
+      - email
+      - firstName
+      - lastName
+    UserRole:
+      type: string
+      enum:
+      - account-owner
+      - billing-admin
+      - enterprise-shield-admin
+      - developer
+      - document-admin
+      - group-admin
+      - organizational-group-admin
+      - team-admin
+      - team-manager
+      - template-admin
+      - unknown-role
+      description: Allows various administrative actions.
+    Profile:
+      type: object
+      properties:
+        accountId:
+          type: number
+          example: 100
+          description: The unique ID for the user's account.
+        username:
+          type: string
+          example: johndoe
+          description: Username of the user.
+        email:
+          type: string
+          example: john-doe@example.com
+          description: Email of the user.
+        fullName:
+          type: string
+          example: John Doe
+          description: Full name of the user.
+        id:
+          type: number
+          example: 101
+          description: ID of the user.
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+          description: A reference to the user's avatar image, falling back to their Gravatar image.
+      description: The Profile resource contains basic profile information about a user.
+    User:
+      type: object
+      properties:
+        accountId:
+          type: number
+          example: 100
+          description: The unique ID for the user's account.
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the user can authenticate to Lucid. Corresponds to the SCIM active attribute.
+        email:
+          type: string
+          example: john-doe@example.com
+          description: The user's email.
+        name:
+          type: string
+          example: John Doe
+          description: The user's full name.
+        userId:
+          type: number
+          example: 101
+          description: The unique ID for the user.
+        username:
+          type: string
+          example: johndoe
+          description: The user's username.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          example:
+          - billing-admin
+          - team-admin
+          description: A list of administrative roles assigned to the user.
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+          description: A reference to the user's avatar image, falling back to their Gravatar image.
+      description: A standard representation of a user.
+    UserBase:
+      type: object
+      description: Core attributes shared by all user representations.
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: URIs identifying the SCIM schemas that describe this resource's attributes.
+          example:
+          - urn:ietf:params:scim:schemas:core:2.0:User
+          - urn:ietf:params:scim:schemas:extension:enterprise:2.0:User
+        userName:
+          type: string
+          description: The user's username (usually their email).
+          example: john-doe@example.com
+        name:
+          $ref: '#/components/schemas/Name'
+        displayName:
+          type: string
+          description: The name that is displayed and represents the user (usually their email).
+          example: john-doe@example.com
+        emails:
+          type: array
+          items:
+            $ref: '#/components/schemas/Email'
+        active:
+          type: boolean
+          description: Whether the user can authenticate to Lucid.
+          example: false
+        externalId:
+          type: string
+          description: An identifier for the user as defined by the provisioning client.
+          example: external-123
+        title:
+          type: string
+          description: The user's job title.
+          example: Software Engineer
+        phoneNumbers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhoneNumber'
+          description: A list of phone numbers for the user. Currently only "work" type phone numbers are supported.
+        meta:
+          type: object
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+          description: A list of administrative roles assigned to the user. Assigning a role to a user allows that user to perform administrative actions associated with that role.
+        urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:
+          $ref: '#/components/schemas/EnterpriseUserExtension'
+    Email:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The user's email.
+          example: john-doe@example.com
+        type:
+          type: string
+          description: A label indicating the attribute's function (e.g., 'work' or 'home').
+          example: work
+        primary:
+          type: boolean
+          description: Used to determine the primary email of the emails given.
+          example: true
+      description: An object representing a user's email.
+    EnterpriseUserExtension:
+      type: object
+      description: Enterprise extension attributes for the user.
+      properties:
+        costCenter:
+          type: string
+          description: The cost center associated with the user.
+          example: CC-100
+        organization:
+          type: string
+          description: The organization that the user belongs to.
+          example: Engineering
+        division:
+          type: string
+          description: The division that the user belongs to.
+          example: Product Development
+        department:
+          type: string
+          description: The department that the user belongs to.
+          example: Backend Engineering
+        manager:
+          type: object
+          description: The user's manager.
+          properties:
+            value:
+              type: string
+              description: The ID of the manager user. Will be in the form "lucid-1234" with 1234 being the ID of the Lucid user.
+              example: lucid-5678
+    Role:
+      type: object
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: Administrative role type.
+          example: DocumentAdmin
+          enum:
+          - AccountAdmin
+          - BillingAdmin
+          - Developer
+          - DocumentAdmin
+          - EnterpriseShieldAdmin
+          - TemplateAdmin
+    GetAllUsers:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          example:
+          - urn:ietf:params:scim:api:messages:2.0:ListResponse
+        totalResults:
+          type: integer
+          description: The total number of users matching the query.
+          example: 1
+        startIndex:
+          type: integer
+          description: The index of the first user in the "Resources" list (for paginated results).
+          example: 1
+        itemsPerPage:
+          type: integer
+          description: The maximum number of users returned in the "Resources" list (for paginated results).
+          example: 100
+        Resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/User_2'
+          description: The list of users returned by the query.
+    Name:
+      type: object
+      properties:
+        formatted:
+          type: string
+          description: The users first and last name.
+          example: John Doe
+        givenName:
+          type: string
+          description: The user's first name.
+          example: John
+        familyName:
+          type: string
+          description: The user's last name.
+          example: Doe
+      description: An object representing a user's name in various formats.
+    UserOperation:
+      type: object
+      required:
+      - op
+      properties:
+        op:
+          type: string
+          enum:
+          - add
+          - remove
+          - replace
+          description: The operation to perform.
+          example: add
+        path:
+          type: string
+          description: Path to the field you want to change.
+          example: roles
+        value:
+          oneOf:
+          - type: boolean
+          - type: string
+          - type: object
+          - type: array
+            items: {}
+          description: Value to be added/replaced.
+          example:
+          - value: Billing Admin
+    CreateUser:
+      allOf:
+      - $ref: '#/components/schemas/UserBase'
+      - type: object
+        required:
+        - schemas
+        - userName
+        - emails
+        properties:
+          password:
+            type: string
+            example: password
+            description: Passwords must be at least 8 characters in length.
+    PhoneNumber:
+      type: object
+      properties:
+        value:
+          type: string
+          description: The phone number.
+          example: +1-555-123-4567
+        type:
+          type: string
+          description: The type of phone number (e.g., work, home, mobile). Only "work" type is currently supported.
+          example: work
+      description: An object representing a user's phone number.
+    UserGroup:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Id of group.
+          example: lucid-group-1234
+        display:
+          type: string
+          description: Display name of group.
+          example: Group A
+      description: An object representing a user's group.
+    User_2:
+      allOf:
+      - $ref: '#/components/schemas/UserBase'
+      - type: object
+        properties:
+          id:
+            type: string
+            description: Will be in the form "lucid-1234" with 1234 being the ID of the Lucid user.
+            example: lucid-1234
+          groups:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserGroup'
+      description: A standard representation of a user.
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            account.audit.logs: View audit logs on your account.
+            account.info: View basic information about your account (e.g., account ID and account name) .
+            account.user: Create, view, edit, and delete users on your account.
+            account.user:readonly: View users on your account.
+            account.users:admin.readonly: View all users and their roles on your account.
+            account.user.transfercontent: Transfer ownership of a user's resources to another user on your account.
+            account.settings:readonly: View settings on your account.
+            account.legalhold: Create, view, and expire legal holds on your account.
+            account.legalhold:readonly: View legal holds on your account.
+            account.legalhold.users: Manage legal hold users on your account.
+            account.legalhold.users:readonly: View legal hold users on your account.
+            folder: Create, view, edit, share, and delete your folders. Organize your folders and their contents.
+            folder:readonly: View any of your folders and list their contents.
+            folder:admin: Perform admin actions on folders belonging to the account.
+            folder:admin.readonly: View all folders belonging to the account with admin permissions.
+            invitation: Accept document and folder share links.
+            invitation.accept: Accept document and folder share links.
+            cloud.credential: Manage cloud credentials.
+            cloud.credential:readonly: View cloud credentials.
+            cloud.datasource: Manage cloud data sources.
+            cloud.datasource:readonly: View cloud data sources.
+            cloud.model: Manage cloud models.
+            repository: Manage repositories.
+            repository:readonly: View repositories.
+            repository:admin: Perform admin actions on repositories.
+            lucid.document.content: Create, view, edit, and delete any Lucid document accessible by the user.
+            lucid.document.content:readonly: View and download any Lucid document accessible by the user.
+            lucid.document.content:admin: Perform admin actions on Lucid documents belonging to the account.
+            lucid.document.content:admin.readonly: View all Lucid documents belonging to the account with admin permissions.
+            lucid.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share:readonly: View document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator:readonly: View document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.embed: Create, view, edit, and delete document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.embed:readonly: View document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.link: Create, view, edit, and delete share links for any Lucid document accessible by the user.
+            lucid.document.content.share.link:readonly: View share links for any Lucid document accessible by the user.
+            lucid.document.storage:admin.readonly: Perform admin actions backing up Lucid documents belonging to the account.
+            lucid.document.app: View, edit, create, and manage folders and documents within an app.
+            lucid.document.app.folder: Create, view, edit, and manage any Lucid document within its app-specific folder.
+            lucid.document.app.picker: View, edit, and manage any Lucid document selected within an app.
+            lucid.document.app.picker:readonly: View and download any Lucid document selected within an app.
+            lucid.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator:readonly: View document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed: Create, view, edit, and delete document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed:readonly: View document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link: Create, view, edit, and delete share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link:readonly: View share links for any Lucid document selected within an app.
+            lucid.document.accessRequest: Request access to Lucid documents.
+            licenses:admin: Perform admin actions on licenses and subscriptions belonging to the account.
+            licenses:admin.readonly: View licenses and subscriptions belonging to the account with admin permissions.
+            teams: Create, view, and edit, archive, and restore any teams on your account. Control which users belong to teams.
+            teams:readonly: View any teams on your account and list which users belong to them.
+            teams:admin: Manage teams on your account.
+            lucidchart.document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed:readonly: View embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            lucidchart.document.content:readonly: View and download any Lucidchart document on your account.
+            lucidchart.document.content:admin: Perform admin actions on Lucidchart documents belonging to the account.
+            lucidchart.document.content:admin.readonly: View all Lucidchart documents belonging to the account with admin permissions.
+            lucidchart.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed:readonly: View embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link:readonly: View the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.storage:admin.readonly: Perform admin actions backing up Lucidchart documents belonging to the account.
+            lucidchart.document.accessRequest: Request access to Lucidchart documents.
+            lucidspark.document.app: View, edit, and manage any Lucidspark board selected for this third-party application. Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.folder: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.picker: View, edit, and manage any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker:readonly: View and download any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed:readonly: View embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.content: Create, view, edit, and delete any Lucidspark board on your account.
+            lucidspark.document.content:readonly: View and download any Lucidspark board on your account.
+            lucidspark.document.content:admin: Perform admin actions on Lucidspark boards belonging to the account.
+            lucidspark.document.content:admin.readonly: View all Lucidspark boards belonging to the account with admin permissions.
+            lucidspark.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed:readonly: View embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link:readonly: View the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.storage:admin.readonly: Perform admin actions backing up Lucidspark boards belonging to the account.
+            lucidspark.document.accessRequest: Request access to Lucidspark boards.
+            lucidscale.document.app: View, edit, and manage any Lucidscale model selected for this third-party application. Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.folder: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.picker: View, edit, and manage any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker:readonly: View and download any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed:readonly: View embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.content: Create, view, edit, and delete any Lucidscale model on your account.
+            lucidscale.document.content:readonly: View and download any Lucidscale model on your account.
+            lucidscale.document.content:admin: Perform admin actions on Lucidscale models belonging to the account.
+            lucidscale.document.content:admin.readonly: View all Lucidscale models belonging to the account with admin permissions.
+            lucidscale.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed:readonly: View embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link:readonly: View the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.storage:admin.readonly: Perform admin actions backing up Lucidscale models belonging to the account.
+            lucidscale.document.accessRequest: Request access to Lucidscale models.
+            offline_access: Continue to perform authorized actions when you're not logged in (required to refresh tokens).
+            user.profile: Allow applications to view basic information about you (e.g., full name, username, and email).
+            document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            document.content:readonly: View and download any Lucidchart document on your account.
+    ApiKey:
+      type: http
+      scheme: bearer
+    Bearer:
+      type: http
+      scheme: bearer
+x-refined-from:
+- lucid-rest-api-openapi.yml
+- lucid-scim-api-openapi.yml

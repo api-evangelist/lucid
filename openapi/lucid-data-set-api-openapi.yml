@@ -1,0 +1,433 @@
+openapi: 3.2.0
+info:
+  title: Lucid Data Data Set API
+  version: '1.0'
+  description: The Lucid Data API enables external applications to create, read, update, and delete structured data linked to Lucid documents. Use it to sync data sets, collections, and schemas between your data sources and Lucid diagrams. Authenticate via OAuth 2.0.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/data-api
+servers:
+- url: https://data.lucid.app
+tags:
+- name: Data Set
+  description: Create, retrieve, update, and delete data sets. A data set is a top-level container that groups related data sources and their collections.
+paths:
+  /dataSets:
+    head:
+      summary: Get Total Data Sets Count
+      description: 'This endpoint returns the number of data sets a user has access to. The return value is in the response headers as `Lucid-DataSets-Total`
+
+        '
+      operationId: getDataSetCount
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      responses:
+        '200':
+          description: OK with lucid-datasets-total header in response
+          headers:
+            lucid-datasets-total:
+              description: Total number of data sets
+              schema:
+                type: integer
+                example: 123
+    get:
+      summary: Get All Data Sets
+      description: 'This endpoint returns all data sets that the user has access to. The results will be paginated. If the number of data sets exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns data sets in the range from start to start + pagination limit. Items in the response are determined based on their creation order.
+
+        '
+      operationId: getAllDataSets
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: start
+        in: query
+        description: Starting 1-based index of data sets to retreive. Defaults to 1.
+        required: false
+        schema:
+          type: integer
+      - name: end
+        in: query
+        description: Ending index of data sets to retreive. Defaults to 100.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with paginated list of Data Set objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataSets:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uri:
+                          type: string
+                          description: URI of the data set
+                          example: https://data.lucid.app/dataSets/2168
+                        name:
+                          type: string
+                          description: Name of the data set
+                          example: Data Set Name
+                        properties:
+                          type: string
+                          description: Link to get properties of the data set
+                          example: https://data.lucid.app/dataSets/2168/properties
+                        created:
+                          type: string
+                          description: Date the data set was created
+                          example: '2021-01-01T00:00:00Z'
+                        modified:
+                          type: string
+                          description: Date the data set was last modified
+                          example: '2021-01-01T00:00:00Z'
+                        creatorId:
+                          type: integer
+                          description: ID of the user who created the data set
+                          example: 123456
+                        dataSetGrants:
+                          type: string
+                          description: Link to get grants for the data set
+                          example: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                        dataSources:
+                          type: string
+                          description: Link to get data sources for the data set
+                          example: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                      required:
+                      - uri
+                      - name
+                      - properties
+                      - created
+                      - modified
+                      - creatorId
+                      - dataSetGrants
+                      - dataSources
+                      example:
+                        uri: https://data.lucid.app/dataSets/2168
+                        name: Data Set Name
+                        properties: https://data.lucid.app/dataSets/2168/properties
+                        created: '2021-01-01'
+                        modified: '2021-01-01T00:00:00Z'
+                        creatorId: 123456
+                        dataSetGrants: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                        dataSources: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  total:
+                    type: integer
+                    description: Total number of data sets
+                    example: 125
+                  prev:
+                    type: string
+                    description: Link to get the previous set of data sets
+                    example: https://data.lucid.app/dataSets?start=80&end=90
+                  next:
+                    type: string
+                    description: Link to get the next set of data sets
+                    example: https://data.lucid.app/dataSets?start=100&end=110
+    post:
+      summary: Create Data Set
+      description: 'Creates a new data set and a corresponding new data set grant for the user. Note that a data set cannot be created with data sources already inside it, so data sources must be added to a data set through either the Create Data Source endpoint or the Update Data Source endpoint.
+
+        '
+      operationId: createDataSet
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name to give the new data set
+                  example: Data Set Name
+                properties:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Used to create the data set properties for the new data set.
+                  example: null
+              required:
+              - name
+              example:
+                name: Data Set Name
+                properties:
+                  Color: green
+                  AuthoredBy: Lucidchart
+      responses:
+        '200':
+          description: OK with Data Set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set
+                    example: https://data.lucid.app/dataSets/2168
+                  name:
+                    type: string
+                    description: Name of the data set
+                    example: Data Set Name
+                  properties:
+                    type: string
+                    description: Link to get properties of the data set
+                    example: https://data.lucid.app/dataSets/2168/properties
+                  created:
+                    type: string
+                    description: Date the data set was created
+                    example: '2021-01-01T00:00:00Z'
+                  modified:
+                    type: string
+                    description: Date the data set was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  creatorId:
+                    type: integer
+                    description: ID of the user who created the data set
+                    example: 123456
+                  dataSetGrants:
+                    type: string
+                    description: Link to get grants for the data set
+                    example: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources:
+                    type: string
+                    description: Link to get data sources for the data set
+                    example: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                required:
+                - uri
+                - name
+                - properties
+                - created
+                - modified
+                - creatorId
+                - dataSetGrants
+                - dataSources
+                example:
+                  uri: https://data.lucid.app/dataSets/2168
+                  name: Data Set Name
+                  properties: https://data.lucid.app/dataSets/2168/properties
+                  created: '2021-01-01'
+                  modified: '2021-01-01T00:00:00Z'
+                  creatorId: 123456
+                  dataSetGrants: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+  /dataSets/{dataSetId}:
+    get:
+      summary: Get Data Set
+      description: 'Gets a specific existing data set from Lucid.
+
+        '
+      operationId: getDataSet
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to return
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Set object
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set
+                    example: https://data.lucid.app/dataSets/2168
+                  name:
+                    type: string
+                    description: Name of the data set
+                    example: Data Set Name
+                  properties:
+                    type: string
+                    description: Link to get properties of the data set
+                    example: https://data.lucid.app/dataSets/2168/properties
+                  created:
+                    type: string
+                    description: Date the data set was created
+                    example: '2021-01-01T00:00:00Z'
+                  modified:
+                    type: string
+                    description: Date the data set was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  creatorId:
+                    type: integer
+                    description: ID of the user who created the data set
+                    example: 123456
+                  dataSetGrants:
+                    type: string
+                    description: Link to get grants for the data set
+                    example: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources:
+                    type: string
+                    description: Link to get data sources for the data set
+                    example: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                required:
+                - uri
+                - name
+                - properties
+                - created
+                - modified
+                - creatorId
+                - dataSetGrants
+                - dataSources
+                example:
+                  uri: https://data.lucid.app/dataSets/2168
+                  name: Data Set Name
+                  properties: https://data.lucid.app/dataSets/2168/properties
+                  created: '2021-01-01T00:00:00Z'
+                  modified: '2021-01-01T00:00:00Z'
+                  creatorId: 123456
+                  dataSetGrants: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+    patch:
+      summary: Update Data Set Name
+      description: 'This endpoint takes the payload specified below and updates the data set name. Updates will only occur if the user has access to the data set. Note that the other fields in a dataset cannot be updated through this endpoint.
+
+        '
+      operationId: updateDataSetName
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name to give the existing data set
+                  example: New Data Set Name
+              required:
+              - name
+              example:
+                name: New Data Set Name
+      responses:
+        '200':
+          description: OK with Data Set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data set
+                    example: https://data.lucid.app/dataSets/2168
+                  name:
+                    type: string
+                    description: Name of the data set
+                    example: Data Set Name
+                  properties:
+                    type: string
+                    description: Link to get properties of the data set
+                    example: https://data.lucid.app/dataSets/2168/properties
+                  created:
+                    type: string
+                    description: Date the data set was created
+                    example: '2021-01-01T00:00:00Z'
+                  modified:
+                    type: string
+                    description: Date the data set was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  creatorId:
+                    type: integer
+                    description: ID of the user who created the data set
+                    example: 123456
+                  dataSetGrants:
+                    type: string
+                    description: Link to get grants for the data set
+                    example: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources:
+                    type: string
+                    description: Link to get data sources for the data set
+                    example: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                required:
+                - uri
+                - name
+                - properties
+                - created
+                - modified
+                - creatorId
+                - dataSetGrants
+                - dataSources
+                example:
+                  uri: https://data.lucid.app/dataSets/2168
+                  name: Data Set Name
+                  properties: https://data.lucid.app/dataSets/2168/properties
+                  created: '2021-01-01'
+                  modified: '2021-01-01T00:00:00Z'
+                  creatorId: 123456
+                  dataSetGrants: https://data.lucid.app/dataSetGrants?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+                  dataSources: https://data.lucid.app/dataSources?dataSet=https%3A%2F%2Fdata.lucid.app%2FdataSets%2F2168
+    delete:
+      summary: Delete Data Set
+      description: 'This removes the specified data set and its associated properties. Once deleted, none of the information can be recovered. The data sources in the set will be removed from the data set but otherwise they will not be deleted or altered.
+
+        '
+      operationId: deleteDataSet
+      tags:
+      - Data Set
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            data-service.admin: Scope needed for access to the Data APIs.
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

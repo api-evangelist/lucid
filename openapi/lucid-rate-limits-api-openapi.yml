@@ -1,0 +1,77 @@
+openapi: 3.2.0
+info:
+  title: Lucid Data Rate Limits API
+  version: '1.0'
+  description: The Lucid Data API enables external applications to create, read, update, and delete structured data linked to Lucid documents. Use it to sync data sets, collections, and schemas between your data sources and Lucid diagrams. Authenticate via OAuth 2.0.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/data-api
+servers:
+- url: https://data.lucid.app
+tags:
+- name: Rate Limits
+  description: Retrieve current rate limit thresholds and quotas for the authenticated user.
+paths:
+  /rateLimits:
+    get:
+      summary: Get Rate Limits
+      description: 'See what your current rate limits are.
+
+        '
+      operationId: getRateLimits
+      tags:
+      - Rate Limits
+      security:
+      - OAuth2:
+        - data-service.admin
+      responses:
+        '200':
+          description: OK with current limits for requesting user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userHardRefreshInterval:
+                    type: integer
+                    description: Minimum number of seconds that must elapse before a hard (full) data refresh can be triggered again.
+                    example: 30
+                  userSoftRefreshInterval:
+                    type: integer
+                    description: Minimum number of seconds that must elapse before a soft (incremental) data refresh can be triggered again.
+                    example: 30
+                  userApiCallRate:
+                    type: integer
+                    description: Maximum number of API requests the user can make per minute.
+                    example: 750
+                  fileSizeLimit:
+                    type: integer
+                    description: Maximum file upload size in megabytes.
+                    example: 3
+                required:
+                - userHardRefreshInterval
+                - userSoftRefreshInterval
+                - userApiCallRate
+                - fileSizeLimit
+                example:
+                  userHardRefreshInterval: 30
+                  userSoftRefreshInterval: 30
+                  userApiCallRate: 750
+                  fileSizeLimit: 3
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            data-service.admin: Scope needed for access to the Data APIs.
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

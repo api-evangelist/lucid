@@ -1,0 +1,132 @@
+openapi: 3.2.0
+info:
+  title: Lucid Data Data Set Properties API
+  version: '1.0'
+  description: The Lucid Data API enables external applications to create, read, update, and delete structured data linked to Lucid documents. Use it to sync data sets, collections, and schemas between your data sources and Lucid diagrams. Authenticate via OAuth 2.0.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/data-api
+servers:
+- url: https://data.lucid.app
+tags:
+- name: Data Set Properties
+  description: Read and update metadata properties on a data set, such as display name and configuration.
+paths:
+  /dataSets/{dataSetId}/properties:
+    get:
+      summary: Get Data Set Properties
+      description: 'Gets all properties for the specified data set if the user has access to the data set.
+
+        '
+      operationId: getDataSetProperties
+      tags:
+      - Data Set Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to return properties for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Set Properties
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                example:
+                  backgroundColor: blue
+                  font: Times New Roman
+    patch:
+      summary: Update Data Set Properties
+      description: 'Allows a user to update the properties on a data set. This endpoint uses the supplied values to either update existing properties or add new properties.
+
+        '
+      operationId: updateDataSetProperties
+      tags:
+      - Data Set Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to update properties for
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+              example:
+                backgroundColor: blue
+                font: Times New Roman
+      responses:
+        '200':
+          description: OK with affected Data Set Properties
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                example:
+                  backgroundColor: blue
+                  font: Times New Roman
+    delete:
+      summary: Delete Data Set Properties
+      description: 'Removes only the properties provided in the query parameter. The deleted properties cannot be undone. The deletion will only occur if the user has access to the data set.
+
+        '
+      operationId: deleteDataSetProperties
+      tags:
+      - Data Set Properties
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSetId
+        in: path
+        description: ID of data set to delete properties for
+        required: true
+        schema:
+          type: integer
+      - name: properties
+        in: query
+        description: List of properties to remove from specified data set
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            data-service.admin: Scope needed for access to the Data APIs.
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

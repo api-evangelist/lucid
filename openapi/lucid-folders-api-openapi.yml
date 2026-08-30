@@ -1,0 +1,645 @@
+openapi: 3.2.0
+info:
+  title: Lucid REST Folders API
+  version: '1.0'
+  description: The Lucid REST API provides programmatic access to manage documents, users, folders, sharing, licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale). Authenticate via OAuth 2.0 or API key.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/api
+servers:
+- url: https://api.lucid.co
+tags:
+- name: Folders
+  description: Create, retrieve, update, search, trash, and restore folders. Includes listing folder contents and root folder navigation.
+paths:
+  /v1/folders/{id}:
+    get:
+      summary: Get Folder
+      description: Retrieves information about the requested folder.
+      operationId: getFolder
+      tags:
+      - Folders
+      security:
+      - ApiKey:
+        - FolderReadonly
+      - OAuth2:
+        - folder:readonly
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the folder to be retrieved.
+      responses:
+        '200':
+          description: OK with a Folder resource containing information about the requested folder.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '403':
+          description: Forbidden if the app making the request does not have permission to the folder, or if the folder has been deleted (trashed is okay) or does not exist.
+    patch:
+      summary: Update Folder
+      description: 'Allows the requester to modify certain fields on a folder.
+
+
+        When updating the parent field, the folder moves to the new parent location while its contents remain intact. The requesting user must have both edit and share access to both the old and new parent folders, or the entire update will fail.
+
+
+        It is not permitted to update the parent field on Team Folders. Moving folders into or out of Team Folders may encounter permission-related errors, but once a folder is within a Team Folder, reorganization among descendants within that Team Folder can proceed without permission issues.
+
+        '
+      operationId: updateFolder
+      tags:
+      - Folders
+      security:
+      - ApiKey:
+        - FolderEdit
+      - OAuth2:
+        - folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the folder to be updated.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: New name for the folder being updated.
+                parent:
+                  type:
+                  - number
+                  - 'null'
+                  description: New parent for the folder being updated. Causes the folder to be moved into another folder if an ID is provided or into the user's root folder ("My Documents") if `null` is provided. If the parent field is not included in the request, the folder will not be moved. Cannot be provided for Team Folders.
+      responses:
+        '200':
+          description: OK with a Folder resource containing information about the updated folder.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '400':
+          description: Bad Request if the parent field is included in a request for a team folder, or if invalid input types are provided for id, name, or parent.
+        '403':
+          description: Forbidden if the app making the request does not have permission to the folder, the folder has been deleted or does not exist, or the request was not authorized to move the folder.
+  /v1/folders:
+    post:
+      summary: Create Folder
+      description: Creates a new folder.
+      operationId: createFolder
+      tags:
+      - Folders
+      security:
+      - ApiKey:
+        - FolderEdit
+      - OAuth2:
+        - folder
+        - lucidchart.document.app.folder
+        - lucidspark.document.app.folder
+        - lucidscale.document.app.folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the folder being created.
+                type:
+                  $ref: '#/components/schemas/FolderType'
+                parent:
+                  description: Destination folder or repository to create the new folder in. For repositories, use the repository ID prefixed with `repo_` (e.g., `repo_12345`). For folders, use the numeric folder ID. If it is not provided, the folder will be created in the root of the user's folder manager ("My Documents"). Ignored when `appFolder` is set to `true`.
+                  oneOf:
+                  - type: integer
+                    description: Numeric folder ID.
+                  - type: string
+                    description: Repository ID prefixed with `repo_`.
+                  example: 12345
+                appFolder:
+                  type: boolean
+                  description: 'When set to `true`, the folder is created inside the OAuth2 client''s app project folder, overriding the `parent` field. Required when using a `document.app.folder` scope without a `folder` scope.
+
+                    '
+              required:
+              - name
+              - type
+      responses:
+        '201':
+          description: Created with a Folder resource containing information about the newly created folder.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folder'
+        '400':
+          description: Bad Request. * A team folder cannot be created within another folder or team. * Invalid parent ID. Must be either a string prefixed with repo_ (for repositories) or a number. * When using a `document.app.folder` scope, `appFolder` must be set to `true`.
+        '403':
+          description: 'Forbidden if the request is not authorized to create in the specified `parent` folder or repository, or when using a `document.app.folder` scope without setting `appFolder` to `true`.
+
+            '
+  /v1/folders/{id}/trash:
+    post:
+      summary: Trash Folder
+      description: Moves the given folder and all of its contents into the trash.
+      operationId: trashFolder
+      tags:
+      - Folders
+      security:
+      - ApiKey:
+        - FolderEdit
+      - OAuth2:
+        - folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the folder to be moved to the trash.
+      responses:
+        '204':
+          description: No Content when the folder is successfully moved into the trash or is already trashed.
+        '403':
+          description: Forbidden if the app making the request does not have permission to the folder, or if the folder has been deleted or does not exist.
+  /v1/folders/{id}/restore:
+    post:
+      summary: Restore Folder
+      description: Moves a trashed folder and all of its contents back to their original pre-trash locations.
+      operationId: restoreFolder
+      tags:
+      - Folders
+      security:
+      - ApiKey:
+        - FolderEdit
+      - OAuth2:
+        - folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the folder to be restored from the trash.
+      responses:
+        '204':
+          description: No Content when the folder is successfully moved out of the trash or is already not in the trash.
+        '403':
+          description: Forbidden if the app making the request does not have permission to the folder, or if the folder has been deleted or does not exist.
+  /v1/folders/search:
+    post:
+      summary: Search Folders
+      description: 'Retrieves information about folders the authenticated user has at least read-only access to. Admin requests using the `Lucid-Request-As: admin` header return all account folders; this capability is exclusive to Enterprise Shield accounts. Results are sorted by creation date and paginated. Rate limited to 300 requests per 5 seconds per account.'
+      operationId: searchFolders
+      tags:
+      - Folders
+      security:
+      - ApiKey:
+        - FolderReadonly
+        - FolderAdmin
+      - OAuth2:
+        - folder:readonly
+        - folder:admin.readonly
+        - lucidchart.document.app.folder
+        - lucidspark.document.app.folder
+        - lucidscale.document.app.folder
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Folders'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  $ref: '#/components/schemas/FolderType'
+                  description: 'Note: This endpoint only accepts the folder type'
+                userIds:
+                  type: array
+                  items:
+                    type: number
+                  description: 'If provided, limit the search to folders that at least one specified user can access.
+
+                    Without a list, the system searches the entire account (admin-level) or only folders the authenticated user can access (user-level).
+
+                    '
+                ownedByUsers:
+                  type: boolean
+                  description: When true, search results will only include folders owned by users specified by userIds. Ignored if no userIds are provided.
+                keywords:
+                  type: string
+                  description: Keywords to search against folder content and titles. This field is truncated to 400 characters. When provided, results will be sorted by relevance to keyword search.
+                appFolder:
+                  type: boolean
+                  description: 'When set to `true`, restricts search results to folders within the OAuth2 client''s app project folder. Required when using a `document.app.folder` scope without a `folder:readonly` scope.
+
+                    '
+      responses:
+        '200':
+          description: OK with an array of Folder Resource objects containing information about folders the authenticated user has access to.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+        '400':
+          description: 'Bad Request.
+
+            * The request does not contain a body.
+
+            * When using a `document.app.folder` scope, `appFolder` must be set to `true`.
+
+            '
+        '403':
+          description: 'Forbidden.
+
+            * User requests with admin scope and without Lucid-Request-As=admin header.
+
+            * User requests without an admin scope and includes Lucid-Request-As=admin header.
+
+            * Account does not have access to the API.
+
+            * When using a `document.app.folder` scope without setting `appFolder` to `true`.
+
+            '
+        '429':
+          description: Too Many Requests if the account makes more than 300 requests in 5 seconds.
+  /v1/folders/{id}/contents:
+    get:
+      summary: List Folder Contents
+      description: Retrieves basic information about the contents of a given folder. Results are paginated.
+      operationId: listFolderContents
+      tags:
+      - Folders
+      security:
+      - ApiKey:
+        - FolderReadonly
+      - OAuth2:
+        - folder:readonly
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          oneOf:
+          - type: number
+          - type: string
+            enum:
+            - root
+        description: ID of the folder or `root` to retrieve contents of the authenticated user's root directory ("My Documents").
+      responses:
+        '200':
+          description: OK with an array of Folder Content Resources containing information about the contents of the requested folder.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FolderContent'
+        '403':
+          description: Forbidden if the app making the request does not have permission to the folder, or if the folder has been deleted or does not exist.
+  /v1/folders/root/contents:
+    get:
+      summary: List Root Folder Contents
+      description: Retrieves basic information about the contents of the root folder. Results are paginated.
+      operationId: listRootFolderContents
+      tags:
+      - Folders
+      security:
+      - ApiKey:
+        - FolderReadonly
+      - OAuth2:
+        - folder:readonly
+      responses:
+        '200':
+          description: OK with an array of Folder Content Resources containing information about the contents of the requested folder.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FolderContent'
+        '403':
+          description: Forbidden if the app making the request does not have permission to the folder, or if the folder has been deleted or does not exist.
+  /v1/folders/app/contents:
+    get:
+      summary: List App Folder Contents
+      operationId: listAppFolderContents
+      tags:
+      - Folders
+      description: Lists the contents of the OAuth2 client's app project folder for the authenticated user. The app project folder is automatically resolved from the OAuth2 client ID associated with the access token.
+      security:
+      - OAuth2:
+        - folder:readonly
+        - lucidchart.document.app.folder
+        - lucidspark.document.app.folder
+        - lucidscale.document.app.folder
+      responses:
+        '200':
+          description: OK with an array of Folder Content Resources containing information about the contents of the app project folder.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FolderContent'
+components:
+  schemas:
+    FolderAttribute:
+      type: object
+      description: An attribute assigned to the folder.
+      properties:
+        name:
+          type: string
+          description: Name of the attribute
+          example: Sample Label
+        value:
+          description: Value of the attribute. Can be any type, but attributes with the same name will always have the same type.
+          example: Sample Value
+    Folder:
+      type: object
+      description: A standard representation of a folder.
+      properties:
+        id:
+          type: number
+          description: Unique ID of the folder
+          example: 123456789
+        type:
+          $ref: '#/components/schemas/FolderType'
+        name:
+          type: string
+          description: Name of the folder
+          example: Folder Name
+        parent:
+          type:
+          - number
+          - 'null'
+          description: ID of the parent folder.
+          example: 123456788
+        created:
+          type: string
+          format: date-time
+          description: Date and time of when the folder was created
+          example: '2020-06-26T16:29:37Z'
+        trashed:
+          type: string
+          format: date-time
+          description: Date and time of when the folder was trashed
+          example: '2022-01-20T12:14:18Z'
+        attributes:
+          type: array
+          description: An array of attributes assigned to the folder. Can be null or empty.
+          items:
+            $ref: '#/components/schemas/FolderAttribute'
+      required:
+      - id
+      - type
+      - name
+      - created
+    FolderContent:
+      type: object
+      description: A representation of a single item contained in a folder.
+      properties:
+        id:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: number
+          description: Unique ID of the folder or document being referred to. This field will be a Number for folders and a UUID for documents.
+          example: 123456789
+        type:
+          $ref: '#/components/schemas/FolderContentType'
+        name:
+          type: string
+          description: Name of the folder or document
+          example: Folder Name
+        isShortcut:
+          type: boolean
+          description: A boolean value indicating whether or not the folder or document is a shortcut.
+          example: false
+        product:
+          $ref: '#/components/schemas/Product'
+      required:
+      - id
+      - type
+      - name
+      - isShortcut
+    FolderContentType:
+      type: string
+      description: '* folder  -  Type denoting that the Folder Content Resource is a folder and will have a Number id field and no product field.
+
+        * document  -  Type denoting that the Folder Content Resource is a document and will have a UUID id field and will contain a product field.
+
+        '
+      enum:
+      - folder
+      - document
+      example: document
+    FolderType:
+      type: string
+      description: '* folder - Folders can live in other folders, team folders, or the root of a user’s folder manager ("My Documents"). A folder in "My Documents" will have a null parent field.
+
+        * team   - Team folders can never live in another folder and are always located in the "Team Folders" section of a user''s folder manager. Team folders will not have a parent field. Learn more
+
+        '
+      enum:
+      - folder
+      - team
+      example: folder
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
+  parameters:
+    RequestAs-Folders:
+      in: header
+      name: Lucid-Request-As
+      required: true
+      description: 'If the requesting user is an account owner or folder admin with the required permissions and they make the request
+
+        with the value of “admin” as this header and include an admin scope, the request will be made using their admin
+
+        permissions.
+
+        Account owners and document admins can access the admin version of folder search.
+
+        '
+      schema:
+        type: string
+      example: admin
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            account.audit.logs: View audit logs on your account.
+            account.info: View basic information about your account (e.g., account ID and account name) .
+            account.user: Create, view, edit, and delete users on your account.
+            account.user:readonly: View users on your account.
+            account.users:admin.readonly: View all users and their roles on your account.
+            account.user.transfercontent: Transfer ownership of a user's resources to another user on your account.
+            account.settings:readonly: View settings on your account.
+            account.legalhold: Create, view, and expire legal holds on your account.
+            account.legalhold:readonly: View legal holds on your account.
+            account.legalhold.users: Manage legal hold users on your account.
+            account.legalhold.users:readonly: View legal hold users on your account.
+            folder: Create, view, edit, share, and delete your folders. Organize your folders and their contents.
+            folder:readonly: View any of your folders and list their contents.
+            folder:admin: Perform admin actions on folders belonging to the account.
+            folder:admin.readonly: View all folders belonging to the account with admin permissions.
+            invitation: Accept document and folder share links.
+            invitation.accept: Accept document and folder share links.
+            cloud.credential: Manage cloud credentials.
+            cloud.credential:readonly: View cloud credentials.
+            cloud.datasource: Manage cloud data sources.
+            cloud.datasource:readonly: View cloud data sources.
+            cloud.model: Manage cloud models.
+            repository: Manage repositories.
+            repository:readonly: View repositories.
+            repository:admin: Perform admin actions on repositories.
+            lucid.document.content: Create, view, edit, and delete any Lucid document accessible by the user.
+            lucid.document.content:readonly: View and download any Lucid document accessible by the user.
+            lucid.document.content:admin: Perform admin actions on Lucid documents belonging to the account.
+            lucid.document.content:admin.readonly: View all Lucid documents belonging to the account with admin permissions.
+            lucid.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share:readonly: View document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator:readonly: View document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.embed: Create, view, edit, and delete document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.embed:readonly: View document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.link: Create, view, edit, and delete share links for any Lucid document accessible by the user.
+            lucid.document.content.share.link:readonly: View share links for any Lucid document accessible by the user.
+            lucid.document.storage:admin.readonly: Perform admin actions backing up Lucid documents belonging to the account.
+            lucid.document.app: View, edit, create, and manage folders and documents within an app.
+            lucid.document.app.folder: Create, view, edit, and manage any Lucid document within its app-specific folder.
+            lucid.document.app.picker: View, edit, and manage any Lucid document selected within an app.
+            lucid.document.app.picker:readonly: View and download any Lucid document selected within an app.
+            lucid.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator:readonly: View document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed: Create, view, edit, and delete document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed:readonly: View document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link: Create, view, edit, and delete share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link:readonly: View share links for any Lucid document selected within an app.
+            lucid.document.accessRequest: Request access to Lucid documents.
+            licenses:admin: Perform admin actions on licenses and subscriptions belonging to the account.
+            licenses:admin.readonly: View licenses and subscriptions belonging to the account with admin permissions.
+            teams: Create, view, and edit, archive, and restore any teams on your account. Control which users belong to teams.
+            teams:readonly: View any teams on your account and list which users belong to them.
+            teams:admin: Manage teams on your account.
+            lucidchart.document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed:readonly: View embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            lucidchart.document.content:readonly: View and download any Lucidchart document on your account.
+            lucidchart.document.content:admin: Perform admin actions on Lucidchart documents belonging to the account.
+            lucidchart.document.content:admin.readonly: View all Lucidchart documents belonging to the account with admin permissions.
+            lucidchart.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed:readonly: View embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link:readonly: View the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.storage:admin.readonly: Perform admin actions backing up Lucidchart documents belonging to the account.
+            lucidchart.document.accessRequest: Request access to Lucidchart documents.
+            lucidspark.document.app: View, edit, and manage any Lucidspark board selected for this third-party application. Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.folder: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.picker: View, edit, and manage any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker:readonly: View and download any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed:readonly: View embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.content: Create, view, edit, and delete any Lucidspark board on your account.
+            lucidspark.document.content:readonly: View and download any Lucidspark board on your account.
+            lucidspark.document.content:admin: Perform admin actions on Lucidspark boards belonging to the account.
+            lucidspark.document.content:admin.readonly: View all Lucidspark boards belonging to the account with admin permissions.
+            lucidspark.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed:readonly: View embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link:readonly: View the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.storage:admin.readonly: Perform admin actions backing up Lucidspark boards belonging to the account.
+            lucidspark.document.accessRequest: Request access to Lucidspark boards.
+            lucidscale.document.app: View, edit, and manage any Lucidscale model selected for this third-party application. Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.folder: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.picker: View, edit, and manage any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker:readonly: View and download any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed:readonly: View embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.content: Create, view, edit, and delete any Lucidscale model on your account.
+            lucidscale.document.content:readonly: View and download any Lucidscale model on your account.
+            lucidscale.document.content:admin: Perform admin actions on Lucidscale models belonging to the account.
+            lucidscale.document.content:admin.readonly: View all Lucidscale models belonging to the account with admin permissions.
+            lucidscale.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed:readonly: View embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link:readonly: View the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.storage:admin.readonly: Perform admin actions backing up Lucidscale models belonging to the account.
+            lucidscale.document.accessRequest: Request access to Lucidscale models.
+            offline_access: Continue to perform authorized actions when you're not logged in (required to refresh tokens).
+            user.profile: Allow applications to view basic information about you (e.g., full name, username, and email).
+            document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            document.content:readonly: View and download any Lucidchart document on your account.
+    ApiKey:
+      type: http
+      scheme: bearer
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-rest-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

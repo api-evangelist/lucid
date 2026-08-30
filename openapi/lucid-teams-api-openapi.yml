@@ -1,0 +1,674 @@
+openapi: 3.2.0
+info:
+  title: Lucid REST Teams API
+  version: '1.0'
+  description: The Lucid REST API provides programmatic access to manage documents, users, folders, sharing, licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale). Authenticate via OAuth 2.0 or API key.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/api
+servers:
+- url: https://api.lucid.co
+tags:
+- name: Teams
+  description: Create, retrieve, update, archive, and restore teams. Manage team membership by adding and removing users.
+paths:
+  /v1/teams:
+    get:
+      summary: List Teams
+      description: 'Retrieves information about teams the authenticated user has at least read-only access to.
+
+
+        The list of teams returned depends on whether the request was made using user or admin permissions. User permissions return teams the requesting user has access to. Admin permissions return all teams belonging to the account.
+
+
+        This endpoint is paginated.
+
+        '
+      operationId: listTeams
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsReadonly
+        - TeamsAdmin
+      - OAuth2:
+        - teams:readonly
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      - name: filter
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - include=memberonly
+        description: The filter to apply to the returned teams. The only supported filter is "include=memberonly", which returns only teams that the requesting user is a member of. If no filter is provided, all `open` and `closed` teams on the account are returned, along with `hidden` teams that the requesting user is a member of.
+        example: include=memberonly
+      responses:
+        '200':
+          description: OK. Returns a list of Team resources containing information about teams directly accessible to the authenticated user. If requesting as admin, the list includes all teams on the account. If a filter is specified, only teams matching the filter are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+    post:
+      summary: Create Team
+      description: 'Creates a new team for the authenticated user, populated with the given team members. Hidden teams cannot be created via the REST API.
+
+
+        Whether the requesting user is automatically added to the team depends on the permission type. With user permissions, the user is automatically added to the team. With admin permissions, the user is not automatically added.
+
+        '
+      operationId: createTeam
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsEdit
+        - TeamsAdmin
+      - OAuth2:
+        - teams
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTeamBody'
+      responses:
+        '201':
+          description: Created. Returns a Team resource containing information about the created team. If requesting as admin, the user making the request will not have been automatically included as a user on the team.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          description: Bad Request. Occurs if the name in the request body is empty or exceeds the maximum allowed length.
+        '403':
+          description: Forbidden. Occurs if the user making the request does not have permission to create teams.
+        '409':
+          description: Conflict. Occurs if a team already exists with an identical name.
+  /v1/teams/{id}:
+    get:
+      summary: Get Team
+      description: 'Retrieves information about a requested team. The response depends on the permission type used: user permissions require that the authenticated user has access to the team, while admin permissions allow access to any team belonging to the account.'
+      operationId: getTeam
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsReadonly
+        - TeamsAdmin
+      - OAuth2:
+        - teams:readonly
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the team to get.
+        example: 99
+      responses:
+        '200':
+          description: OK. Returns a Team resource containing information about the specified team. If requesting as admin, a Team resource may be returned even if the authenticated user does not have direct access to the specified team.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '403':
+          description: Forbidden. * if the user making the request does not have access to the specified team. * if the team is not directly accessible by the authenticated user or does not exist.
+    patch:
+      summary: Update Team
+      description: Updates the properties of an existing team, such as its name or type. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, any team belonging to the account can be updated.
+      operationId: updateTeam
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsEdit
+        - TeamsAdmin
+      - OAuth2:
+        - teams
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the team to update.
+        example: 99
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTeamBody'
+      responses:
+        '200':
+          description: OK. Returns a Team resource containing information about the updated team.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '400':
+          description: Bad Request. Occurs if the name in the request body is empty or exceeds the maximum allowed length.
+        '403':
+          description: Forbidden. * if the user making the request does not have access to the specified team. * if the team is not directly accessible by the authenticated user or does not exist. * if the team is managed via SCIM. Use the SCIM Groups API to modify SCIM-managed teams.
+        '409':
+          description: Conflict. Occurs if a team already exists with an identical name.
+  /v1/teams/{id}/users:
+    get:
+      summary: List Users on Team
+      description: 'Retrieves basic information about users on a specified team. With user permissions, the authenticated user must have access to the team. With admin permissions, users from any team belonging to the account can be retrieved.
+
+
+        This endpoint is paginated.
+
+        '
+      operationId: listUsersOnTeam
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsReadonly
+        - TeamsAdmin
+      - OAuth2:
+        - teams:readonly
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the team to be queried.
+        example: 99
+      responses:
+        '200':
+          description: OK. Returns a list of Profile resources containing basic information about users on the specified team. If requesting as admin, Profile resources may be returned even if the authenticated user does not have direct access to the specified team.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Profile'
+        '403':
+          description: Forbidden. * if the user making the request does not have access to the specified team. * if the team has been archived, is not directly accessible by the authenticated user, or does not exist.
+  /v1/teams/{id}/users/add:
+    post:
+      summary: Add Users to Team
+      description: Adds users to a specified team with assigned roles. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, users can be added to any team belonging to the account.
+      operationId: addUsersToTeam
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsEdit
+        - TeamsAdmin
+      - OAuth2:
+        - teams
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the team to which to add users.
+        example: 99
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUsersToTeamBody'
+      responses:
+        '204':
+          description: No Content. The users were successfully added to the team with their assigned roles. If requesting as admin, users may have been added even though the authenticated user does not have direct access to the specified team.
+        '403':
+          description: Forbidden. * if not all the specified users are on the authenticated account. * if the user making the request does not have permission to edit teams. * if the user making the request does not have access to the specified team. * if the team is managed via SCIM. Use the SCIM Groups API to modify SCIM-managed teams.
+  /v1/teams/{id}/users/remove:
+    post:
+      summary: Remove Users from Team
+      description: Removes users from a specified team. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, users can be removed from any team belonging to the account.
+      operationId: removeUsersFromTeam
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsEdit
+        - TeamsAdmin
+      - OAuth2:
+        - teams
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the team from which to remove users.
+        example: 99
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveUsersFromTeamBody'
+      responses:
+        '204':
+          description: No Content. The users were successfully removed from the team. If requesting as admin, users may be have been removed even if the authenticated user does not have direct access to the specified team.
+        '400':
+          description: Bad Request. * if the user making the request attempts to remove all users from the team. * if not all the specified users are members of the team.
+        '403':
+          description: Forbidden. * if the user making the request does not have permission to edit teams. * if the user making the request does not have access to the specified team. * if the team is managed via SCIM. Use the SCIM Groups API to modify SCIM-managed teams.
+  /v1/teams/{id}/archive:
+    post:
+      summary: Archive Team
+      description: Archives a team, making it inactive. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, any team belonging to the account can be archived.
+      operationId: archiveTeam
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsEdit
+        - TeamsAdmin
+      - OAuth2:
+        - teams
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the team to be archived.
+        example: 99
+      responses:
+        '204':
+          description: No Content. The team was successfully archived. If requesting as admin, the specified team may have been archived even though the authenticated user did not have direct access to it.
+        '403':
+          description: Forbidden. * if the user making the request does not have permission to edit teams. * if the user making the request does not have access to the specified team. * if the team is managed via SCIM. Use the SCIM Groups API to modify SCIM-managed teams.
+  /v1/teams/{id}/restore:
+    post:
+      summary: Restore Team
+      description: Restores a previously archived team. With user permissions, the team must be one the requesting user has edit access to. With admin permissions, any team belonging to the account can be restored.
+      operationId: restoreTeam
+      tags:
+      - Teams
+      security:
+      - ApiKey:
+        - TeamsEdit
+        - TeamsAdmin
+      - OAuth2:
+        - teams
+        - teams:admin
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-Teams'
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: number
+        description: ID of the team to be restored.
+        example: 99
+      responses:
+        '204':
+          description: No Content. The team was successfully restored. If requesting as admin, the specified team may have been restored even though the authenticated user did not have direct access to it.
+        '403':
+          description: Forbidden. * if the user making the request does not have permission to edit teams. * if the user making the request does not have access to the specified team. * if the team is managed via SCIM. Use the SCIM Groups API to modify SCIM-managed teams.
+components:
+  schemas:
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
+    TeamUser:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user to add to the team
+          example: 321
+        role:
+          $ref: '#/components/schemas/TeamRole'
+      required:
+      - userId
+      - role
+      description: A user with a specific role to add to a team
+    TeamRole:
+      type: string
+      enum:
+      - TEAM_MANAGER
+      - EDIT_SHARE_MEMBER
+      - EDIT_MEMBER
+      - COMMENT_MEMBER
+      - VIEW_MEMBER
+      description: 'The role to assign to a user on a team. Team roles determine what permissions a user has on documents shared with the team:
+
+        - `TEAM_MANAGER`: Can manage team settings, members, and has full access to team content
+
+        - `EDIT_SHARE_MEMBER`: Can view, comment on, edit, and share team documents
+
+        - `EDIT_MEMBER`: Can view, comment on, and edit team documents
+
+        - `COMMENT_MEMBER`: Can view and comment on team documents
+
+        - `VIEW_MEMBER`: Can only view team documents
+
+        '
+      example: EDIT_MEMBER
+    UpdateTeamBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The team's name. Max length of name is 80 characters.
+          example: Team Name
+      required:
+      - name
+    AddUsersToTeamBody:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamUser'
+          description: Array of users with their assigned roles to add to the team
+      required:
+      - users
+    RemoveUsersFromTeamBody:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: integer
+          description: Array of IDs of users to remove from the team.
+          example:
+          - 321
+          - 654
+          - 987
+      required:
+      - users
+    Profile:
+      type: object
+      properties:
+        accountId:
+          type: number
+          example: 100
+          description: The unique ID for the user's account.
+        username:
+          type: string
+          example: johndoe
+          description: Username of the user.
+        email:
+          type: string
+          example: john-doe@example.com
+          description: Email of the user.
+        fullName:
+          type: string
+          example: John Doe
+          description: Full name of the user.
+        id:
+          type: number
+          example: 101
+          description: ID of the user.
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+          description: A reference to the user's avatar image, falling back to their Gravatar image.
+      description: The Profile resource contains basic profile information about a user.
+    Team:
+      type: object
+      description: A standard representation of a team.
+      properties:
+        id:
+          type: number
+          description: The unique ID for the team.
+          example: 123456789
+        name:
+          type: string
+          description: The team's name.
+          example: Team Name
+        type:
+          $ref: '#/components/schemas/TeamType'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the team was created.
+          example: '2024-01-30T16:29:37Z'
+        archived:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time when the team was archived (if it has been archived).
+          example: null
+    CreateTeamBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The team's name. Max length of name is 80 characters.
+          example: Team Name
+        type:
+          $ref: '#/components/schemas/TeamType'
+        users:
+          type: array
+          items:
+            type: integer
+          description: Array of IDs of users to be on the team.
+          example:
+          - 321
+          - 654
+          - 987
+      required:
+      - name
+      - type
+      - users
+    TeamType:
+      type: string
+      enum:
+      - hidden
+      - closed
+      - open
+      description: The type of the team
+      example: open
+  parameters:
+    RequestAs-Teams:
+      in: header
+      name: Lucid-Request-As
+      required: false
+      description: 'If the requesting user is an account owner, team admin, or team manager with the required permissions and they make
+
+        the request with the value of “admin” as this header and include an admin scope, the request will be made using
+
+        their admin permissions.
+
+        '
+      schema:
+        type: string
+      example: admin
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            account.audit.logs: View audit logs on your account.
+            account.info: View basic information about your account (e.g., account ID and account name) .
+            account.user: Create, view, edit, and delete users on your account.
+            account.user:readonly: View users on your account.
+            account.users:admin.readonly: View all users and their roles on your account.
+            account.user.transfercontent: Transfer ownership of a user's resources to another user on your account.
+            account.settings:readonly: View settings on your account.
+            account.legalhold: Create, view, and expire legal holds on your account.
+            account.legalhold:readonly: View legal holds on your account.
+            account.legalhold.users: Manage legal hold users on your account.
+            account.legalhold.users:readonly: View legal hold users on your account.
+            folder: Create, view, edit, share, and delete your folders. Organize your folders and their contents.
+            folder:readonly: View any of your folders and list their contents.
+            folder:admin: Perform admin actions on folders belonging to the account.
+            folder:admin.readonly: View all folders belonging to the account with admin permissions.
+            invitation: Accept document and folder share links.
+            invitation.accept: Accept document and folder share links.
+            cloud.credential: Manage cloud credentials.
+            cloud.credential:readonly: View cloud credentials.
+            cloud.datasource: Manage cloud data sources.
+            cloud.datasource:readonly: View cloud data sources.
+            cloud.model: Manage cloud models.
+            repository: Manage repositories.
+            repository:readonly: View repositories.
+            repository:admin: Perform admin actions on repositories.
+            lucid.document.content: Create, view, edit, and delete any Lucid document accessible by the user.
+            lucid.document.content:readonly: View and download any Lucid document accessible by the user.
+            lucid.document.content:admin: Perform admin actions on Lucid documents belonging to the account.
+            lucid.document.content:admin.readonly: View all Lucid documents belonging to the account with admin permissions.
+            lucid.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share:readonly: View document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator:readonly: View document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.embed: Create, view, edit, and delete document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.embed:readonly: View document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.link: Create, view, edit, and delete share links for any Lucid document accessible by the user.
+            lucid.document.content.share.link:readonly: View share links for any Lucid document accessible by the user.
+            lucid.document.storage:admin.readonly: Perform admin actions backing up Lucid documents belonging to the account.
+            lucid.document.app: View, edit, create, and manage folders and documents within an app.
+            lucid.document.app.folder: Create, view, edit, and manage any Lucid document within its app-specific folder.
+            lucid.document.app.picker: View, edit, and manage any Lucid document selected within an app.
+            lucid.document.app.picker:readonly: View and download any Lucid document selected within an app.
+            lucid.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator:readonly: View document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed: Create, view, edit, and delete document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed:readonly: View document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link: Create, view, edit, and delete share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link:readonly: View share links for any Lucid document selected within an app.
+            lucid.document.accessRequest: Request access to Lucid documents.
+            licenses:admin: Perform admin actions on licenses and subscriptions belonging to the account.
+            licenses:admin.readonly: View licenses and subscriptions belonging to the account with admin permissions.
+            teams: Create, view, and edit, archive, and restore any teams on your account. Control which users belong to teams.
+            teams:readonly: View any teams on your account and list which users belong to them.
+            teams:admin: Manage teams on your account.
+            lucidchart.document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed:readonly: View embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            lucidchart.document.content:readonly: View and download any Lucidchart document on your account.
+            lucidchart.document.content:admin: Perform admin actions on Lucidchart documents belonging to the account.
+            lucidchart.document.content:admin.readonly: View all Lucidchart documents belonging to the account with admin permissions.
+            lucidchart.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed:readonly: View embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link:readonly: View the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.storage:admin.readonly: Perform admin actions backing up Lucidchart documents belonging to the account.
+            lucidchart.document.accessRequest: Request access to Lucidchart documents.
+            lucidspark.document.app: View, edit, and manage any Lucidspark board selected for this third-party application. Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.folder: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.picker: View, edit, and manage any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker:readonly: View and download any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed:readonly: View embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.content: Create, view, edit, and delete any Lucidspark board on your account.
+            lucidspark.document.content:readonly: View and download any Lucidspark board on your account.
+            lucidspark.document.content:admin: Perform admin actions on Lucidspark boards belonging to the account.
+            lucidspark.document.content:admin.readonly: View all Lucidspark boards belonging to the account with admin permissions.
+            lucidspark.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed:readonly: View embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link:readonly: View the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.storage:admin.readonly: Perform admin actions backing up Lucidspark boards belonging to the account.
+            lucidspark.document.accessRequest: Request access to Lucidspark boards.
+            lucidscale.document.app: View, edit, and manage any Lucidscale model selected for this third-party application. Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.folder: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.picker: View, edit, and manage any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker:readonly: View and download any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed:readonly: View embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.content: Create, view, edit, and delete any Lucidscale model on your account.
+            lucidscale.document.content:readonly: View and download any Lucidscale model on your account.
+            lucidscale.document.content:admin: Perform admin actions on Lucidscale models belonging to the account.
+            lucidscale.document.content:admin.readonly: View all Lucidscale models belonging to the account with admin permissions.
+            lucidscale.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed:readonly: View embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link:readonly: View the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.storage:admin.readonly: Perform admin actions backing up Lucidscale models belonging to the account.
+            lucidscale.document.accessRequest: Request access to Lucidscale models.
+            offline_access: Continue to perform authorized actions when you're not logged in (required to refresh tokens).
+            user.profile: Allow applications to view basic information about you (e.g., full name, username, and email).
+            document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            document.content:readonly: View and download any Lucidchart document on your account.
+    ApiKey:
+      type: http
+      scheme: bearer
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-rest-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

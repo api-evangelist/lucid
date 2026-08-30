@@ -1,0 +1,569 @@
+openapi: 3.2.0
+info:
+  title: Lucid REST Documents Collaboration API
+  version: '1.0'
+  description: The Lucid REST API provides programmatic access to manage documents, users, folders, sharing, licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale). Authenticate via OAuth 2.0 or API key.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/api
+servers:
+- url: https://api.lucid.co
+tags:
+- name: Documents Collaboration
+  description: Manage user and team collaborator access on individual documents, including granting, updating, and revoking collaboration roles.
+paths:
+  /v1/documents/{id}/shares/users/{userId}:
+    get:
+      summary: Get Document User Collaborator
+      description: Retrieves information about a specific user's collaboration access level for a given document, including the sharing permissions and role that the user has been granted.
+      operationId: getDocumentUserCollaborators
+      tags:
+      - Documents Collaboration
+      security:
+      - ApiKey:
+        - DocumentReadonly
+      - OAuth2:
+        - lucidchart.document.content.share.collaborator:readonly
+        - lucidchart.document.app.picker.share.collaborator:readonly
+        - lucidchart.document.app.folder
+        - lucidscale.document.content.share.collaborator:readonly
+        - lucidscale.document.app.picker.share.collaborator:readonly
+        - lucidscale.document.app.folder
+        - lucidspark.document.content.share.collaborator:readonly
+        - lucidspark.document.app.picker.share.collaborator:readonly
+        - lucidspark.document.app.folder
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the document.
+        schema:
+          type: string
+          format: uuid
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      - in: path
+        name: userId
+        required: true
+        description: ID of the user to retrieve collaborator settings for.
+        schema:
+          type: number
+      responses:
+        '200':
+          description: OK with a Document User Collaborator Resource containing information about the user's collaboration settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentUserCollaborator'
+        '403':
+          description: Forbidden if the app making the request does not have permission to the document, or if the document has been deleted, or does not exist.
+        '404':
+          description: Not Found when a user with the specified ID can not be found or does not have collaborator access to the document.
+    put:
+      summary: Create/Update Document User Collaborator
+      description: Updates the collaborator role for a user on a document. If the user did not previously have access to the document, they will be granted access and a new collaborator record will be created.
+      operationId: putDocumentUserCollaborators
+      tags:
+      - Documents Collaboration
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.content.share.collaborator
+        - lucidchart.document.app.picker.share.collaborator
+        - lucidchart.document.app.folder
+        - lucidscale.document.content.share.collaborator
+        - lucidscale.document.app.picker.share.collaborator
+        - lucidscale.document.app.folder
+        - lucidspark.document.content.share.collaborator
+        - lucidspark.document.app.picker.share.collaborator
+        - lucidspark.document.app.folder
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the document.
+        schema:
+          type: string
+          format: uuid
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      - in: path
+        name: userId
+        required: true
+        description: ID of the user to retrieve collaborator settings for.
+        schema:
+          type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum:
+                  - editandshare
+                  - edit
+                  - comment
+                  - view
+                  example: comment
+                  description: The Collaborator Role to assign to the user for this document.
+      responses:
+        '200':
+          description: OK when updating an existing Document User Collaborator. Contains the updated Document User Collaborator Resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentUserCollaborator'
+        '201':
+          description: Created when creating a new Document User Collaborator. Contains the new Document User Collaborator Resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentUserCollaborator'
+        '403':
+          description: Forbidden if the token does not have permission to the document, or if the document has been deleted or does not exist.
+    delete:
+      summary: Delete Document User Collaborator
+      description: Revokes all collaborator access to a document for the given user. The user may still have access to the document through other means such as shared folders. Cannot be used to remove the document owner's access.
+      operationId: deleteDocumentUserCollaborators
+      tags:
+      - Documents Collaboration
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.content.share.collaborator
+        - lucidchart.document.app.picker.share.collaborator
+        - lucidchart.document.app.folder
+        - lucidscale.document.content.share.collaborator
+        - lucidscale.document.app.picker.share.collaborator
+        - lucidscale.document.app.folder
+        - lucidspark.document.content.share.collaborator
+        - lucidspark.document.app.picker.share.collaborator
+        - lucidspark.document.app.folder
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the document.
+        schema:
+          type: string
+          format: uuid
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      - in: path
+        name: userId
+        required: true
+        description: ID of the user to retrieve collaborator settings for.
+        schema:
+          type: number
+      responses:
+        '204':
+          description: No Content when the user's collaborator record on the document was successfully deleted.
+        '403':
+          description: Forbidden * if the token does not have permission to the document, or if the document has been deleted or does not exist. * when attempting to revoke the collaboration for the document owner.
+  /v1/documents/{id}/shares/users:
+    get:
+      summary: List Document User Collaborators
+      description: Retrieves information about all collaborators on the provided document. Supports pagination for managing large result sets.
+      operationId: listDocumentUserCollaborators
+      tags:
+      - Documents Collaboration
+      security:
+      - ApiKey:
+        - DocumentReadonly
+      - OAuth2:
+        - lucidchart.document.content.share.collaborator:readonly
+        - lucidchart.document.app.picker.share.collaborator:readonly
+        - lucidchart.document.app.folder
+        - lucidscale.document.content.share.collaborator:readonly
+        - lucidscale.document.app.picker.share.collaborator:readonly
+        - lucidscale.document.app.folder
+        - lucidspark.document.content.share.collaborator:readonly
+        - lucidspark.document.app.picker.share.collaborator:readonly
+        - lucidspark.document.app.folder
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the document.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: OK with an array of Document User Collaborator Resources for the document's collaborators.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentUserCollaborator'
+        '403':
+          description: Forbidden if the token does not have permission to the document, or if the document has been deleted or does not exist.
+  /v1/documents/{id}/shares/teams/{teamId}:
+    get:
+      summary: Get Document Team Collaborator
+      description: Returns information about the given team's collaboration on the given document, including the team's access and collaboration permissions.
+      operationId: getDocumentTeamCollaborator
+      tags:
+      - Documents Collaboration
+      security:
+      - ApiKey:
+        - DocumentReadonly
+      - OAuth2:
+        - lucidchart.document.app.folder
+        - lucidchart.document.app.picker.share.collaborator:readonly
+        - lucidchart.document.content.share.collaborator:readonly
+        - lucidscale.document.app.folder
+        - lucidscale.document.app.picker.share.collaborator:readonly
+        - lucidscale.document.content.share.collaborator:readonly
+        - lucidspark.document.app.folder
+        - lucidspark.document.app.picker.share.collaborator:readonly
+        - lucidspark.document.content.share.collaborator:readonly
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the document.
+        schema:
+          type: string
+          format: uuid
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      - in: path
+        name: teamId
+        required: true
+        description: ID of the team to retrieve collaborator settings for.
+        schema:
+          type: number
+        example: 99
+      responses:
+        '200':
+          description: OK. Returns a Document Team Collaborator Resource containing information about the team's collaboration settings.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTeamCollaborator'
+        '403':
+          description: Forbidden. Occurs if the app making the request does not have permission for the document, or if the document has been deleted or does not exist.
+        '404':
+          description: Not Found. Occurs when a team with the specified ID can not be found or does not have collaborator access to the document.
+    put:
+      summary: Create/Update Document Team Collaborator
+      description: Updates the details of the given team's collaboration on the given document, or adds the team as a collaborator on the document if it isn't already a collaborator.
+      operationId: putDocumentTeamCollaborator
+      tags:
+      - Documents Collaboration
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.app.folder
+        - lucidchart.document.app.picker.share.collaborator
+        - lucidchart.document.content.share.collaborator
+        - lucidscale.document.app.folder
+        - lucidscale.document.app.picker.share.collaborator
+        - lucidscale.document.content.share.collaborator
+        - lucidspark.document.app.folder
+        - lucidspark.document.app.picker.share.collaborator
+        - lucidspark.document.content.share.collaborator
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the document.
+        schema:
+          type: string
+          format: uuid
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      - in: path
+        name: teamId
+        required: true
+        description: ID of the team to retrieve collaborator settings for.
+        schema:
+          type: number
+        example: 99
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum:
+                  - editandshare
+                  - edit
+                  - comment
+                  - view
+                  example: comment
+                  description: The Collaborator Role to assign to the user for this document.
+      responses:
+        '200':
+          description: OK when updating an existing Document Team Collaborator. Contains the updated Document Team Collaborator Resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTeamCollaborator'
+        '201':
+          description: Created when creating a new Document Team Collaborator. Contains the new Document Team Collaborator Resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentTeamCollaborator'
+        '403':
+          description: Forbidden if the token does not have permission to the document, or if the document has been deleted or does not exist.
+    delete:
+      summary: Delete Document Team Collaborator
+      description: Removes the given team as a collaborator on the given document.
+      operationId: deleteDocumentTeamCollaborator
+      tags:
+      - Documents Collaboration
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.app.folder
+        - lucidchart.document.app.picker.share.collaborator
+        - lucidchart.document.content.share.collaborator
+        - lucidscale.document.app.folder
+        - lucidscale.document.app.picker.share.collaborator
+        - lucidscale.document.content.share.collaborator
+        - lucidspark.document.app.folder
+        - lucidspark.document.app.picker.share.collaborator
+        - lucidspark.document.content.share.collaborator
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID of the document.
+        schema:
+          type: string
+          format: uuid
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      - in: path
+        name: teamId
+        required: true
+        description: ID of the team to retrieve collaborator settings for.
+        schema:
+          type: number
+        example: 99
+      responses:
+        '204':
+          description: No Content. The team's collaborator record on the document was successfully deleted.
+        '403':
+          description: Forbidden * if the token does not have permission to the document, or if the document has been deleted or does not exist. * when attempting to revoke the collaboration for the document owner.
+components:
+  schemas:
+    Role:
+      type: string
+      enum:
+      - owner
+      - editandshare
+      - edit
+      - comment
+      - view
+      description: The Collaborator Role on the document or folder
+    DocumentTeamCollaborator:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          description: Document ID
+        teamId:
+          type: integer
+          description: Team ID
+        role:
+          $ref: '#/components/schemas/Role'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the collaboration was created
+      required:
+      - documentId
+      - teamId
+      - role
+      - created
+    DocumentUserCollaborator:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          description: Document ID
+        userId:
+          type: integer
+          description: User ID
+        role:
+          $ref: '#/components/schemas/Role'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the collaboration was created
+      required:
+      - documentId
+      - userId
+      - role
+      - created
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            account.audit.logs: View audit logs on your account.
+            account.info: View basic information about your account (e.g., account ID and account name) .
+            account.user: Create, view, edit, and delete users on your account.
+            account.user:readonly: View users on your account.
+            account.users:admin.readonly: View all users and their roles on your account.
+            account.user.transfercontent: Transfer ownership of a user's resources to another user on your account.
+            account.settings:readonly: View settings on your account.
+            account.legalhold: Create, view, and expire legal holds on your account.
+            account.legalhold:readonly: View legal holds on your account.
+            account.legalhold.users: Manage legal hold users on your account.
+            account.legalhold.users:readonly: View legal hold users on your account.
+            folder: Create, view, edit, share, and delete your folders. Organize your folders and their contents.
+            folder:readonly: View any of your folders and list their contents.
+            folder:admin: Perform admin actions on folders belonging to the account.
+            folder:admin.readonly: View all folders belonging to the account with admin permissions.
+            invitation: Accept document and folder share links.
+            invitation.accept: Accept document and folder share links.
+            cloud.credential: Manage cloud credentials.
+            cloud.credential:readonly: View cloud credentials.
+            cloud.datasource: Manage cloud data sources.
+            cloud.datasource:readonly: View cloud data sources.
+            cloud.model: Manage cloud models.
+            repository: Manage repositories.
+            repository:readonly: View repositories.
+            repository:admin: Perform admin actions on repositories.
+            lucid.document.content: Create, view, edit, and delete any Lucid document accessible by the user.
+            lucid.document.content:readonly: View and download any Lucid document accessible by the user.
+            lucid.document.content:admin: Perform admin actions on Lucid documents belonging to the account.
+            lucid.document.content:admin.readonly: View all Lucid documents belonging to the account with admin permissions.
+            lucid.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share:readonly: View document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator:readonly: View document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.embed: Create, view, edit, and delete document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.embed:readonly: View document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.link: Create, view, edit, and delete share links for any Lucid document accessible by the user.
+            lucid.document.content.share.link:readonly: View share links for any Lucid document accessible by the user.
+            lucid.document.storage:admin.readonly: Perform admin actions backing up Lucid documents belonging to the account.
+            lucid.document.app: View, edit, create, and manage folders and documents within an app.
+            lucid.document.app.folder: Create, view, edit, and manage any Lucid document within its app-specific folder.
+            lucid.document.app.picker: View, edit, and manage any Lucid document selected within an app.
+            lucid.document.app.picker:readonly: View and download any Lucid document selected within an app.
+            lucid.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator:readonly: View document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed: Create, view, edit, and delete document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed:readonly: View document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link: Create, view, edit, and delete share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link:readonly: View share links for any Lucid document selected within an app.
+            lucid.document.accessRequest: Request access to Lucid documents.
+            licenses:admin: Perform admin actions on licenses and subscriptions belonging to the account.
+            licenses:admin.readonly: View licenses and subscriptions belonging to the account with admin permissions.
+            teams: Create, view, and edit, archive, and restore any teams on your account. Control which users belong to teams.
+            teams:readonly: View any teams on your account and list which users belong to them.
+            teams:admin: Manage teams on your account.
+            lucidchart.document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed:readonly: View embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            lucidchart.document.content:readonly: View and download any Lucidchart document on your account.
+            lucidchart.document.content:admin: Perform admin actions on Lucidchart documents belonging to the account.
+            lucidchart.document.content:admin.readonly: View all Lucidchart documents belonging to the account with admin permissions.
+            lucidchart.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed:readonly: View embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link:readonly: View the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.storage:admin.readonly: Perform admin actions backing up Lucidchart documents belonging to the account.
+            lucidchart.document.accessRequest: Request access to Lucidchart documents.
+            lucidspark.document.app: View, edit, and manage any Lucidspark board selected for this third-party application. Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.folder: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.picker: View, edit, and manage any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker:readonly: View and download any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed:readonly: View embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.content: Create, view, edit, and delete any Lucidspark board on your account.
+            lucidspark.document.content:readonly: View and download any Lucidspark board on your account.
+            lucidspark.document.content:admin: Perform admin actions on Lucidspark boards belonging to the account.
+            lucidspark.document.content:admin.readonly: View all Lucidspark boards belonging to the account with admin permissions.
+            lucidspark.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed:readonly: View embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link:readonly: View the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.storage:admin.readonly: Perform admin actions backing up Lucidspark boards belonging to the account.
+            lucidspark.document.accessRequest: Request access to Lucidspark boards.
+            lucidscale.document.app: View, edit, and manage any Lucidscale model selected for this third-party application. Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.folder: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.picker: View, edit, and manage any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker:readonly: View and download any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed:readonly: View embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.content: Create, view, edit, and delete any Lucidscale model on your account.
+            lucidscale.document.content:readonly: View and download any Lucidscale model on your account.
+            lucidscale.document.content:admin: Perform admin actions on Lucidscale models belonging to the account.
+            lucidscale.document.content:admin.readonly: View all Lucidscale models belonging to the account with admin permissions.
+            lucidscale.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed:readonly: View embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link:readonly: View the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.storage:admin.readonly: Perform admin actions backing up Lucidscale models belonging to the account.
+            lucidscale.document.accessRequest: Request access to Lucidscale models.
+            offline_access: Continue to perform authorized actions when you're not logged in (required to refresh tokens).
+            user.profile: Allow applications to view basic information about you (e.g., full name, username, and email).
+            document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            document.content:readonly: View and download any Lucidchart document on your account.
+    ApiKey:
+      type: http
+      scheme: bearer
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-rest-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

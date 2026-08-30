@@ -1,0 +1,953 @@
+openapi: 3.2.0
+info:
+  title: Lucid Data Collection API
+  version: '1.0'
+  description: The Lucid Data API enables external applications to create, read, update, and delete structured data linked to Lucid documents. Use it to sync data sets, collections, and schemas between your data sources and Lucid diagrams. Authenticate via OAuth 2.0.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/data-api
+servers:
+- url: https://data.lucid.app
+tags:
+- name: Collection
+  description: Create, retrieve, update, and delete collections within a data source. A collection is a named group of data items that share a common schema (similar to a database table).
+paths:
+  /collections:
+    head:
+      summary: Get Total Collections Count
+      description: 'This endpoint returns the number of collections a user has access to. The return value is in the response headers as Lucid-Collections-Total.
+
+        '
+      operationId: getTotalCollectionsCount
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      responses:
+        '200':
+          description: OK with `lucid-collections-total` header in response
+          headers:
+            lucid-collections-total:
+              schema:
+                type: integer
+                example: 123
+    get:
+      summary: Get All Collections
+      description: 'This endpoint returns all collections that the user has access to. The results will be paginated. If the number of collections exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns collections in the range from start to start + pagination limit. Items in the response are determined based on their creation order.
+
+        '
+      operationId: getAllCollections
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: start
+        in: query
+        description: Starting 1-based index of collections to retreive. Defaults to 1.
+        required: false
+        schema:
+          type: integer
+      - name: end
+        in: query
+        description: Ending index of collections to retreive. Defaults to 1000.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with paginated list of Collections
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  collections:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uri:
+                          type: string
+                          description: URI of the collection
+                          example: https://data.lucid.app/collections/3
+                        dataSource:
+                          type: string
+                          description: Link to get parent data source
+                          example: https://data.lucid.app/dataSources/1
+                        name:
+                          type: string
+                          description: Name of the collection
+                          example: Collection 1
+                        lastSync:
+                          type: string
+                          description: Date the collection was last synced with upstream source
+                          example: '2021-01-01T00:00:00Z'
+                        versionTimestamp:
+                          type: string
+                          description: Timestamp of the last time the collection, the collection's schema, the collection's contents, one of its collection properties, or anything in any of its metadata collections was changed. It can be used to tell if a copy of the data is out of date and needs to be refreshed.
+                          example: '2021-01-01T00:00:00Z'
+                        created:
+                          type: string
+                          description: Date the collection was created
+                          example: '2021-01-01T00:00:00Z'
+                        lastModified:
+                          type: string
+                          description: Date the collection was last modified
+                          example: '2021-01-01T00:00:00Z'
+                        items:
+                          type: string
+                          description: Link to get items in the collection
+                          example: https://data.lucid.app/collections/3/items
+                        schema:
+                          type: string
+                          description: Link to get schema for the collection
+                          example: https://data.lucid.app/collections/3/schema
+                        properties:
+                          type: string
+                          description: Link to get properties for the collection
+                          example: https://data.lucid.app/collections/3/properties
+                        metadata:
+                          type: string
+                          description: Link to get metadata for the collection
+                          example: https://data.lucid.app/collections/3/metadata
+                        metadataType:
+                          type: string
+                          description: If a metadata collection, this specifies what tyep of metadata it contains
+                          example: null
+                        parent:
+                          type: string
+                          description: If a metadata collection, this link will get its parent collection
+                          example: https://data.lucid.app/collections/2
+                        syncStarted:
+                          type: string
+                          description: Represents the sync status of the collection. When it is null, there is no sync happening. When it has a DateTime value, that value represents the start time for the sync that is currently happening.
+                          example: '2021-01-01T00:00:00Z'
+                        deleted:
+                          type: string
+                          description: Date the collection was deleted
+                          example: '2021-01-01T00:00:00Z'
+                      required:
+                      - uri
+                      - dataSource
+                      - name
+                      - lastSync
+                      - versionTimestamp
+                      - created
+                      - lastModified
+                      - items
+                      - schema
+                      - properties
+                      - metadata
+                      example:
+                        uri: https://data.lucid.app/collections/3
+                        dataSource: https://data.lucid.app/dataSources/1
+                        name: Collection 1
+                        lastSync: '2021-01-01T00:00:00Z'
+                        versionTimestamp: '2021-01-01T00:00:00Z'
+                        created: '2021-01-01T00:00:00Z'
+                        lastModified: '2021-01-01T00:00:00Z'
+                        items: https://data.lucid.app/collections/3/items
+                        schema: https://data.lucid.app/collections/3/schema
+                        properties: https://data.lucid.app/collections/3/properties
+                        metadata: https://data.lucid.app/collections/3/metadata
+                  total:
+                    type: integer
+                    example: 123
+                  prev:
+                    type: string
+                    example: https://data.lucid.app/collections?start=80&end=90
+                  next:
+                    type: string
+                    example: https://data.lucid.app/collections?start=100&end=110
+    post:
+      summary: Create Collection
+      description: 'Creates a new collection for the specified data source. Only succeeds if the user has access to the data source.
+
+        '
+      operationId: createCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSource:
+                  type: string
+                  description: URI of data source to add collection to
+                  example: https://data.lucid.app/dataSources/435
+                name:
+                  type: string
+                  description: Name of the new collection
+                  example: New Collection
+                schema:
+                  type: array
+                  description: The schema field takes an array of Field Definition objects
+                  items:
+                    type: object
+                    properties:
+                      uri:
+                        type: string
+                        description: Link to self
+                        example: https://data.lucid.app/collections/2/schema/4
+                      name:
+                        type: string
+                        description: Name of the field
+                        example: Co1B
+                      fieldType:
+                        type: string
+                        description: Stores the type of the field. The type does not affect how the data is interpreted in the Data Service; it is for use on the client side. Valid values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                        example: STRING
+                      collection:
+                        type: string
+                        description: Link to the associated collection
+                        example: https://data.lucid.app/collections/2
+                      isPrimary:
+                        type: boolean
+                        description: Denotes whether the specified field is part of the primary key. The default value is false
+                        example: false
+                      order:
+                        type: string
+                        description: Denotes a default ordering for the fields. This is currently used by the Lucid client to determine the order in which the fields are displayed, unless the context suggests a better ordering.
+                        example: '1'
+                      default:
+                        type: string
+                        description: Default value for this field
+                        example: '5'
+                      label:
+                        type: string
+                        description: Override name for field which is used when displaying to users
+                        example: User Friendly Field Name
+                    required:
+                    - uri
+                    - name
+                    - fieldType
+                    - collection
+                    - isPrimary
+                    example:
+                      uri: https://data.lucid.app/collections/2/schema/4
+                      name: Co1B
+                      fieldType: STRING
+                      collection: https://data.lucid.app/collections/2
+                      isPrimary: false
+                      order: '1'
+                      default: '5'
+                      label: User Friendly Field Name
+                properties:
+                  type: object
+                  description: The properties field takes an object of key-value pairs
+                  example:
+                    param1: value1
+                    param2: value2
+              required:
+              - dataSource
+              - name
+              - schema
+              - properties
+              example:
+                dataSource: https://data.lucid.app/dataSources/435
+                name: New Collection
+                schema:
+                - uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: '5'
+                  label: User Friendly Field Name
+                properties:
+                  fontSize: '12'
+      responses:
+        '200':
+          description: OK with Collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the collection
+                    example: https://data.lucid.app/collections/3
+                  dataSource:
+                    type: string
+                    description: Link to get parent data source
+                    example: https://data.lucid.app/dataSources/1
+                  name:
+                    type: string
+                    description: Name of the collection
+                    example: Collection 1
+                  lastSync:
+                    type: string
+                    description: Date the collection was last synced with upstream source
+                    example: '2021-01-01T00:00:00Z'
+                  versionTimestamp:
+                    type: string
+                    description: Timestamp of the last time the collection, the collection's schema, the collection's contents, one of its collection properties, or anything in any of its metadata collections was changed. It can be used to tell if a copy of the data is out of date and needs to be refreshed.
+                    example: '2021-01-01T00:00:00Z'
+                  created:
+                    type: string
+                    description: Date the collection was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the collection was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  items:
+                    type: string
+                    description: Link to get items in the collection
+                    example: https://data.lucid.app/collections/3/items
+                  schema:
+                    type: string
+                    description: Link to get schema for the collection
+                    example: https://data.lucid.app/collections/3/schema
+                  properties:
+                    type: string
+                    description: Link to get properties for the collection
+                    example: https://data.lucid.app/collections/3/properties
+                  metadata:
+                    type: string
+                    description: Link to get metadata for the collection
+                    example: https://data.lucid.app/collections/3/metadata
+                  metadataType:
+                    type: string
+                    description: If a metadata collection, this specifies what tyep of metadata it contains
+                    example: null
+                  parent:
+                    type: string
+                    description: If a metadata collection, this link will get its parent collection
+                    example: https://data.lucid.app/collections/2
+                  syncStarted:
+                    type: string
+                    description: Represents the sync status of the collection. When it is null, there is no sync happening. When it has a DateTime value, that value represents the start time for the sync that is currently happening.
+                    example: '2021-01-01T00:00:00Z'
+                  deleted:
+                    type: string
+                    description: Date the collection was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - dataSource
+                - name
+                - lastSync
+                - versionTimestamp
+                - created
+                - lastModified
+                - items
+                - schema
+                - properties
+                - metadata
+                example:
+                  uri: https://data.lucid.app/collections/3
+                  dataSource: https://data.lucid.app/dataSources/1
+                  name: Collection 1
+                  lastSync: '2021-01-01T00:00:00Z'
+                  versionTimestamp: '2021-01-01T00:00:00Z'
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  items: https://data.lucid.app/collections/3/items
+                  schema: https://data.lucid.app/collections/3/schema
+                  properties: https://data.lucid.app/collections/3/properties
+                  metadata: https://data.lucid.app/collections/3/metadata
+  /collections/{collectionId}:
+    get:
+      summary: Get Collection
+      description: 'Gets a specific existing collection from Lucid.
+
+        '
+      operationId: getCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to return
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the collection
+                    example: https://data.lucid.app/collections/3
+                  dataSource:
+                    type: string
+                    description: Link to get parent data source
+                    example: https://data.lucid.app/dataSources/1
+                  name:
+                    type: string
+                    description: Name of the collection
+                    example: Collection 1
+                  lastSync:
+                    type: string
+                    description: Date the collection was last synced with upstream source
+                    example: '2021-01-01T00:00:00Z'
+                  versionTimestamp:
+                    type: string
+                    description: Timestamp of the last time the collection, the collection's schema, the collection's contents, one of its collection properties, or anything in any of its metadata collections was changed. It can be used to tell if a copy of the data is out of date and needs to be refreshed.
+                    example: '2021-01-01T00:00:00Z'
+                  created:
+                    type: string
+                    description: Date the collection was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the collection was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  items:
+                    type: string
+                    description: Link to get items in the collection
+                    example: https://data.lucid.app/collections/3/items
+                  schema:
+                    type: string
+                    description: Link to get schema for the collection
+                    example: https://data.lucid.app/collections/3/schema
+                  properties:
+                    type: string
+                    description: Link to get properties for the collection
+                    example: https://data.lucid.app/collections/3/properties
+                  metadata:
+                    type: string
+                    description: Link to get metadata for the collection
+                    example: https://data.lucid.app/collections/3/metadata
+                  metadataType:
+                    type: string
+                    description: If a metadata collection, this specifies what tyep of metadata it contains
+                    example: null
+                  parent:
+                    type: string
+                    description: If a metadata collection, this link will get its parent collection
+                    example: https://data.lucid.app/collections/2
+                  syncStarted:
+                    type: string
+                    description: Represents the sync status of the collection. When it is null, there is no sync happening. When it has a DateTime value, that value represents the start time for the sync that is currently happening.
+                    example: '2021-01-01T00:00:00Z'
+                  deleted:
+                    type: string
+                    description: Date the collection was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - dataSource
+                - name
+                - lastSync
+                - versionTimestamp
+                - created
+                - lastModified
+                - items
+                - schema
+                - properties
+                - metadata
+                example:
+                  uri: https://data.lucid.app/collections/3
+                  dataSource: https://data.lucid.app/dataSources/1
+                  name: Collection 1
+                  lastSync: '2021-01-01T00:00:00Z'
+                  versionTimestamp: '2021-01-01T00:00:00Z'
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  items: https://data.lucid.app/collections/3/items
+                  schema: https://data.lucid.app/collections/3/schema
+                  properties: https://data.lucid.app/collections/3/properties
+                  metadata: https://data.lucid.app/collections/3/metadata
+    patch:
+      summary: Update Collection
+      description: 'This endpoint takes a JSON object and uses it to update the collection''s name and/or data source. The JSON object of the updated collection is returned. Updates will only occur if the user has access to the data source. Only top level collections can be updated. Metadata collections cannot be updated.
+
+        '
+      operationId: updateCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataSource:
+                  type: string
+                  description: URI of data source to move collection to
+                  example: https://data.lucid.app/dataSources/12
+                name:
+                  type: string
+                  description: New name for the collection
+                  example: Updated Collection Name
+              example:
+                dataSource: https://data.lucid.app/dataSources/12
+                name: Updated Collection Name
+      responses:
+        '200':
+          description: OK with Collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the collection
+                    example: https://data.lucid.app/collections/3
+                  dataSource:
+                    type: string
+                    description: Link to get parent data source
+                    example: https://data.lucid.app/dataSources/1
+                  name:
+                    type: string
+                    description: Name of the collection
+                    example: Collection 1
+                  lastSync:
+                    type: string
+                    description: Date the collection was last synced with upstream source
+                    example: '2021-01-01T00:00:00Z'
+                  versionTimestamp:
+                    type: string
+                    description: Timestamp of the last time the collection, the collection's schema, the collection's contents, one of its collection properties, or anything in any of its metadata collections was changed. It can be used to tell if a copy of the data is out of date and needs to be refreshed.
+                    example: '2021-01-01T00:00:00Z'
+                  created:
+                    type: string
+                    description: Date the collection was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the collection was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  items:
+                    type: string
+                    description: Link to get items in the collection
+                    example: https://data.lucid.app/collections/3/items
+                  schema:
+                    type: string
+                    description: Link to get schema for the collection
+                    example: https://data.lucid.app/collections/3/schema
+                  properties:
+                    type: string
+                    description: Link to get properties for the collection
+                    example: https://data.lucid.app/collections/3/properties
+                  metadata:
+                    type: string
+                    description: Link to get metadata for the collection
+                    example: https://data.lucid.app/collections/3/metadata
+                  metadataType:
+                    type: string
+                    description: If a metadata collection, this specifies what tyep of metadata it contains
+                    example: null
+                  parent:
+                    type: string
+                    description: If a metadata collection, this link will get its parent collection
+                    example: https://data.lucid.app/collections/2
+                  syncStarted:
+                    type: string
+                    description: Represents the sync status of the collection. When it is null, there is no sync happening. When it has a DateTime value, that value represents the start time for the sync that is currently happening.
+                    example: '2021-01-01T00:00:00Z'
+                  deleted:
+                    type: string
+                    description: Date the collection was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - dataSource
+                - name
+                - lastSync
+                - versionTimestamp
+                - created
+                - lastModified
+                - items
+                - schema
+                - properties
+                - metadata
+                example:
+                  uri: https://data.lucid.app/collections/3
+                  dataSource: https://data.lucid.app/dataSources/1
+                  name: Collection 1
+                  lastSync: '2021-01-01T00:00:00Z'
+                  versionTimestamp: '2021-01-01T00:00:00Z'
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  items: https://data.lucid.app/collections/3/items
+                  schema: https://data.lucid.app/collections/3/schema
+                  properties: https://data.lucid.app/collections/3/properties
+                  metadata: https://data.lucid.app/collections/3/metadata
+    delete:
+      summary: Delete Collection
+      description: 'This removes the collection and anything that belongs to it (metadata collections, schema, and items). Data sources will not be removed. This action cannot be undone and will only occur if the user has access to the data source.
+
+        '
+      operationId: deleteCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /collections/{collectionId}/metadata:
+    get:
+      summary: Get All Metadata Collections
+      description: 'This endpoint returns a list of Collections for any metadata collections that exist on the requested collection. The return will only occur if the user has access to the data source. Each metadata collection will have a link to its parent collection in the parent field.
+
+        '
+      operationId: getAllMetadataCollections
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to return metadata collections for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Array[Collection]
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: URI of the collection
+                      example: https://data.lucid.app/collections/3
+                    dataSource:
+                      type: string
+                      description: Link to get parent data source
+                      example: https://data.lucid.app/dataSources/1
+                    name:
+                      type: string
+                      description: Name of the collection
+                      example: Collection 1
+                    lastSync:
+                      type: string
+                      description: Date the collection was last synced with upstream source
+                      example: '2021-01-01T00:00:00Z'
+                    versionTimestamp:
+                      type: string
+                      description: Timestamp of the last time the collection, the collection's schema, the collection's contents, one of its collection properties, or anything in any of its metadata collections was changed. It can be used to tell if a copy of the data is out of date and needs to be refreshed.
+                      example: '2021-01-01T00:00:00Z'
+                    created:
+                      type: string
+                      description: Date the collection was created
+                      example: '2021-01-01T00:00:00Z'
+                    lastModified:
+                      type: string
+                      description: Date the collection was last modified
+                      example: '2021-01-01T00:00:00Z'
+                    items:
+                      type: string
+                      description: Link to get items in the collection
+                      example: https://data.lucid.app/collections/3/items
+                    schema:
+                      type: string
+                      description: Link to get schema for the collection
+                      example: https://data.lucid.app/collections/3/schema
+                    properties:
+                      type: string
+                      description: Link to get properties for the collection
+                      example: https://data.lucid.app/collections/3/properties
+                    metadata:
+                      type: string
+                      description: Link to get metadata for the collection
+                      example: https://data.lucid.app/collections/3/metadata
+                    metadataType:
+                      type: string
+                      description: If a metadata collection, this specifies what tyep of metadata it contains
+                      example: null
+                    parent:
+                      type: string
+                      description: If a metadata collection, this link will get its parent collection
+                      example: https://data.lucid.app/collections/2
+                    syncStarted:
+                      type: string
+                      description: Represents the sync status of the collection. When it is null, there is no sync happening. When it has a DateTime value, that value represents the start time for the sync that is currently happening.
+                      example: '2021-01-01T00:00:00Z'
+                    deleted:
+                      type: string
+                      description: Date the collection was deleted
+                      example: '2021-01-01T00:00:00Z'
+                  required:
+                  - uri
+                  - dataSource
+                  - name
+                  - lastSync
+                  - versionTimestamp
+                  - created
+                  - lastModified
+                  - items
+                  - schema
+                  - properties
+                  - metadata
+                  example:
+                    uri: https://data.lucid.app/collections/3
+                    dataSource: https://data.lucid.app/dataSources/1
+                    name: Collection 1
+                    lastSync: '2021-01-01T00:00:00Z'
+                    versionTimestamp: '2021-01-01T00:00:00Z'
+                    created: '2021-01-01T00:00:00Z'
+                    lastModified: '2021-01-01T00:00:00Z'
+                    items: https://data.lucid.app/collections/3/items
+                    schema: https://data.lucid.app/collections/3/schema
+                    properties: https://data.lucid.app/collections/3/properties
+                    metadata: https://data.lucid.app/collections/3/metadata
+    post:
+      summary: Create Metadata Collection
+      description: 'Create a new metadata collection for a given collection. The user must have access to the data source in order to create a metadata collection. Metadata collections cannot be updated.
+
+        '
+      operationId: createMetadataCollection
+      tags:
+      - Collection
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to add metadata collection to
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the new metadata collection
+                  example: New Metadata Collection
+                metadataType:
+                  type: string
+                  description: Type of metadata this collection contains
+                  example: type1
+                schema:
+                  type: array
+                  description: The schema field takes an array of Field Definition objects
+                  items:
+                    type: object
+                    properties:
+                      uri:
+                        type: string
+                        description: Link to self
+                        example: https://data.lucid.app/collections/2/schema/4
+                      name:
+                        type: string
+                        description: Name of the field
+                        example: Co1B
+                      fieldType:
+                        type: string
+                        description: Stores the type of the field. The type does not affect how the data is interpreted in the Data Service; it is for use on the client side. Valid values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                        example: STRING
+                      collection:
+                        type: string
+                        description: Link to the associated collection
+                        example: https://data.lucid.app/collections/2
+                      isPrimary:
+                        type: boolean
+                        description: Denotes whether the specified field is part of the primary key. The default value is false
+                        example: false
+                      order:
+                        type: string
+                        description: Denotes a default ordering for the fields. This is currently used by the Lucid client to determine the order in which the fields are displayed, unless the context suggests a better ordering.
+                        example: '1'
+                      default:
+                        type: string
+                        description: Default value for this field
+                        example: '5'
+                      label:
+                        type: string
+                        description: Override name for field which is used when displaying to users
+                        example: User Friendly Field Name
+                    required:
+                    - uri
+                    - name
+                    - fieldType
+                    - collection
+                    - isPrimary
+                    example:
+                      uri: https://data.lucid.app/collections/2/schema/4
+                      name: Co1B
+                      fieldType: STRING
+                      collection: https://data.lucid.app/collections/2
+                      isPrimary: false
+                      order: '1'
+                      default: '5'
+                      label: User Friendly Field Name
+                properties:
+                  type: object
+                  description: The properties field takes an object of key-value pairs
+                  example:
+                    param1: value1
+                    param2: value2
+              required:
+              - name
+              - metadataType
+              - schema
+              - properties
+              example:
+                name: New Metadata Collection
+                metadataType: TextColor
+                schema:
+                - uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: '5'
+                  label: User Friendly Field Name
+                properties:
+                  fontSize: '12'
+      responses:
+        '200':
+          description: OK with Collection
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the collection
+                    example: https://data.lucid.app/collections/3
+                  dataSource:
+                    type: string
+                    description: Link to get parent data source
+                    example: https://data.lucid.app/dataSources/1
+                  name:
+                    type: string
+                    description: Name of the collection
+                    example: Collection 1
+                  lastSync:
+                    type: string
+                    description: Date the collection was last synced with upstream source
+                    example: '2021-01-01T00:00:00Z'
+                  versionTimestamp:
+                    type: string
+                    description: Timestamp of the last time the collection, the collection's schema, the collection's contents, one of its collection properties, or anything in any of its metadata collections was changed. It can be used to tell if a copy of the data is out of date and needs to be refreshed.
+                    example: '2021-01-01T00:00:00Z'
+                  created:
+                    type: string
+                    description: Date the collection was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the collection was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  items:
+                    type: string
+                    description: Link to get items in the collection
+                    example: https://data.lucid.app/collections/3/items
+                  schema:
+                    type: string
+                    description: Link to get schema for the collection
+                    example: https://data.lucid.app/collections/3/schema
+                  properties:
+                    type: string
+                    description: Link to get properties for the collection
+                    example: https://data.lucid.app/collections/3/properties
+                  metadata:
+                    type: string
+                    description: Link to get metadata for the collection
+                    example: https://data.lucid.app/collections/3/metadata
+                  metadataType:
+                    type: string
+                    description: If a metadata collection, this specifies what tyep of metadata it contains
+                    example: null
+                  parent:
+                    type: string
+                    description: If a metadata collection, this link will get its parent collection
+                    example: https://data.lucid.app/collections/2
+                  syncStarted:
+                    type: string
+                    description: Represents the sync status of the collection. When it is null, there is no sync happening. When it has a DateTime value, that value represents the start time for the sync that is currently happening.
+                    example: '2021-01-01T00:00:00Z'
+                  deleted:
+                    type: string
+                    description: Date the collection was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - dataSource
+                - name
+                - lastSync
+                - versionTimestamp
+                - created
+                - lastModified
+                - items
+                - schema
+                - properties
+                - metadata
+                example:
+                  uri: https://data.lucid.app/collections/3
+                  dataSource: https://data.lucid.app/dataSources/1
+                  name: Collection 1
+                  lastSync: '2021-01-01T00:00:00Z'
+                  versionTimestamp: '2021-01-01T00:00:00Z'
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  items: https://data.lucid.app/collections/3/items
+                  schema: https://data.lucid.app/collections/3/schema
+                  properties: https://data.lucid.app/collections/3/properties
+                  metadata: https://data.lucid.app/collections/3/metadata
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            data-service.admin: Scope needed for access to the Data APIs.
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

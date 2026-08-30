@@ -1,0 +1,498 @@
+openapi: 3.2.0
+info:
+  title: Lucid Data Schema API
+  version: '1.0'
+  description: The Lucid Data API enables external applications to create, read, update, and delete structured data linked to Lucid documents. Use it to sync data sets, collections, and schemas between your data sources and Lucid diagrams. Authenticate via OAuth 2.0.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/data-api
+servers:
+- url: https://data.lucid.app
+tags:
+- name: Schema
+  description: Define and retrieve the schema for a collection, specifying the fields, types, and constraints for its data items.
+paths:
+  /collections/{collectionId}/schema/{fieldDefinitionId}:
+    get:
+      summary: Get Field Definition
+      description: 'Gets a specific existing field definition for a given collection
+
+        '
+      operationId: getFieldDefinition
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to get field definition for
+        required: true
+        schema:
+          type: integer
+      - name: fieldDefinitionId
+        in: path
+        description: ID of field definition to get
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Field Definition
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: Link to self
+                    example: https://data.lucid.app/collections/2/schema/4
+                  name:
+                    type: string
+                    description: Name of the field
+                    example: Co1B
+                  fieldType:
+                    type: string
+                    description: Stores the type of the field. The type does not affect how the data is interpreted in the Data Service; it is for use on the client side. Valid values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                    example: STRING
+                  collection:
+                    type: string
+                    description: Link to the associated collection
+                    example: https://data.lucid.app/collections/2
+                  isPrimary:
+                    type: boolean
+                    description: Denotes whether the specified field is part of the primary key. The default value is false
+                    example: false
+                  order:
+                    type: string
+                    description: Denotes a default ordering for the fields. This is currently used by the Lucid client to determine the order in which the fields are displayed, unless the context suggests a better ordering.
+                    example: '1'
+                  default:
+                    type: string
+                    description: Default value for this field
+                    example: '5'
+                  label:
+                    type: string
+                    description: Override name for field which is used when displaying to users
+                    example: User Friendly Field Name
+                required:
+                - uri
+                - name
+                - fieldType
+                - collection
+                - isPrimary
+                example:
+                  uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: 'null'
+    patch:
+      summary: Update Field Definition
+      description: 'This endpoint takes a Field Definition, which is used to update the specified field definition. The easiest way to accomplish this is to modify the values in the response from the GET field definition endpoint and send a PATCH request.
+
+        '
+      operationId: updateFieldDefinition
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update field definition for
+        required: true
+        schema:
+          type: integer
+      - name: fieldDefinitionId
+        in: path
+        description: ID of field definition to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name of the field
+                  example: Co1B
+                fieldType:
+                  type: string
+                  description: Stores the type of the field. The type does not affect how the data is interpreted in the Data Service; it is for use on the client side. Valid values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                  example: STRING
+                collection:
+                  type: string
+                  description: Link to the associated collection
+                  example: https://data.lucid.app/collections/2
+                isPrimary:
+                  type: boolean
+                  description: Denotes whether the specified field is part of the primary key. The default value is false
+                  example: false
+                order:
+                  type: string
+                  description: Denotes a default ordering for the fields. This is currently used by the Lucid client to determine the order in which the fields are displayed, unless the context suggests a better ordering.
+                  example: '1'
+                default:
+                  type: string
+                  description: Default value for this field
+                  example: '5'
+                label:
+                  type: string
+                  description: Override name for field which is used when displaying to users
+                  example: User Friendly Field Name
+              example:
+                name: Co1B
+                fieldType: STRING
+                collection: https://data.lucid.app/collections/2
+                isPrimary: false
+                order: '1'
+                default: '5'
+                label: User Friendly Field Name
+      responses:
+        '200':
+          description: OK with Field Definition containing new or updated fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: Link to self
+                    example: https://data.lucid.app/collections/2/schema/4
+                  name:
+                    type: string
+                    description: Name of the field
+                    example: Co1B
+                  fieldType:
+                    type: string
+                    description: Stores the type of the field. The type does not affect how the data is interpreted in the Data Service; it is for use on the client side. Valid values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                    example: STRING
+                  collection:
+                    type: string
+                    description: Link to the associated collection
+                    example: https://data.lucid.app/collections/2
+                  isPrimary:
+                    type: boolean
+                    description: Denotes whether the specified field is part of the primary key. The default value is false
+                    example: false
+                  order:
+                    type: string
+                    description: Denotes a default ordering for the fields. This is currently used by the Lucid client to determine the order in which the fields are displayed, unless the context suggests a better ordering.
+                    example: '1'
+                  default:
+                    type: string
+                    description: Default value for this field
+                    example: '5'
+                  label:
+                    type: string
+                    description: Override name for field which is used when displaying to users
+                    example: User Friendly Field Name
+                required:
+                - uri
+                - name
+                - fieldType
+                - collection
+                - isPrimary
+                example:
+                  uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: '5'
+                  label: User Friendly Field Name
+    delete:
+      summary: Delete Field Definition
+      description: 'This removes the field definition from the collection''s schema. This results of this action cannot be undone. The delete will only occur if the user has access to the data source. This action will also remove all data item values associated with the deleted field.
+
+        '
+      operationId: deleteFieldDefinition
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete field definition from
+        required: true
+        schema:
+          type: integer
+      - name: fieldDefinitionId
+        in: path
+        description: ID of field definition to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /collections/{collectionId}/schema:
+    get:
+      summary: Get All Field Definitions
+      description: 'This endpoint returns all field definitions for a given collection if the user has access.
+
+        '
+      operationId: getAllFieldDefinitions
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to get field definitions for
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Array[Field Definition]
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: Link to self
+                      example: https://data.lucid.app/collections/2/schema/4
+                    name:
+                      type: string
+                      description: Name of the field
+                      example: Co1B
+                    fieldType:
+                      type: string
+                      description: Stores the type of the field. The type does not affect how the data is interpreted in the Data Service; it is for use on the client side. Valid values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                      example: STRING
+                    collection:
+                      type: string
+                      description: Link to the associated collection
+                      example: https://data.lucid.app/collections/2
+                    isPrimary:
+                      type: boolean
+                      description: Denotes whether the specified field is part of the primary key. The default value is false
+                      example: false
+                    order:
+                      type: string
+                      description: Denotes a default ordering for the fields. This is currently used by the Lucid client to determine the order in which the fields are displayed, unless the context suggests a better ordering.
+                      example: '1'
+                    default:
+                      type: string
+                      description: Default value for this field
+                      example: '5'
+                    label:
+                      type: string
+                      description: Override name for field which is used when displaying to users
+                      example: User Friendly Field Name
+                  required:
+                  - uri
+                  - name
+                  - fieldType
+                  - collection
+                  - isPrimary
+                  example:
+                    uri: https://data.lucid.app/collections/2/schema/4
+                    name: Co1B
+                    fieldType: STRING
+                    collection: https://data.lucid.app/collections/2
+                    isPrimary: false
+                    order: '1'
+                    default: '5'
+                    label: User Friendly Field Name
+    patch:
+      summary: Update Field Definitions
+      description: 'This endpoint allows updating multiple field definitions at once. The easiest way to accomplish this is to modify the values in the response from the get all field definitions endpoint and send a PATCH request. Changing the values will update existing field definitions within the collection''s schema. Any fields sent without a uri field will result in an addition to the schema if the name field is unique within the schema. Fields cannot be deleted with this endpoint.
+
+        '
+      operationId: updateFieldDefinitions
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to update field definitions for
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of field definitions to be added or updated for the collection
+              items:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: Link to self
+                    example: https://data.lucid.app/collections/2/schema/4
+                  name:
+                    type: string
+                    description: Name of the field
+                    example: Co1B
+                  fieldType:
+                    type: string
+                    description: Stores the type of the field. The type does not affect how the data is interpreted in the Data Service; it is for use on the client side. Valid values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                    example: STRING
+                  collection:
+                    type: string
+                    description: Link to the associated collection
+                    example: https://data.lucid.app/collections/2
+                  isPrimary:
+                    type: boolean
+                    description: Denotes whether the specified field is part of the primary key. The default value is false
+                    example: false
+                  order:
+                    type: string
+                    description: Denotes a default ordering for the fields. This is currently used by the Lucid client to determine the order in which the fields are displayed, unless the context suggests a better ordering.
+                    example: '1'
+                  default:
+                    type: string
+                    description: Default value for this field
+                    example: '5'
+                  label:
+                    type: string
+                    description: Override name for field which is used when displaying to users
+                    example: User Friendly Field Name
+                required:
+                - uri
+                - name
+                - fieldType
+                - collection
+                - isPrimary
+                example:
+                  uri: https://data.lucid.app/collections/2/schema/4
+                  name: Co1B
+                  fieldType: STRING
+                  collection: https://data.lucid.app/collections/2
+                  isPrimary: false
+                  order: '1'
+                  default: '5'
+                  label: User Friendly Field Name
+      responses:
+        '200':
+          description: OK with Array[Field Definition] containing new or updated fields on the collection
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uri:
+                      type: string
+                      description: Link to self
+                      example: https://data.lucid.app/collections/2/schema/4
+                    name:
+                      type: string
+                      description: Name of the field
+                      example: Co1B
+                    fieldType:
+                      type: string
+                      description: Stores the type of the field. The type does not affect how the data is interpreted in the Data Service; it is for use on the client side. Valid values include `BOOLEAN`, `STRING`, `NUMBER`, and `ANY`.
+                      example: STRING
+                    collection:
+                      type: string
+                      description: Link to the associated collection
+                      example: https://data.lucid.app/collections/2
+                    isPrimary:
+                      type: boolean
+                      description: Denotes whether the specified field is part of the primary key. The default value is false
+                      example: false
+                    order:
+                      type: string
+                      description: Denotes a default ordering for the fields. This is currently used by the Lucid client to determine the order in which the fields are displayed, unless the context suggests a better ordering.
+                      example: '1'
+                    default:
+                      type: string
+                      description: Default value for this field
+                      example: '5'
+                    label:
+                      type: string
+                      description: Override name for field which is used when displaying to users
+                      example: User Friendly Field Name
+                  required:
+                  - uri
+                  - name
+                  - fieldType
+                  - collection
+                  - isPrimary
+                  example:
+                    uri: https://data.lucid.app/collections/2/schema/4
+                    name: Co1B
+                    fieldType: STRING
+                    collection: https://data.lucid.app/collections/2
+                    isPrimary: false
+                    order: '1'
+                    default: '5'
+                    label: User Friendly Field Name
+    delete:
+      summary: Delete Field Definitions
+      description: 'This endpoint removes only the field definitions provided in the query parameter. The fields in the query parameter must belong to the collection specified. The results of this deletion cannot be undone. The deletion will only occur if the user has access to the data source.
+
+        NOTE: If the entire schema is removed then all of the values of each data item are also removed.
+
+        '
+      operationId: deleteFieldDefinitions
+      tags:
+      - Schema
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: collectionId
+        in: path
+        description: ID of collection to delete field definitions from
+        required: true
+        schema:
+          type: integer
+      - name: fields
+        in: query
+        description: List of field definition URI's to remove from specified collection
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            data-service.admin: Scope needed for access to the Data APIs.
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

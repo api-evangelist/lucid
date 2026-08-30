@@ -1,0 +1,576 @@
+openapi: 3.2.0
+info:
+  title: Lucid REST Repositories API
+  version: '1.0'
+  description: The Lucid REST API provides programmatic access to manage documents, users, folders, sharing, licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale). Authenticate via OAuth 2.0 or API key.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/api
+servers:
+- url: https://api.lucid.co
+tags:
+- name: Repositories
+  description: Create and manage shared document repositories. Control repository membership by adding and removing users and groups.
+paths:
+  /v1/repositories:
+    get:
+      summary: List Repositories
+      description: Retrieves basic information for all repositories the authenticated user has permission to view.
+      operationId: listRepositories
+      tags:
+      - Repositories
+      security:
+      - ApiKey:
+        - RepositoryRead
+      - OAuth2:
+        - repository:readonly
+      responses:
+        '200':
+          description: OK. Returns a list of repositories the user has access to.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepositoryObject'
+        '403':
+          description: Forbidden. Occurs when the user does not have access to view any repository.
+    post:
+      summary: Create Repository
+      description: Creates a new repository on the account.
+      operationId: createRepository
+      tags:
+      - Repositories
+      security:
+      - ApiKey:
+        - RepositoryEdit
+      - OAuth2:
+        - repository
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRepositoryRequest'
+      responses:
+        '201':
+          description: Created. Returns the newly created repository.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryObject'
+        '400':
+          description: Bad Request. Occurs when no owner is provided, members or groups are added to an UNRESTRICTED repository, or invalid user/group IDs.
+        '403':
+          description: Forbidden. Occurs when the user does not have permission to create a repository.
+  /v1/repositories/{repositoryId}:
+    get:
+      summary: Get Repository
+      description: Retrieves basic information for the requested repository, provided the user has at least read-only access.
+      operationId: getRepository
+      tags:
+      - Repositories
+      security:
+      - ApiKey:
+        - RepositoryRead
+      - OAuth2:
+        - repository:readonly
+      parameters:
+      - name: repositoryId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/RepositoryId'
+        description: The unique identifier of the repository
+      responses:
+        '200':
+          description: OK. Returns the repository object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepositoryObject'
+        '403':
+          description: Forbidden. Occurs when the user does not have access to the repository.
+  /v1/repositories/{repositoryId}/users:
+    get:
+      summary: List Repository User Collaborators
+      operationId: listRepositoryUsers
+      tags:
+      - Repositories
+      description: List users with roles on a repository.
+      security:
+      - ApiKey:
+        - RepositoryRead
+      - OAuth2:
+        - repository:readonly
+      parameters:
+      - name: repositoryId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/RepositoryId'
+        description: The unique identifier of the repository
+      responses:
+        '200':
+          description: OK. Returns a list of users and their roles on the repository.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepositoryUser'
+        '403':
+          description: Forbidden. Occurs when the user does not have access to view repository owners or members.
+  /v1/repositories/{repositoryId}/users/add:
+    post:
+      summary: Create or Update Repository User Roles
+      operationId: addRepositoryUsers
+      tags:
+      - Repositories
+      description: Manages user roles on a repository, allowing for updating of existing repository users or adding roles for new users on the repository.
+      security:
+      - ApiKey:
+        - RepositoryEdit
+      - OAuth2:
+        - repository
+      parameters:
+      - name: repositoryId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/RepositoryId'
+        description: The unique identifier of the repository
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRepositoryUsersRequest'
+      responses:
+        '204':
+          description: No Content. User and group roles have been successfully added or updated.
+        '400':
+          description: Bad Request. Occurs when duplicate or invalid user IDs are provided, or REPOSITORY_MEMBERs are added to an UNRESTRICTED repository.
+        '403':
+          description: Forbidden. Occurs when the user does not have permission to modify the repository.
+  /v1/repositories/{repositoryId}/users/remove:
+    post:
+      summary: Remove Users from Repository
+      operationId: removeRepositoryUsers
+      tags:
+      - Repositories
+      description: Removes one or more users from a repository.
+      security:
+      - ApiKey:
+        - RepositoryEdit
+      - OAuth2:
+        - repository
+      parameters:
+      - name: repositoryId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/RepositoryId'
+        description: The unique identifier of the repository
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    type: integer
+                    description: User ID to remove from the repository
+                    example: 123321
+                  minItems: 1
+                  description: Array of user IDs to remove from the repository
+              required:
+              - users
+      responses:
+        '204':
+          description: No Content. Users have been successfully removed from the repository.
+        '403':
+          description: Forbidden. Occurs when the user does not have permission to modify the repository.
+  /v1/repositories/{repositoryId}/groups:
+    get:
+      summary: List Repository Groups
+      operationId: listRepositoryGroups
+      tags:
+      - Repositories
+      description: List groups with repository member access.
+      security:
+      - ApiKey:
+        - RepositoryRead
+      - OAuth2:
+        - repository:readonly
+      parameters:
+      - name: repositoryId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/RepositoryId'
+        description: The unique identifier of the repository
+      responses:
+        '200':
+          description: OK. Returns a list of groups with access to the repository.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RepositoryGroupCollaborator'
+        '400':
+          description: Bad Request. Occurs when attempting to list groups on an UNRESTRICTED repository.
+        '403':
+          description: Forbidden. Occurs when the user does not have access to the repository.
+  /v1/repositories/{repositoryId}/groups/add:
+    post:
+      summary: Add Groups as Members on Repository
+      operationId: addRepositoryGroups
+      tags:
+      - Repositories
+      description: Add Groups to a repository. Users in the Group will have repository member access to the specified repository.
+      security:
+      - ApiKey:
+        - RepositoryEdit
+      - OAuth2:
+        - repository
+      parameters:
+      - name: repositoryId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/RepositoryId'
+        description: The unique identifier of the repository
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepositoryGroupsRequest'
+      responses:
+        '204':
+          description: No Content. Groups have been successfully added.
+        '400':
+          description: Bad Request. Occurs when groups are added to an UNRESTRICTED repository, or invalid group IDs are provided.
+        '403':
+          description: Forbidden. Occurs when the user does not have permission to modify the repository.
+  /v1/repositories/{repositoryId}/groups/remove:
+    post:
+      summary: Remove Groups from Repository
+      operationId: removeRepositoryGroups
+      tags:
+      - Repositories
+      description: Removes one or more groups from a restricted repository.
+      security:
+      - ApiKey:
+        - RepositoryEdit
+      - OAuth2:
+        - repository
+      parameters:
+      - name: repositoryId
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/RepositoryId'
+        description: The unique identifier of the repository
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RepositoryGroupsRequest'
+      responses:
+        '204':
+          description: No Content. Groups have been successfully removed from the repository.
+        '400':
+          description: Bad Request. Occurs when attempting to remove groups from an UNRESTRICTED repository.
+        '403':
+          description: Forbidden. Occurs when the user does not have permission to modify the repository.
+components:
+  schemas:
+    RepositoryObject:
+      type: object
+      properties:
+        repositoryId:
+          $ref: '#/components/schemas/RepositoryId'
+        name:
+          type: string
+          description: Display name of the repository
+          example: My Business Process Repository
+        accessType:
+          $ref: '#/components/schemas/RepositoryAccessType'
+        created:
+          type: string
+          format: date-time
+          description: The date and time the repository was created
+          example: '2022-11-11T21:48:35.293Z'
+    RepositoryAccessType:
+      type: string
+      enum:
+      - UNRESTRICTED
+      - RESTRICTED
+      description: Determines repository visibility. UNRESTRICTED repositories are visible to all users on the account, RESTRICTED are visible to specific authorized groups and individuals.
+      example: UNRESTRICTED
+    RepositoryUser:
+      type: object
+      properties:
+        repositoryId:
+          type: string
+          description: Unique identifier of the repository
+          example: repo_2000719
+        userId:
+          type: integer
+          description: Unique identifier of the user
+          example: 1234567
+        role:
+          $ref: '#/components/schemas/RepositoryRole'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the user was added to the repository
+          example: '2026-01-21T01:10:41Z'
+    RepositoryId:
+      type: string
+      description: Unique identifier for a repository folder, prefixed with `repo_`
+      example: repo_1234321
+    AddRepositoryUsersRequest:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddRepositoryUserRequest'
+          description: Array of users and their roles to add or update on the repository
+      required:
+      - users
+    RepositoryRole:
+      type: string
+      enum:
+      - REPOSITORY_OWNER
+      - REPOSITORY_MEMBER
+      description: Role of a user on a repository
+      example: REPOSITORY_OWNER
+    RepositoryGroupsRequest:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            type: integer
+          description: Array of group IDs.
+          example:
+          - 123456
+          - 789123
+      required:
+      - groups
+    RepositoryGroupCollaborator:
+      type: object
+      properties:
+        repositoryId:
+          type: string
+          description: Unique identifier of the repository
+          example: repo_987654
+        groupId:
+          type: integer
+          description: Unique identifier of the group
+          example: 123456
+    CreateRepositoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Display name for the repository
+          example: Example Process Repository
+        accessType:
+          $ref: '#/components/schemas/RepositoryAccessType'
+          description: Optional. Determines repository visibility. Defaults to UNRESTRICTED.
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddRepositoryUserRequest'
+          description: List of users to add to the repository. Must contain at least one owner.
+        groups:
+          type: array
+          items:
+            type: integer
+          description: Optional. Group Ids of groups whose members should have access to this repository. Only applicable to RESTRICTED repositories.
+          example:
+          - 123456
+          - 789123
+      required:
+      - name
+      - users
+    AddRepositoryUserRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: Unique identifier of the user to add or update
+          example: 1234567
+        role:
+          $ref: '#/components/schemas/RepositoryRole'
+      required:
+      - userId
+      - role
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            account.audit.logs: View audit logs on your account.
+            account.info: View basic information about your account (e.g., account ID and account name) .
+            account.user: Create, view, edit, and delete users on your account.
+            account.user:readonly: View users on your account.
+            account.users:admin.readonly: View all users and their roles on your account.
+            account.user.transfercontent: Transfer ownership of a user's resources to another user on your account.
+            account.settings:readonly: View settings on your account.
+            account.legalhold: Create, view, and expire legal holds on your account.
+            account.legalhold:readonly: View legal holds on your account.
+            account.legalhold.users: Manage legal hold users on your account.
+            account.legalhold.users:readonly: View legal hold users on your account.
+            folder: Create, view, edit, share, and delete your folders. Organize your folders and their contents.
+            folder:readonly: View any of your folders and list their contents.
+            folder:admin: Perform admin actions on folders belonging to the account.
+            folder:admin.readonly: View all folders belonging to the account with admin permissions.
+            invitation: Accept document and folder share links.
+            invitation.accept: Accept document and folder share links.
+            cloud.credential: Manage cloud credentials.
+            cloud.credential:readonly: View cloud credentials.
+            cloud.datasource: Manage cloud data sources.
+            cloud.datasource:readonly: View cloud data sources.
+            cloud.model: Manage cloud models.
+            repository: Manage repositories.
+            repository:readonly: View repositories.
+            repository:admin: Perform admin actions on repositories.
+            lucid.document.content: Create, view, edit, and delete any Lucid document accessible by the user.
+            lucid.document.content:readonly: View and download any Lucid document accessible by the user.
+            lucid.document.content:admin: Perform admin actions on Lucid documents belonging to the account.
+            lucid.document.content:admin.readonly: View all Lucid documents belonging to the account with admin permissions.
+            lucid.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share:readonly: View document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator:readonly: View document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.embed: Create, view, edit, and delete document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.embed:readonly: View document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.link: Create, view, edit, and delete share links for any Lucid document accessible by the user.
+            lucid.document.content.share.link:readonly: View share links for any Lucid document accessible by the user.
+            lucid.document.storage:admin.readonly: Perform admin actions backing up Lucid documents belonging to the account.
+            lucid.document.app: View, edit, create, and manage folders and documents within an app.
+            lucid.document.app.folder: Create, view, edit, and manage any Lucid document within its app-specific folder.
+            lucid.document.app.picker: View, edit, and manage any Lucid document selected within an app.
+            lucid.document.app.picker:readonly: View and download any Lucid document selected within an app.
+            lucid.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator:readonly: View document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed: Create, view, edit, and delete document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed:readonly: View document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link: Create, view, edit, and delete share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link:readonly: View share links for any Lucid document selected within an app.
+            lucid.document.accessRequest: Request access to Lucid documents.
+            licenses:admin: Perform admin actions on licenses and subscriptions belonging to the account.
+            licenses:admin.readonly: View licenses and subscriptions belonging to the account with admin permissions.
+            teams: Create, view, and edit, archive, and restore any teams on your account. Control which users belong to teams.
+            teams:readonly: View any teams on your account and list which users belong to them.
+            teams:admin: Manage teams on your account.
+            lucidchart.document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed:readonly: View embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            lucidchart.document.content:readonly: View and download any Lucidchart document on your account.
+            lucidchart.document.content:admin: Perform admin actions on Lucidchart documents belonging to the account.
+            lucidchart.document.content:admin.readonly: View all Lucidchart documents belonging to the account with admin permissions.
+            lucidchart.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed:readonly: View embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link:readonly: View the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.storage:admin.readonly: Perform admin actions backing up Lucidchart documents belonging to the account.
+            lucidchart.document.accessRequest: Request access to Lucidchart documents.
+            lucidspark.document.app: View, edit, and manage any Lucidspark board selected for this third-party application. Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.folder: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.picker: View, edit, and manage any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker:readonly: View and download any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed:readonly: View embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.content: Create, view, edit, and delete any Lucidspark board on your account.
+            lucidspark.document.content:readonly: View and download any Lucidspark board on your account.
+            lucidspark.document.content:admin: Perform admin actions on Lucidspark boards belonging to the account.
+            lucidspark.document.content:admin.readonly: View all Lucidspark boards belonging to the account with admin permissions.
+            lucidspark.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed:readonly: View embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link:readonly: View the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.storage:admin.readonly: Perform admin actions backing up Lucidspark boards belonging to the account.
+            lucidspark.document.accessRequest: Request access to Lucidspark boards.
+            lucidscale.document.app: View, edit, and manage any Lucidscale model selected for this third-party application. Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.folder: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.picker: View, edit, and manage any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker:readonly: View and download any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed:readonly: View embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.content: Create, view, edit, and delete any Lucidscale model on your account.
+            lucidscale.document.content:readonly: View and download any Lucidscale model on your account.
+            lucidscale.document.content:admin: Perform admin actions on Lucidscale models belonging to the account.
+            lucidscale.document.content:admin.readonly: View all Lucidscale models belonging to the account with admin permissions.
+            lucidscale.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed:readonly: View embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link:readonly: View the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.storage:admin.readonly: Perform admin actions backing up Lucidscale models belonging to the account.
+            lucidscale.document.accessRequest: Request access to Lucidscale models.
+            offline_access: Continue to perform authorized actions when you're not logged in (required to refresh tokens).
+            user.profile: Allow applications to view basic information about you (e.g., full name, username, and email).
+            document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            document.content:readonly: View and download any Lucidchart document on your account.
+    ApiKey:
+      type: http
+      scheme: bearer
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-rest-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

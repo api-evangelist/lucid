@@ -1,0 +1,2828 @@
+openapi: 3.2.0
+info:
+  title: Lucid REST Document Access API
+  version: '1.0'
+  description: The Lucid REST API provides programmatic access to manage documents, users, folders, sharing, licensing, and audit logs across the Lucid Suite (Lucidchart, Lucidspark, and Lucidscale). Authenticate via OAuth 2.0 or API key.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/api
+servers:
+- url: https://api.lucid.co
+tags:
+- name: Document Access
+  description: Create, import, copy, retrieve, update, search, export, and trash documents across the Lucid Suite, and access their contents.
+paths:
+  /v1/accounts/me/documents/search:
+    post:
+      summary: Search Account Documents
+      description: Returns a list of all documents belonging to the requesting user's account, sorted by created date. This API is exclusive to Enterprise Shield accounts. The endpoint supports pagination and has a per-account rate limit of 300 requests per 5 seconds.
+      operationId: SearchAccountDocuments
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentAdmin
+      - OAuth2:
+        - lucidchart.document.content:admin.readonly
+        - lucidspark.document.content:admin.readonly
+        - lucidscale.document.content:admin.readonly
+      parameters:
+      - $ref: '#/components/parameters/RequestAs-AccountDocuments'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userIds:
+                  type: array
+                  items:
+                    type: number
+                  description: 'When provided, limit the search to documents that at least one specified user can access.
+
+                    If no list is provided, search across the entire account.
+
+                    '
+                ownedByUsers:
+                  type: boolean
+                  description: When true, search results will only include documents owned by users specified by userIds. Ignored if no userIds are provided.
+                documentIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  description: List of documentIds to filter by.
+                classificationIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  description: List of classificationIds to filter by.
+                statusIds:
+                  type: array
+                  items:
+                    type: number
+                  description: List of statusIds to filter by.
+                createdStartTime:
+                  type: string
+                  format: date-time
+                  description: Start of range to filter documents by created time.
+                createdEndTime:
+                  type: string
+                  format: date-time
+                  description: End of range to filter documents by created time.
+                lastModifiedStartTime:
+                  type: string
+                  format: date-time
+                  description: Start of range to filter documents by last modified time.
+                lastModifiedEndTime:
+                  type: string
+                  format: date-time
+                  description: End of range to filter documents by last modified time.
+                product:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Product'
+                  description: Array of Lucid Suite products to filter by. Default value assumes all valid products for the given scopes.
+                  default:
+                  - lucidchart
+                  - lucidscale
+                  - lucidspark
+                keywords:
+                  type: string
+                  description: Keyword(s) to search against document content and titles. When provided, results will be sorted by relevance to keyword search. Use quotes to search for exact phrases (e.g. "Project X")
+                documentLocation:
+                  type: string
+                  enum:
+                  - team folders
+                  - users
+                  - deleted
+                  - repositories
+                  description: Specify to search for documents in team folders, owned by users, deleted, or contained within repositories
+                externalAccess:
+                  type: string
+                  enum:
+                  - any
+                  - external-collaborators
+                  - external-links
+                  description: Specify to search for documents with either “any” type of external access, “external-collaborators”, or "external-links"
+      responses:
+        '200':
+          description: With paginated list of Account Documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountDocument'
+        '400':
+          description: Bad Request if incorrect format
+        '403':
+          description: Forbidden if "product" query parameter is used and the token’s scopes do not contain the matching readonly scope for each product, or account does not have access to the API
+        '429':
+          description: Too Many Requests if account makes more than 300 requests in 5 seconds
+  /v1/documents:
+    post:
+      summary: Create Document
+      description: 'Creates a new document for the requesting user, with the specified title. Requires `title` and `product`. Optionally, a `parent` folder, `extensionBootstrapData`, or Lucid Standard Import `content` can be provided to customize the new document.
+
+
+        > 📘
+
+        >
+
+        > This endpoint can only create a new Lucidchart or Lucidspark document. It cannot modify an existing document''s contents.
+
+
+        > 📘 ##### Document Creation Location
+
+        >
+
+        > When there is no `parent` field on the request, the new document will be created in a default location depending on the authorizing token''s scopes.
+
+        >
+
+        > - If the token authorizing the request uses one of the `document.app` scopes, then the document will be created in an `app-specific folder`.
+
+        > - If one of the `document.content` scopes is used, the document will be created in the user''s ''My Documents folder''.
+
+        > - If both types of scopes are authorized on the token, the `document.content` behavior will take priority and the document will be created in the user''s ''My Documents'' folder.
+
+
+        > 📘 ##### Bootstrap Data for Create Document
+
+        >
+
+        > Bootstrap data can be attached to the created document to be consumed by a specific [Extension Package](https://lucid.readme.io/docs/lucid-extension-api). See [Bootstrap Data for documents created via API](https://lucid.readme.io/docs/editor-extension-data#bootstrap-data-for-documents-created-via-api) for usage.
+
+
+        > 📘 Standard Import
+
+        >
+
+        > When `content` is provided, it must conform to the Lucid Standard Import schema. For more information on how to use the Standard Import, refer to the extensive reference documentation [here](doc:overview-si).
+
+        >
+
+        > For examples of how to use the Standard Import, refer to the `/standard-import` folder in Lucid''s repository of [Sample Lucid REST Applications](https://github.com/lucidsoftware/sample-lucid-rest-applications/tree/main/standard-import). This repo also contains some example `.zip` Standard Import files you can reference or use in your own projects.
+
+
+        ## Valid Authentication Methods
+
+
+        **API Key Grants:**
+
+        - `DocumentEdit`
+
+
+        **OAuth 2.0 User Token Scopes:**
+
+        - `lucidchart.document.content`
+
+        - `lucidchart.document.app.folder`
+
+        - `lucidspark.document.content`
+
+        - `lucidspark.document.app.folder`
+
+        '
+      operationId: createDocument
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.content
+        - lucidchart.document.app.folder
+        - lucidspark.document.content
+        - lucidspark.document.app.folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - product
+              properties:
+                title:
+                  type: string
+                  description: Title that should be given to the newly created document.
+                product:
+                  $ref: '#/components/schemas/CreatableProduct'
+                parent:
+                  type: number
+                  description: Folder ID for the new document.
+                extensionBootstrapData:
+                  $ref: '#/components/schemas/BootstrapData'
+                content:
+                  $ref: '#/components/schemas/LucidStandardImportContent'
+      responses:
+        '201':
+          description: 'Created with Document resource containing information about the newly created document.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Bad Request. * `'content' and 'extensionBootstrapData' cannot both be provided` — the `content` field is mutually exclusive with `extensionBootstrapData`. * Invalid `content` JSON — the provided content does not conform to the Lucid Standard Import schema.
+        '403':
+          description: Forbidden. * if the user doesn't have access to or permissions to create within the specified parent folder. * if the token authorizing the request has the document.app scope with a specified parent folder that is outside the app folder's folder tree.
+  /v1/documents/create:
+    post:
+      summary: Create Document with Standard Import File
+      description: 'Creates a new document from a Lucid Standard Import file (`.zip` archive) uploaded as multipart/form-data. Requires `file`, `type`, and `product`. Optionally, a `title` and `parent` folder can be provided. If no `title` is provided, the new document''s title will be the imported filename.
+
+
+        > 📘
+
+        >
+
+        > This endpoint can only create a new Lucidchart or Lucidspark document. It cannot modify an existing document''s contents.
+
+
+        > 📘 ##### Document Creation Location
+
+        >
+
+        > When there is no `parent` field on the request, the new document will be created in a default location depending on the authorizing token''s scopes.
+
+        >
+
+        > - If the token authorizing the request uses one of the `document.app` scopes, then the document will be created in an `app-specific folder`.
+
+        > - If one of the `document.content` scopes is used, the document will be created in the user''s ''My Documents folder''.
+
+        > - If both types of scopes are authorized on the token, the `document.content` behavior will take priority and the document will be created in the user''s ''My Documents'' folder.
+
+
+        > 📘 Standard Import
+
+        >
+
+        > For more information on how to use the Standard Import, refer to the extensive reference documentation [here](doc:overview-si).
+
+        >
+
+        > For examples of how to use the Standard Import, refer to the `/standard-import` folder in Lucid''s repository of [Sample Lucid REST Applications](https://github.com/lucidsoftware/sample-lucid-rest-applications/tree/main/standard-import). This repo also contains some example `.zip` Standard Import files you can reference or use in your own projects.
+
+
+        ## Valid Authentication Methods
+
+
+        **API Key Grants:**
+
+        - `DocumentEdit`
+
+
+        **OAuth 2.0 User Token Scopes:**
+
+        - `lucidchart.document.content`
+
+        - `lucidchart.document.app.folder`
+
+        - `lucidspark.document.content`
+
+        - `lucidspark.document.app.folder`
+
+        '
+      operationId: createDocumentWithStandardImport
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.content
+        - lucidchart.document.app.folder
+        - lucidspark.document.content
+        - lucidspark.document.app.folder
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              - type
+              - product
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The Lucid Standard Import specification (`.zip` archive) from which to create the document.
+                type:
+                  type: string
+                  enum:
+                  - x-application/vnd.lucid.standardImport
+                product:
+                  $ref: '#/components/schemas/CreatableProduct'
+                title:
+                  type: string
+                  description: Title that should be given to the newly created document. If no title is specified, the document will be automatically assigned the file name.
+                parent:
+                  type: number
+                  description: Folder ID for the new document.
+      responses:
+        '201':
+          description: 'Created with Document resource containing information about the newly created document.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: 'Bad Request.
+
+            * Invalid request body — the provided payload does not conform to the Lucid Standard Import schema.
+
+            '
+        '403':
+          description: 'Forbidden.
+
+            * if the user doesn''t have access to or permissions to create within the specified parent folder.
+
+            * if the token authorizing the request has the document.app scope with a specified parent folder that is outside the app folder''s folder tree.
+
+            * if the token does not have the correct scope for the import type.
+
+            '
+        '415':
+          description: Unsupported Media Type. The file type provided is not supported.
+  /v1/documents/import:
+    post:
+      summary: Import Document
+      description: 'Imports an external non-Lucid file as a new document within Lucid. The file is uploaded as multipart/form-data. Requires `file`, `type`, and `product`. Optionally, a `title` and `parent` folder can be provided. If no `title` is provided, the new document''s title will be the imported filename.
+
+
+        > 📘
+
+        >
+
+        > This endpoint can only create a new Lucidchart or Lucidspark document. It cannot modify an existing document''s contents.
+
+
+        > 📘 ##### Document Creation Location
+
+        >
+
+        > When there is no `parent` field on the request, the new document will be created in a default location depending on the authorizing token''s scopes.
+
+        >
+
+        > - If the token authorizing the request uses one of the `document.app` scopes, then the document will be created in an `app-specific folder`.
+
+        > - If one of the `document.content` scopes is used, the document will be created in the user''s ''My Documents folder''.
+
+        > - If both types of scopes are authorized on the token, the `document.content` behavior will take priority and the document will be created in the user''s ''My Documents'' folder.
+
+
+        > 📘 Board import
+
+        >
+
+        > - The `board` import type only accepts pdfs that are exports of digital whiteboards.
+
+        > - The `board` import type can only be authorized by users with a Lucidspark Enterprise license.
+
+        > - The `board` import type is experimental and importing the same board may produce varying results over time.
+
+
+        ## Valid Authentication Methods
+
+
+        **API Key Grants:**
+
+        - `DocumentEdit`
+
+
+        **OAuth 2.0 User Token Scopes:**
+
+        - `lucidchart.document.content`
+
+        - `lucidchart.document.app.folder`
+
+        - `lucidspark.document.content`
+
+        - `lucidspark.document.app.folder`
+
+        '
+      operationId: importDocument
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.content
+        - lucidchart.document.app.folder
+        - lucidspark.document.content
+        - lucidspark.document.app.folder
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - file
+              - type
+              - product
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The file from which to import the document.
+                type:
+                  type: string
+                  enum:
+                  - x-application/vnd.lucid.drawio
+                  - x-application/vnd.lucid.visio
+                  - x-application/vnd.lucid.gliffy
+                  - x-application/vnd.lucid.board
+                  description: 'The type of file provided for import. Supported types:
+
+                    * `x-application/vnd.lucid.drawio` — draw.io files (.drawio, .xml) for Lucidchart
+
+                    * `x-application/vnd.lucid.visio` — Visio files (.vsdx, .vdx) for Lucidchart
+
+                    * `x-application/vnd.lucid.gliffy` — Gliffy files (.gliffy, .gon, .gxml) for Lucidchart
+
+                    * `x-application/vnd.lucid.board` — Board files (.pdf) for Lucidspark
+
+                    '
+                product:
+                  $ref: '#/components/schemas/CreatableProduct'
+                title:
+                  type: string
+                  description: Title that should be given to the newly imported document. If no title is specified, the document will be automatically assigned the file name.
+                parent:
+                  type: number
+                  description: Folder ID for the new document.
+      responses:
+        '201':
+          description: 'Created with Document resource containing information about the newly imported document.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '403':
+          description: 'Forbidden.
+
+            * if the user doesn''t have access to or permissions to create within the specified parent folder.
+
+            * if the token authorizing the request has the document.app scope with a specified parent folder that is outside the app folder''s folder tree.
+
+            * if the token does not have the correct scope for the import type.
+
+            * if the token requesting a board import does not have a Lucidspark Enterprise License.
+
+            '
+        '415':
+          description: Unsupported Media Type. The file type provided is not supported.
+  /v1/documents/copy:
+    post:
+      summary: Copy Document
+      description: 'Copies one of the requesting user''s existing documents, with the specified title. Requires `title` and `template` (the ID of the document to copy). Optionally, a `parent` folder can be provided. Note that collaborator permissions are not transferred to the copied document.
+
+
+        > 📘
+
+        >
+
+        > This endpoint can only create a new Lucidchart or Lucidspark document. It cannot modify an existing document''s contents.
+
+
+        > 📘 ##### Document Creation Location
+
+        >
+
+        > When there is no `parent` field on the request, the new document will be created in a default location depending on the authorizing token''s scopes.
+
+        >
+
+        > - If the token authorizing the request uses one of the `document.app` scopes, then the document will be created in an `app-specific folder`.
+
+        > - If one of the `document.content` scopes is used, the document will be created in the user''s ''My Documents folder''.
+
+        > - If both types of scopes are authorized on the token, the `document.content` behavior will take priority and the document will be created in the user''s ''My Documents'' folder.
+
+
+        ## Valid Authentication Methods
+
+
+        **API Key Grants:**
+
+        - `DocumentEdit`
+
+
+        **OAuth 2.0 User Token Scopes:**
+
+        - `lucidchart.document.content`
+
+        - `lucidchart.document.app.folder`
+
+        - `lucidspark.document.content`
+
+        - `lucidspark.document.app.folder`
+
+        '
+      operationId: copyDocument
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.content
+        - lucidchart.document.app.folder
+        - lucidspark.document.content
+        - lucidspark.document.app.folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - template
+              properties:
+                title:
+                  type: string
+                  description: Title that should be given to the copied document.
+                template:
+                  type: string
+                  format: uuid
+                  description: ID of the document to copy.
+                parent:
+                  type: number
+                  description: Folder ID for the new document.
+      responses:
+        '201':
+          description: 'Created with Document resource containing information about the newly copied document.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '403':
+          description: 'Forbidden.
+
+            * if the user doesn''t have access to or permissions to create within the specified parent folder.
+
+            * if the user doesn''t have permissions to access the specified template to copy from.
+
+            * if the token authorizing the request has the document.app scope with a specified parent folder that is outside the app folder''s folder tree.
+
+            '
+  /v1/documents/{id}:
+    get:
+      summary: Get/Export Document
+      description: 'Retrieves information about the requested document or exports it as an image.
+
+
+        **Get Document:** Requires at least read-only access. Document owner information is only returned if the requesting user has view access and the document is unpublished. If published, the user must be at least a collaborator.
+
+
+        **Export Document:** Exports a given document in a specified image format. When exporting oversized images, the resolution may be automatically scaled down to enable performant API requests.
+
+
+        **Admin flow:** Account owners and document admins can access any document belonging to their account without needing a direct share by setting the `Lucid-Request-As: admin` header and authenticating with an admin scope or `DocumentAdmin` API key grant.
+
+        '
+      operationId: getOrExportDocument
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentReadonly
+        - DocumentAdmin
+      - OAuth2:
+        - lucidchart.document.content:readonly
+        - lucidchart.document.content:admin.readonly
+        - lucidchart.document.app.picker:readonly
+        - lucidchart.document.app.folder
+        - lucidscale.document.content:readonly
+        - lucidscale.document.content:admin.readonly
+        - lucidscale.document.app.picker:readonly
+        - lucidscale.document.app.folder
+        - lucidspark.document.content:readonly
+        - lucidspark.document.content:admin.readonly
+        - lucidspark.document.app.picker:readonly
+        - lucidspark.document.app.folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: ID of the document to be retrieved or exported.
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      - name: Lucid-Request-As
+        in: header
+        required: false
+        description: 'If the requesting user is an account owner or document admin with the required permissions and they make the
+
+          request with the value of "admin" as this header and include an admin scope or `DocumentAdmin` API key grant,
+
+          the request will be made using their admin permissions and will succeed for any document belonging to their
+
+          account.
+
+          '
+        schema:
+          type: string
+        example: admin
+      - name: Accept
+        in: header
+        description: "When using the Export Document API, the format of the exported document is set via the `Accept` header. This header contains up to two parts, separated by a semicolon:\n  * A prefix stating which type of image you would like the document exported as. Options are:\n    * `image/jpeg`\n    * `image/png`\n  * Optionally, you can also supply the dots per inch (DPI) you want the exported image to have. If this value is not provided, a default of 160 will be used. For example:\n    * `image/png;dpi=256`\n    * `image/jpeg;dpi=64`"
+        required: false
+        schema:
+          type: string
+          example: image/png
+      - name: page
+        in: query
+        description: 1-based page index of the document to export. Defaults to the first page. Only a single page is allowed. Optional for export operation. Cannot be provided when pageId is provided.
+        required: false
+        schema:
+          type: number
+          default: 1
+      - name: pageId
+        in: query
+        description: Specific page of the document to export. Only a single page is allowed. Optional for export operation. Cannot be provided when page is provided.
+        example: J~65X_X714o2
+        required: false
+        schema:
+          type: string
+      - name: crop
+        in: query
+        description: "Specifies the crop settings for the document export. Optional for export operation. Possible values are\n  * Default (no crop parameter) - Exports the entire page canvas area that contains your content. Automatically adjusts to include all items on the page, including the space between them and maintains the relative positioning and spacing of your document elements\n  * `x, y, width, height` - Crop to the specified region (in pixels) on the page. Example crop=1000,300,30,7\n    * Note: The region (in pixels) is accurate to the number of pixels on the canvas. The number of pixels of the outputted image will only match the crop window at a DPI of 160.\n  * `content` - Crop to page content. Example crop=content"
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK with Document resource containing information about the requested document or the binary data in the response body for exports. The Accept header specifies the type of image for exports.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad Request. More than one page and/or pageId was provided for export.
+        '403':
+          description: Forbidden. The app making the request does not have permission to the document, or if the document has been deleted or does not exist.
+        '404':
+          description: Not Found. The specified page or pageID could not be found for export.
+        '406':
+          description: Not Acceptable. The specified image type is not supported for export.
+        '429':
+          description: Too Many Requests. If the account makes more than 75 requests in 5 seconds.
+    patch:
+      summary: Update Document
+      description: 'Updates properties of an existing document. Supports partial updates via JSON for title, parent, and classification.
+
+
+        Supports moving documents into (but not out of) repositories by providing a repo_-prefixed repository ID as the parent.
+
+        '
+      operationId: updateDocument
+      tags:
+      - Document Access
+      security:
+      - OAuth2:
+        - lucidchart.document.content
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: ID of the document to update.
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchDocumentRequestBody'
+      responses:
+        '200':
+          description: OK with Document resource containing information about the updated document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          description: Bad Request. * Title must be non-empty when included. * Title must be at most 300 characters. * Title must not start or end with whitespace. * Invalid parent ID. Must be either a string prefixed with repo_ (for repositories) or a number. * Custom tag values must be non-empty when included. * Custom tag values must not start or end with whitespace. * Classification ID must either be null or an existing classification ID.
+        '403':
+          description: Forbidden. The app making the request does not have permission to the document, or the document does not exist.
+        '409':
+          description: Conflict. A conflict occurred when saving the document.
+  /v1/documents/{id}/trash:
+    post:
+      summary: Trash Document
+      description: 'Moves the specified document to the trash for the requesting user.
+
+
+        If the document is shared or part of a team folder, other users will still have access to the document. Requires the user to be the owner of the requested document or have the appropriate team folder permissions.
+
+        '
+      operationId: trashDocument
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentEdit
+      - OAuth2:
+        - lucidchart.document.content
+        - lucidchart.document.app.folder
+        - lucidscale.document.content
+        - lucidscale.document.app.folder
+        - lucidspark.document.content
+        - lucidspark.document.app.folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: ID of the document to be moved to the trash.
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      responses:
+        '204':
+          description: No Content when the document is successfully moved into the trash or is already trashed.
+        '403':
+          description: Forbidden. if the app making the request does not have permission to the document, or if the document has been deleted or does not exist.
+  /v1/documents/search:
+    post:
+      summary: Search Documents
+      operationId: searchDocuments
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentReadonly
+      - OAuth2:
+        - lucidchart.document.content:readonly
+        - lucidscale.document.content:readonly
+        - lucidspark.document.content:readonly
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Product'
+                  description: Array of Lucid Suite products to filter by. Default value assumes all valid products for the given scopes.
+                  default:
+                  - lucidchart
+                  - lucidscale
+                  - lucidspark
+                createdStartTime:
+                  type: string
+                  format: date-time
+                  default: '0001-01-01T00:00:00Z'
+                  description: Date and time to filter documents that have been created after. Default value assumes the beginning of time.
+                createdEndTime:
+                  type: string
+                  format: date-time
+                  default: '9999-12-31T23:59:59Z'
+                  description: Date and time to filter documents that have been created before. Default value assumes the current instant of time.
+                lastModifiedAfter:
+                  type: string
+                  format: date-time
+                  default: '0001-01-01T00:00:00Z'
+                  description: Date and time to filter documents that have been modified after. Default value assumes the beginning of time.
+                lastModifiedBefore:
+                  type: string
+                  format: date-time
+                  description: Date and time to filter documents that have been modified before. When omitted, results are not bounded by an upper modified-time limit.
+                keywords:
+                  type: string
+                  description: Keywords to search against document content and titles. This field is truncated to 400 characters. When provided, results will be sorted by relevance to keyword search.
+                excludeTrashed:
+                  type: boolean
+                  description: When set to true, excludes trashed/deleted documents from search results. When set to false or omitted, trashed documents are included in results with their trashedTimestamp populated.
+                  default: false
+                documentLocation:
+                  type: string
+                  enum:
+                  - repositories
+                  description: When provided, restricts search results to documents contained within repositories the authenticated user can access. Only the value "repositories" is supported on this endpoint.
+                owners:
+                  type: array
+                  items:
+                    type: number
+                  description: When provided, limit the search to documents owned by at least one of the specified users. Results are still restricted to documents the authenticated user can access. A maximum of 10000 users may be specified.
+                externalAccess:
+                  type: string
+                  enum:
+                  - any
+                  - external-collaborators
+                  - external-links
+                  description: Specify to search for documents with either “any” type of external access, “external-collaborators”, or "external-links"
+                statusIds:
+                  type: array
+                  items:
+                    type: number
+                  description: List of statusIds to filter by.
+                documentIds:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  description: List of documentIds to filter by. A maximum of 10000 documents may be specified.
+      responses:
+        '200':
+          description: OK with an array of Document Resource objects containing information about documents the authenticated user has access to.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+        '400':
+          description: Bad Request if the request does not contain a body.
+        '403':
+          description: Forbidden if the product query parameter is used and the token's scopes do not contain the matching readonly scope for each product.
+        '429':
+          description: Too Many Requests if the account makes more than 300 requests in 5 seconds.
+  /v1/documents/{id}/contents:
+    get:
+      summary: Document Contents
+      description: 'Retrieves information about the contents of the requested Lucidchart or Lucidspark document.
+
+
+        Due to the evolving nature of Lucid documents, an unchanged document may produce varying results over time.
+
+        '
+      operationId: getDocumentContent
+      tags:
+      - Document Access
+      security:
+      - ApiKey:
+        - DocumentReadonly
+      - OAuth2:
+        - lucidchart.document.content:readonly
+        - lucidchart.document.app.picker:readonly
+        - lucidchart.document.app.folder
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: ID of the document to have contents retrieved.
+        example: 110808fd-4553-4316-bccf-4f25ff59a532
+      responses:
+        '200':
+          description: OK with Document Content resource containing information about the requested document's content.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentContent'
+        '403':
+          description: Forbidden if the app making the request does not have permission to the document, or if the document has been deleted or does not exist.
+        '429':
+          description: Too Many Requests if the account makes more than 100 requests in 5 seconds.
+components:
+  schemas:
+    LucidStandardImportToggleLayerAction:
+      type: object
+      description: Toggle visibility of layers.
+      properties:
+        type:
+          type: string
+          enum:
+          - toggleLayer
+        layers:
+          type: array
+          description: List of layer names to toggle.
+          items:
+            type: string
+      required:
+      - type
+      - layers
+    EndpointStyle:
+      type: string
+      description: The visual style of a line endpoint.
+      enum:
+      - none
+      - aggregation
+      - arrow
+      - hollowArrow
+      - openArrow
+      - async1
+      - async2
+      - closedSquare
+      - openSquare
+      - bpmnConditional
+      - bpmnDefault
+      - closedCircle
+      - openCircle
+      - composition
+      - exactlyOne
+      - generalization
+      - many
+      - nesting
+      - one
+      - oneOrMore
+      - zeroOrMore
+      - zeroOrOne
+      example: arrow
+    LucidStandardImportPositionEndpoint:
+      type: object
+      description: An endpoint at an absolute position on the page.
+      properties:
+        type:
+          type: string
+          enum:
+          - positionEndpoint
+        style:
+          $ref: '#/components/schemas/EndpointStyle'
+        position:
+          $ref: '#/components/schemas/AbsolutePoint'
+      required:
+      - type
+      - style
+      - position
+    Line:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Line ID
+          example: VTAuwAeC0_R1
+        endpoint1:
+          $ref: '#/components/schemas/Endpoint'
+        endpoint2:
+          $ref: '#/components/schemas/Endpoint'
+        textAreas:
+          type: array
+          items:
+            $ref: '#/components/schemas/TextArea'
+        customData:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+        linkedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedData'
+      description: Object representing a line on the page of a document. Note that the ItemId of a line is unique across all groups, layers, shapes, and lines.
+      required:
+      - id
+      - endpoint1
+      - endpoint2
+      - textAreas
+      - customData
+      - linkedData
+    LucidStandardImportCollection:
+      type: object
+      description: 'A data collection to associate with the document. Exactly one of `dataSource` or `values` must be provided — providing both or neither is an error.
+
+        '
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the collection.
+      required:
+      - id
+      oneOf:
+      - title: Data source reference
+        required:
+        - dataSource
+        properties:
+          dataSource:
+            type: string
+            description: The data source this collection belongs to.
+      - title: Inline values
+        required:
+        - values
+        properties:
+          values:
+            type: array
+            description: 'Inline JSON data for the collection. Each element is an object whose keys become the column headers and whose values become the row data.
+
+              '
+            items:
+              type: object
+              additionalProperties: true
+    LucidStandardImportStandardPageSize:
+      type: object
+      description: A standard named page size.
+      properties:
+        type:
+          type: string
+          description: The standard page size name.
+          enum:
+          - letter
+          - legal
+          - executive
+          - a3
+          - a4
+          - a5
+          - tabloid
+          - folio
+          - statement
+          example: letter
+        format:
+          type: string
+          description: Page orientation.
+          enum:
+          - landscape
+          - portrait
+          default: portrait
+      required:
+      - type
+    LucidStandardImportHideLayerAction:
+      type: object
+      description: Hide layers.
+      properties:
+        type:
+          type: string
+          enum:
+          - hideLayer
+        layers:
+          type: array
+          description: List of layer names to hide.
+          items:
+            type: string
+      required:
+      - type
+      - layers
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Group ID
+          example: VTAu-dl6qtyx
+        members:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of shapes, lines, & groups contained within the group
+          example:
+          - VTAuCB8~evzW
+          - VTAuo_Y56.q~
+        customData:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+        linkedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedData'
+      description: Object representing a group on the page of a document. Note that the ItemId of a group is unique across all groups, layers, shapes, and lines.
+      required:
+      - id
+      - members
+    AbsolutePoint:
+      type: object
+      description: An absolute point on the page canvas.
+      properties:
+        x:
+          type: number
+          description: The x-coordinate. Must be between -1200000 and 1200000, inclusive.
+        y:
+          type: number
+          description: The y-coordinate. Must be between -1200000 and 1200000, inclusive.
+      required:
+      - x
+      - y
+    Data:
+      type: object
+      properties:
+        collections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Collection'
+          description: Array of collections
+      required:
+      - collections
+      description: Object representing an array of Collections on a document.
+    LucidStandardImportUrlAction:
+      type: object
+      description: Navigate to an external URL.
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+        url:
+          type: string
+          description: The target URL.
+          example: https://example.com
+        newWindow:
+          type: boolean
+          description: Whether to open in a new window.
+      required:
+      - type
+      - url
+    LucidStandardImportShowLayerAction:
+      type: object
+      description: Show layers.
+      properties:
+        type:
+          type: string
+          enum:
+          - showLayer
+        layers:
+          type: array
+          description: List of layer names to show.
+          items:
+            type: string
+      required:
+      - type
+      - layers
+    LucidStandardImportPageSettings:
+      type: object
+      description: Page-level settings for a Lucid Standard Import page.
+      properties:
+        fillColor:
+          type: string
+          description: Background fill color for the page as a hex color string.
+          example: '#ffffff'
+        infiniteCanvas:
+          type: boolean
+          description: Whether the page uses an infinite canvas.
+        size:
+          $ref: '#/components/schemas/LucidStandardImportPageSize'
+        autoTiling:
+          type: boolean
+          description: Whether auto-tiling is enabled for the page.
+        lineJumps:
+          type: boolean
+          description: 'Whether lines on this page draw small humps where they cross
+
+            other lines. Individual lines may override this with their own
+
+            `lineJumps` setting.
+
+            '
+    LucidStandardImportLineEndpoint:
+      type: object
+      description: An endpoint connected to another line.
+      properties:
+        type:
+          type: string
+          enum:
+          - lineEndpoint
+        style:
+          $ref: '#/components/schemas/EndpointStyle'
+        lineId:
+          type: string
+          description: The ID of the line to connect to.
+          example: line1
+        position:
+          type: number
+          description: Relative position along the line (0 to 1 inclusive).
+          minimum: 0
+          maximum: 1
+      required:
+      - type
+      - style
+      - lineId
+      - position
+    LucidStandardImportGroup:
+      type: object
+      description: A group of items on a page.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the group.
+          example: group1
+        items:
+          type: array
+          description: 'List of item IDs (shapes, lines, groups) contained in this group. An item can belong to only one group. If an item ID is specified in multiple groups, it is assigned to the first group encountered, and all subsequent references to that item ID are ignored.
+
+            '
+          items:
+            type: string
+        customData:
+          type: array
+          description: Custom key-value data to attach to the group.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCustomDatum'
+        linkedData:
+          type: array
+          description: Links to data collection entries.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
+        note:
+          type: string
+          description: A note to attach to the group.
+        zIndex:
+          type: integer
+          description: The z-order of the group on the page.
+      required:
+      - id
+    Contains:
+      type: object
+      properties:
+        shapes:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of shapes contained within the container
+          example:
+          - VTAuCB8~evzW
+        lines:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of lines contained within the container
+          example:
+          - VTAuo_Y56.q~
+        groups:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of groups contained within the container
+          example:
+          - VTAu-dl6qtyx
+      required:
+      - shapes
+      - lines
+      - groups
+      description: Object listing the IDs of items contained within a container shape (e.g., a frame).
+    LucidStandardImportShape:
+      type: object
+      description: 'A shape definition within a page. The `type` field determines which kind of shape to create.
+
+        Common shape types include `rectangle`, `circle`, `diamond`, `cloud`, `process`, `document`,
+
+        `database`, `hexagon`, `octagon`, `pill`, `roundedRectangle`, `triangle`, `isoscelesTriangle`,
+
+        `stickyNote`, `image`, `table`, `swimLanes`, and many more including BPMN shapes.
+
+        '
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the shape within the import. Used to reference this shape from lines and groups.
+          example: shape1
+        type:
+          type: string
+          description: The type of shape to create.
+          enum:
+          - bpmnActivity
+          - bpmnBlackBoxPool
+          - bpmnChoreography
+          - bpmnConversation
+          - bpmnDataObject
+          - bpmnDataStore
+          - bpmnEvent
+          - bpmnGateway
+          - bpmnGroup
+          - bpmnPool
+          - bpmnTextAnnotation
+          - braceContainer
+          - braceNote
+          - bracketContainer
+          - circle
+          - circleContainer
+          - cloud
+          - connector
+          - cross
+          - namedContainer
+          - namedShape
+          - data
+          - database
+          - decision
+          - delay
+          - diamond
+          - diamondContainer
+          - directAccessStorage
+          - display
+          - document
+          - doubleArrow
+          - flexiblePolygon
+          - freehandBlock
+          - freehandDrawing
+          - hexagon
+          - hotspot
+          - image
+          - internalStorage
+          - isoscelesTriangle
+          - lucidCard
+          - manualInput
+          - manualOperation
+          - merge
+          - multipleDocuments
+          - note
+          - octagon
+          - offPageLink
+          - or
+          - paperTape
+          - pentagon
+          - pillContainer
+          - polyStar
+          - predefinedProcess
+          - preparation
+          - process
+          - rectangle
+          - rectangleContainer
+          - rightTriangle
+          - roundedRectangleContainer
+          - singleArrow
+          - sparkCalloutSquare
+          - sparkContainer
+          - sparkFrame
+          - stickyNote
+          - storedData
+          - summingJunction
+          - swimLanes
+          - table
+          - terminator
+          - text
+          - umlClass
+          example: rectangle
+        boundingBox:
+          $ref: '#/components/schemas/BoundingBox'
+        text:
+          type: string
+          description: Text content to display inside the shape.
+          example: Hello World
+        opacity:
+          type: integer
+          description: Opacity of the shape, from 0 (fully transparent) to 100 (fully opaque).
+          minimum: 0
+          maximum: 100
+        note:
+          type: string
+          description: A note to attach to the shape.
+        zIndex:
+          type: integer
+          description: The z-order of the shape on the page.
+        customData:
+          type: array
+          description: Custom key-value data to attach to the shape.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCustomDatum'
+        style:
+          $ref: '#/components/schemas/LucidStandardImportStyle'
+        actions:
+          type: array
+          description: Interactive actions attached to the shape (e.g., navigate to a URL or page).
+          items:
+            $ref: '#/components/schemas/LucidStandardImportAction'
+        linkedData:
+          type: array
+          description: Links to data collection entries.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
+      required:
+      - id
+      - type
+      - boundingBox
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
+    LucidStandardImportGotoDocumentAction:
+      type: object
+      description: Navigate to a page in another document.
+      properties:
+        type:
+          type: string
+          enum:
+          - gotoDocument
+        documentId:
+          type: string
+          description: The ID of the target document.
+        pageId:
+          type: string
+          description: The ID of the target page within the document.
+        newWindow:
+          type: boolean
+          description: Whether to open in a new window.
+      required:
+      - type
+      - documentId
+      - pageId
+    LucidStandardImportColorFill:
+      type: object
+      description: A solid color fill.
+      properties:
+        type:
+          type: string
+          enum:
+          - color
+        color:
+          type: string
+          description: Fill color as a hex color string.
+          example: '#ffffff'
+      required:
+      - type
+      - color
+    LucidStandardImportStyle:
+      type: object
+      description: Visual style properties for a shape.
+      properties:
+        fill:
+          $ref: '#/components/schemas/LucidStandardImportFill'
+        stroke:
+          $ref: '#/components/schemas/LucidStandardImportStroke'
+        rounding:
+          type: number
+          description: Corner rounding radius for the shape. Must be between 0 and 720, inclusive.
+          default: 6
+          minimum: 0
+          maximum: 720
+        textColor:
+          type: string
+          description: Text color as a hex color string.
+          example: '#000000'
+    LucidStandardImportStroke:
+      type: object
+      description: Stroke styling for a line.
+      properties:
+        color:
+          type: string
+          description: Hex color string for the stroke.
+          default: '#000000'
+          example: '#000000'
+        width:
+          type: number
+          description: Stroke thickness. Must be between 0 and 10, inclusive.
+          default: 2
+          minimum: 0
+          maximum: 10
+          example: 2
+        style:
+          type: string
+          description: The stroke dash style.
+          enum:
+          - solid
+          - dotted
+          - dashed
+          default: solid
+          example: solid
+    Page:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Page ID
+          example: YGcM5DNywbTK
+        title:
+          type: string
+          description: Title of the page
+          example: document page title
+        index:
+          type: integer
+          description: 0-Based index of the page in the document
+          example: 0
+        items:
+          $ref: '#/components/schemas/Items'
+          description: Shapes, Lines, Groups, and Layers on the page
+        customData:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+          description: Array of Data Pair resources linked to the page
+        linkedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedData'
+          description: Array of Linked Data resources linked to the page
+      description: Object representing a single page of a Lucidchart document.
+      required:
+      - id
+      - title
+      - index
+      - items
+      - customData
+      - linkedData
+      example:
+        id: YGcM5DNywbTK
+        title: document page title
+        index: 0
+        items:
+          shapes: []
+          lines: []
+          groups: []
+          layers: []
+        customData: []
+        linkedData: []
+    LucidStandardImportContent:
+      type: object
+      description: 'Defines the content of a document using the Lucid Standard Import format, including pages, shapes, and lines.
+
+        Mutually exclusive with `extensionBootstrapData`.
+
+        '
+      properties:
+        version:
+          type: integer
+          description: The version of the Lucid Standard Import format.
+          enum:
+          - 1
+          example: 1
+        pages:
+          type: array
+          description: List of pages to create in the document. At least one page is required.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/LucidStandardImportPage'
+        collections:
+          type: array
+          description: List of data collections to associate with the document.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCollection'
+        documentSettings:
+          $ref: '#/components/schemas/LucidStandardImportDocumentSettings'
+      required:
+      - version
+      - pages
+    LucidStandardImportLine:
+      type: object
+      description: A line definition within a page.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the line within the import.
+          example: line1
+        lineType:
+          type: string
+          description: The type of line routing.
+          enum:
+          - straight
+          - elbow
+          - curved
+          example: elbow
+        stroke:
+          $ref: '#/components/schemas/LucidStandardImportStroke'
+        endpoint1:
+          $ref: '#/components/schemas/LucidStandardImportEndpoint'
+        endpoint2:
+          $ref: '#/components/schemas/LucidStandardImportEndpoint'
+        text:
+          type: array
+          description: Text labels to display along the line.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLineText'
+        customData:
+          type: array
+          description: Custom key-value data to attach to the line.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCustomDatum'
+        linkedData:
+          type: array
+          description: Links to data collection entries.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
+        joints:
+          type: array
+          description: Control points for straight lines.
+          items:
+            $ref: '#/components/schemas/AbsolutePoint'
+        elbowControlPoints:
+          type: array
+          description: Control points for elbow lines.
+          items:
+            $ref: '#/components/schemas/AbsolutePoint'
+        cornerRadius:
+          type: number
+          description: Corner radius for elbow line bends.
+        zIndex:
+          type: integer
+          description: The z-order of the line on the page.
+        lineJumps:
+          type: boolean
+          description: 'Whether this line draws a small hump where it crosses other lines.
+
+            When set, overrides the page-level `lineJumps` setting for this
+
+            line only.
+
+            '
+      required:
+      - id
+      - lineType
+      - endpoint1
+      - endpoint2
+    PatchDocumentRequestBody:
+      type: object
+      description: Request body for updating a document. At least one field should be provided.
+      properties:
+        title:
+          type: string
+          description: New title for the document. Must be non-empty, at most 300 characters, and must not start or end with whitespace.
+          example: My Updated Document
+        parent:
+          description: 'ID of the folder or repository to move the document into. Set to null to move the document to the root folder.
+
+            For repositories, use the repository ID prefixed with `repo_` (e.g., `repo_12345`). For folders, use the numeric folder ID.
+
+            '
+          oneOf:
+          - type: integer
+            description: Numeric folder ID.
+          - type: string
+            description: Repository ID prefixed with `repo_`.
+          example: 12345
+        customTags:
+          type: array
+          items:
+            type: string
+          description: List of custom tags to assign to the document. Including this field overwrites all existing tags on the document with the provided values. Each tag must be non-empty and must not start or end with whitespace. Omitting this field leaves existing tags unchanged; set to an empty array to clear all tags.
+          example:
+          - in progress
+        classificationId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: ID of the classification to assign to the document. Omitting this field leaves the existing classification unchanged; set to null to remove the classification.
+          example: 1cdad938-bf0f-4a0c-a2f8-bf4eb94225ce
+    Document:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          description: Unique ID of the document
+          example: 110808fd-4553-4316-bccf-4f25ff59a532
+        title:
+          type: string
+          description: Title of the document
+          example: document title
+        editUrl:
+          type: string
+          format: uri
+          description: Link to edit the document
+          example: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/edit
+        viewUrl:
+          type: string
+          format: uri
+          description: Link to view the document
+          example: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/view
+        version:
+          type: integer
+          description: Most recent version
+          example: 101
+        pageCount:
+          type: integer
+          description: Number of pages within the document
+          example: 5
+        canEdit:
+          type: boolean
+          description: If requesting user can edit the document
+          example: false
+        created:
+          type: string
+          format: date-time
+          description: Date and time of when the document was created
+          example: '2019-04-22T13:47:23Z'
+        creatorId:
+          type: integer
+          description: ID of user who created and owns the document
+          example: 12345
+        lastModified:
+          type: string
+          format: date-time
+          description: Date and time of when the document was last modified
+          example: '2020-06-26T16:29:37Z'
+        lastModifiedUserId:
+          type: integer
+          description: ID of user who most recently modified the document
+          example: 54321
+        customAttributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomAttribute'
+          description: List of any custom attributes belonging to the document. Populated for Enterprise Accounts only.
+          example: []
+        customTags:
+          type: array
+          items:
+            type: string
+          description: List of any custom tags assigned to the document
+          example:
+          - in progress
+        product:
+          $ref: '#/components/schemas/Product'
+        status:
+          type:
+          - string
+          - 'null'
+          description: Current assigned status of the document
+          example: Complete
+        classification:
+          type:
+          - string
+          - 'null'
+          description: Current assigned classification of the document
+          example: Private
+        classificationId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: Current assigned classification ID of the document.
+          example: b7db4f07-5225-4a0c-8313-0fe199eec844
+        trashed:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: If defined, the timestamp when the document was moved to the trash
+          example: null
+        parent:
+          type:
+          - integer
+          - 'null'
+          description: ID of the parent folder
+          example: null
+        repository:
+          allOf:
+          - $ref: '#/components/schemas/Repository'
+        accountId:
+          type:
+          - integer
+          - 'null'
+          description: ID of Lucid account that owns the document
+        owner:
+          $ref: '#/components/schemas/DocumentOwner'
+      required:
+      - documentId
+      - title
+      - editUrl
+      - viewUrl
+      - version
+      - pageCount
+      - canEdit
+      - created
+      - creatorId
+      - lastModified
+      - lastModifiedUserId
+      - customAttributes
+      - customTags
+      - product
+      - accountId
+      example:
+        documentId: 110808fd-4553-4316-bccf-4f25ff59a532
+        title: document title
+        editUrl: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/edit
+        viewUrl: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/view
+        version: 101
+        pageCount: 5
+        canEdit: false
+        created: '2019-04-22T13:47:23Z'
+        creatorId: 12345
+        lastModified: '2020-06-26T16:29:37Z'
+        lastModifiedUserId: 54321
+        customAttributes: []
+        customTags:
+        - in progress
+        product: lucidchart
+        status: Complete
+        classification: Private
+        trashed: null
+        parent: null
+        repository: null
+        owner:
+          id: 123456
+          type: user
+          name: John Doe
+        accountId: 1234
+    Items:
+      type: object
+      properties:
+        shapes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shape'
+          description: Array of Shape resources
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Line'
+          description: Array of Line resources
+        groups:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+          description: Array of Group resources
+        layers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Layer'
+          description: Array of Layer resources
+      description: Individual shapes, lines, groups, and layers all contain a unique ItemId identifying the object.
+      required:
+      - shapes
+      - lines
+      - groups
+      - layers
+    Shape:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Shape ID
+          example: VTAu-oQASzul
+        class:
+          type: string
+          description: A unique string representing the type of the shape (e.g., ProcessBlock)
+          example: ProcessBlock
+        textAreas:
+          type: array
+          items:
+            $ref: '#/components/schemas/TextArea'
+        customData:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+        linkedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedData'
+        contains:
+          $ref: '#/components/schemas/Contains'
+          description: If the shape is a container (e.g., a frame), lists the IDs of shapes, lines, and groups contained within it
+        image:
+          $ref: '#/components/schemas/Image'
+          description: If the shape has an image fill, describes the image
+        linkUrl:
+          type: string
+          description: The external website or destination URL attached to the shape, if configured.
+          example: https://example.com
+      required:
+      - id
+      - class
+      - textAreas
+      - customData
+      - linkedData
+      description: Object representing a shape placed on a page of a document. Note that the ItemId of a shape is unique across all groups, layers, shapes, and lines.
+    CreatableProduct:
+      type: string
+      enum:
+      - lucidchart
+      - lucidspark
+      description: The Lucid Suite product types that can be created.
+      example: lucidchart
+    LinkedData:
+      type: object
+      properties:
+        collection_id:
+          type: string
+          description: Id of the collection containing the data
+          example: ABAuwlf2BTy8
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+          description: Key-value pairs from the dataset
+        primaryKeyValue:
+          type: string
+          description: The value of the primary key of the dataset
+          example: Pkey Value
+      description: Object representing data linked to a resource on a document.
+      required:
+      - data
+      - primaryKeyValue
+    DocumentOwner:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Id of either the user or the account, depending on the type of the document user resource.
+          example: 123456
+        type:
+          type: string
+          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
+          example: user
+        name:
+          type: string
+          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
+          example: John Doe
+    DocumentContent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Document ID
+          example: 8e7b19ec-27ff-40e3-beb8-03f51b1661b2
+        title:
+          type: string
+          description: Title of the document
+          example: document title
+        product:
+          $ref: '#/components/schemas/Product'
+        pages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Page'
+          description: Array of Page resources on the document
+        accountId:
+          type: integer
+          description: ID of Lucid account that owns the document
+        data:
+          $ref: '#/components/schemas/Data'
+          description: Data contained on the document
+      description: Object representing the contents of a Lucidchart document
+      required:
+      - id
+      - title
+      - product
+      - pages
+      - accountId
+      - data
+      example:
+        id: 8e7b19ec-27ff-40e3-beb8-03f51b1661b2
+        title: document title
+        product: lucidchart
+        pages: []
+        accountId: 1234
+        data:
+          collections: []
+    Collection:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of the collection
+          example: ABAuwlf2BTy8
+        name:
+          type: string
+          description: Collection name
+          example: Collection 1
+        primaryKey:
+          type: array
+          items:
+            type: string
+          description: The primary key column name
+          example:
+          - PKey 1
+      required:
+      - id
+      - name
+      - primaryKey
+      description: A collection is a container inside of a source of data. A data source can have many collections, but a collection can only belong to one data source. A collection can be thought of as a tab or individual sheet in a spreadsheet file.
+    LucidStandardImportPage:
+      type: object
+      description: A page definition within a Lucid Standard Import document.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the page within the import.
+          example: page1
+        title:
+          type: string
+          description: The title of the page.
+          example: Page 1
+        shapes:
+          type: array
+          description: List of shapes to place on the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportShape'
+        lines:
+          type: array
+          description: List of lines to place on the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLine'
+        groups:
+          type: array
+          description: List of groups to create on the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportGroup'
+        layers:
+          type: array
+          description: List of layers to create on the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLayer'
+        customData:
+          type: array
+          description: Custom key-value data to attach to the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCustomPageDatum'
+        dataBackedShapes:
+          type: array
+          description: List of data-backed shape generators (e.g., org charts, mind maps).
+          items:
+            $ref: '#/components/schemas/LucidStandardImportGenerator'
+        settings:
+          $ref: '#/components/schemas/LucidStandardImportPageSettings'
+      required:
+      - id
+      - title
+    BoundingBox:
+      type: object
+      description: The bounding box that defines a shape's position and size on the page.
+      properties:
+        x:
+          type: number
+          description: The x-coordinate of the top-left corner.
+          example: 0
+        y:
+          type: number
+          description: The y-coordinate of the top-left corner.
+          example: 0
+        w:
+          type: number
+          description: The width of the bounding box.
+          example: 100
+        h:
+          type: number
+          description: The height of the bounding box.
+          example: 50
+      required:
+      - x
+      - y
+      - w
+      - h
+    CustomAttribute:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - singleLineText
+          - multiLineText
+          - singleSelectDropdown
+          - multiSelectDropdown
+          - webLink
+          - numericalRange
+          - hierarchicalDropdown
+          description: The custom attribute type
+          example: singleLineText
+        name:
+          type: string
+          description: Title of the custom attribute. hierarchicalDropdown attributes do not have names.
+          example: Sample Label
+        value:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              oneOf:
+              - $ref: '#/components/schemas/DataPair'
+              - type: string
+          description: The value assigned to the custom attribute. The type of this value is determined by the Attribute Type.
+          example: null
+      description: Object representing a custom attribute value for a document.
+      required:
+      - type
+    LucidStandardImportLineText:
+      type: object
+      description: A text label on a line.
+      properties:
+        text:
+          type: string
+          description: The text content.
+        position:
+          type: number
+          description: Relative position along the line (0 to 1 inclusive).
+          default: 0.5
+          minimum: 0
+          maximum: 1
+        side:
+          type: string
+          description: Which side of the line the text appears on.
+          enum:
+          - top
+          - middle
+          - bottom
+          default: middle
+      required:
+      - text
+    Image:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - resource
+          - user
+          description: Whether the image is a Lucid resource image (`resource`) or a user-uploaded image (`user`)
+          example: resource
+        id:
+          type: string
+          description: The ID of the resource image. Present when type is `resource`.
+          example: T2VkijPHy1qh
+        url:
+          type: string
+          description: The URL of the user-uploaded image. Present when type is `user`.
+          example: https://example.com/image.png
+      required:
+      - type
+      description: Object describing the image fill on a shape.
+    LucidStandardImportAction:
+      type: object
+      description: 'An interactive action attached to a shape. The `type` field determines the action kind.
+
+        '
+      discriminator:
+        propertyName: type
+        mapping:
+          url: '#/LucidStandardImportUrlAction'
+          gotoPage: '#/LucidStandardImportGotoPageAction'
+          gotoDocument: '#/LucidStandardImportGotoDocumentAction'
+          toggleLayer: '#/LucidStandardImportToggleLayerAction'
+          showLayer: '#/LucidStandardImportShowLayerAction'
+          hideLayer: '#/LucidStandardImportHideLayerAction'
+      oneOf:
+      - $ref: '#/components/schemas/LucidStandardImportUrlAction'
+      - $ref: '#/components/schemas/LucidStandardImportGotoPageAction'
+      - $ref: '#/components/schemas/LucidStandardImportGotoDocumentAction'
+      - $ref: '#/components/schemas/LucidStandardImportToggleLayerAction'
+      - $ref: '#/components/schemas/LucidStandardImportShowLayerAction'
+      - $ref: '#/components/schemas/LucidStandardImportHideLayerAction'
+    LucidStandardImportGenerator:
+      type: object
+      description: 'A data-backed shape generator that automatically creates shapes from data.
+
+        The `type` field determines which generator is used.
+
+        '
+      properties:
+        type:
+          type: string
+          description: The type of generator.
+          enum:
+          - orgChart
+          - mindMap
+          - assistedLayout
+          - umlSequence
+      required:
+      - type
+    LucidStandardImportLinkedDatum:
+      type: object
+      description: A reference linking an item to a data collection entry.
+      properties:
+        collectionId:
+          type: string
+          description: The ID of the collection containing the data.
+        key:
+          type: string
+          description: The key identifying the data entry within the collection.
+      required:
+      - collectionId
+      - key
+    Repository:
+      type: object
+      properties:
+        repositoryId:
+          type: string
+          description: the ID of the repository
+          example: repo_2000008
+    AccountDocument:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          description: Unique ID of the document
+          example: 110808fd-4553-4316-bccf-4f25ff59a532
+        title:
+          type: string
+          description: Title of the document
+          example: document title
+        adminViewUrl:
+          type: string
+          format: uri
+          description: Link to view the document
+          example: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/adminView
+        created:
+          type: string
+          format: date-time
+          description: Date and time of when the document was created
+          example: '2019-04-22T13:47:23Z'
+        owner:
+          type: object
+          properties:
+            ownerType:
+              type: string
+              description: user or account
+            id:
+              type: number
+              description: userId or accountId
+        lastModified:
+          type: string
+          format: date-time
+          description: Date and time of when the document was last modified
+          example: '2020-06-26T16:29:37Z'
+        trashed:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: If defined, the timestamp when the document was moved to the trash
+          example: null
+        customTags:
+          type: array
+          items:
+            type: string
+          description: List of any custom tags assigned to the document
+          example:
+          - in progress
+        product:
+          $ref: '#/components/schemas/Product'
+        status:
+          type:
+          - string
+          - 'null'
+          description: Current assigned status of the document
+          example: Complete
+        classification:
+          type:
+          - string
+          - 'null'
+          description: Current assigned classification of the document
+          example: Private
+        parent:
+          type:
+          - integer
+          - 'null'
+          description: ID of the parent folder
+          example: 123456788
+        userCollaboratorIds:
+          type: array
+          items:
+            type: integer
+          description: List of IDs of users that are collaborators on the document
+          example:
+          - 206418105
+          - 206418104
+          - 206418103
+        teamCollaboratorIds:
+          type: array
+          items:
+            type: integer
+          description: List of IDs of teams that are collaborators on the document
+          example:
+          - 111000660
+          - 111000661
+          - 111000659
+      required:
+      - documentId
+      - title
+      - adminViewUrl
+      - created
+      - owner
+      - lastModified
+      - customTags
+      - product
+      - userCollaboratorIds
+      - teamCollaboratorIds
+      example:
+        documentId: 110808fd-4553-4316-bccf-4f25ff59a532
+        title: document title
+        adminViewUrl: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/adminView
+        created: '2019-04-22T13:47:23Z'
+        owner:
+          ownerType: user
+          id: '123456'
+        lastModified: '2020-06-26T16:29:37Z'
+        customTags:
+        - in progress
+        product: lucidchart
+        status: Complete
+        parent: 123456788
+        trashed: null
+        userCollaboratorIds:
+        - 206418105
+        - 206418104
+        - 206418103
+        teamCollaboratorIds:
+        - 111000660
+        - 111000661
+        - 111000659
+    LucidStandardImportPageSize:
+      description: 'Page size configuration. Either a standard page size with an optional format, or a custom size with explicit dimensions.
+
+        '
+      oneOf:
+      - $ref: '#/components/schemas/LucidStandardImportStandardPageSize'
+      - $ref: '#/components/schemas/LucidStandardImportCustomPageSize'
+    LucidStandardImportShapeEndpoint:
+      type: object
+      description: An endpoint connected to a shape.
+      properties:
+        type:
+          type: string
+          enum:
+          - shapeEndpoint
+        style:
+          $ref: '#/components/schemas/EndpointStyle'
+        shapeId:
+          type: string
+          description: The ID of the shape to connect to.
+          example: shape1
+        position:
+          $ref: '#/components/schemas/RelativePoint'
+          description: Optional relative position on the shape to connect to. If omitted, uses smart auto-linking.
+      required:
+      - type
+      - style
+      - shapeId
+    RelativePoint:
+      type: object
+      description: A relative point with coordinates between 0 and 1, inclusive.
+      properties:
+        x:
+          type: number
+          description: The relative x-coordinate (0 to 1).
+          minimum: 0
+          maximum: 1
+        y:
+          type: number
+          description: The relative y-coordinate (0 to 1).
+          minimum: 0
+          maximum: 1
+      required:
+      - x
+      - y
+    LucidStandardImportCustomPageDatum:
+      type: object
+      description: A custom key-value pair attached to a page, optionally globally inherited.
+      properties:
+        key:
+          type: string
+          description: The data key.
+        value:
+          type: string
+          description: The data value.
+        global:
+          type: boolean
+          description: When true, this data is globally inherited.
+          default: false
+      required:
+      - key
+      - value
+    TextArea:
+      type: object
+      properties:
+        label:
+          type: string
+          description: Text area label
+          example: Text
+        text:
+          type: string
+          description: Text displayed in the text area. This is plain text. All formatting has been removed & formulas evaluated.
+          example: Start here
+      description: Object representing a text area on a Shape or Line.
+      required:
+      - label
+      - text
+    LucidStandardImportImageFill:
+      type: object
+      description: An image fill, either by URL or by reference to an image in the import archive.
+      properties:
+        type:
+          type: string
+          enum:
+          - image
+        url:
+          type: string
+          description: URL of the image. Use this or `ref`, not both.
+          example: https://example.com/image.png
+        ref:
+          type: string
+          description: Reference to an image in the import archive. Use this or `url`, not both.
+        imageScale:
+          type: string
+          description: How the image should be scaled within the shape.
+          enum:
+          - fill
+          - page
+          - shape
+      required:
+      - type
+    LucidStandardImportCustomDatum:
+      type: object
+      description: A custom key-value pair attached to an item.
+      properties:
+        key:
+          type: string
+          description: The data key.
+        value:
+          type: string
+          description: The data value.
+      required:
+      - key
+      - value
+    LucidStandardImportFill:
+      description: 'Fill style for a shape. The `type` field determines the fill kind.
+
+        - `color`: A solid color fill.
+
+        - `image`: An image fill, either by URL or by reference to an image in the import archive.
+
+        '
+      discriminator:
+        propertyName: type
+        mapping:
+          color: '#/LucidStandardImportColorFill'
+          image: '#/LucidStandardImportImageFill'
+      oneOf:
+      - $ref: '#/components/schemas/LucidStandardImportColorFill'
+      - $ref: '#/components/schemas/LucidStandardImportImageFill'
+    Endpoint:
+      type: object
+      properties:
+        style:
+          type: string
+          description: Line end style
+          example: Arrow
+        connectedTo:
+          type:
+          - string
+          - 'null'
+          description: Id of shape or line the line is connected to
+          example: null
+      description: Object representing the endpoint of a Line.
+      required:
+      - style
+      - connectedTo
+    DataPair:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Custom data key
+        value:
+          type: string
+          description: Custom data value
+      description: Object representing a key-value pair of data.
+      required:
+      - name
+      - value
+      example:
+        name: City
+        value: New York
+    LucidStandardImportEndpoint:
+      type: object
+      description: 'An endpoint of a line. The `type` field determines how the endpoint is positioned.
+
+        - `shapeEndpoint`: Connects to a shape by its ID.
+
+        - `positionEndpoint`: Connects to an absolute position on the page.
+
+        - `lineEndpoint`: Connects to another line at a relative position.
+
+        '
+      discriminator:
+        propertyName: type
+        mapping:
+          shapeEndpoint: '#/LucidStandardImportShapeEndpoint'
+          positionEndpoint: '#/LucidStandardImportPositionEndpoint'
+          lineEndpoint: '#/LucidStandardImportLineEndpoint'
+      oneOf:
+      - $ref: '#/components/schemas/LucidStandardImportShapeEndpoint'
+      - $ref: '#/components/schemas/LucidStandardImportPositionEndpoint'
+      - $ref: '#/components/schemas/LucidStandardImportLineEndpoint'
+    BootstrapData:
+      type: object
+      properties:
+        packageId:
+          type: string
+          description: Id of the extension package which will consume this data
+          example: 74672098-cf36-492c-b8e6-2c4233549cd3
+        extensionName:
+          type: string
+          description: Name of the editor extension which will consume this data. Note this is the name field of an editor extension found in your manifest.json file.
+          example: sheets-adapter
+        minimumVersion:
+          type: string
+          description: Minimum version of the extension package which will consume this data
+          example: 1.4.0
+        data:
+          type: object
+          additionalProperties:
+            type: string
+          description: Data to provide to the extension package
+          example:
+            a: 1
+            b: 2
+      required:
+      - packageId
+      - extensionName
+      - minimumVersion
+      - data
+      description: Bootstrap data can be attached to the created document to be consumed by a specific Extension Package.
+    LucidStandardImportDocumentSettings:
+      type: object
+      description: Document-level settings for a Lucid Standard Import.
+      properties:
+        units:
+          type: string
+          description: The measurement unit for the document. Defaults to inches (`in`) if not specified.
+          enum:
+          - in
+          - cm
+          - px
+          - pt
+          default: in
+          example: in
+    Layer:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Layer ID
+          example: VTAu-dl6qtyx
+        name:
+          type: string
+          description: The name of the layer
+          example: Layer 1
+        members:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of shapes, lines, & groups contained within the layer
+          example:
+          - VTAuCB8~evzW
+          - VTAuo_Y56.q~
+        customData:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+        linkedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedData'
+      description: Object representing a layer on the page of a document. Note that the ItemId of a layer is unique across all groups, layers, shapes, and lines.
+      required:
+      - id
+      - name
+      - members
+      - customData
+      - linkedData
+    LucidStandardImportGotoPageAction:
+      type: object
+      description: Navigate to a page in the current document.
+      properties:
+        type:
+          type: string
+          enum:
+          - gotoPage
+        pageId:
+          type: string
+          description: The ID of the target page.
+          example: page2
+      required:
+      - type
+      - pageId
+    LucidStandardImportCustomPageSize:
+      type: object
+      description: A custom page size with explicit dimensions.
+      properties:
+        w:
+          type: number
+          description: Width of the page. Must be between 1.0 and 20000.0, inclusive.
+          minimum: 1
+          maximum: 20000
+        h:
+          type: number
+          description: Height of the page. Must be between 1.0 and 20000.0, inclusive.
+          minimum: 1
+          maximum: 20000
+      required:
+      - w
+      - h
+    LucidStandardImportLayer:
+      type: object
+      description: A layer on a page. Layers can contain shapes, lines, and groups.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the layer.
+          example: layer1
+        title:
+          type: string
+          description: The display name of the layer.
+          example: Background
+        items:
+          type: array
+          description: 'List of item IDs (shapes, lines, groups) contained in this layer. An item can belong to only one layer. If an item ID is specified in multiple layers, it is assigned to the first layer encountered, and all subsequent references to that item ID are ignored.
+
+            '
+          items:
+            type: string
+        customData:
+          type: array
+          description: Custom key-value data to attach to the layer.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCustomDatum'
+        linkedData:
+          type: array
+          description: Links to data collection entries.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
+        note:
+          type: string
+          description: A note to attach to the layer.
+        layerIndex:
+          type: integer
+          description: The index order of the layer.
+      required:
+      - id
+      - title
+  parameters:
+    RequestAs-AccountDocuments:
+      in: header
+      name: Lucid-Request-As
+      required: true
+      description: 'If the requesting user is an account owner or document admin with the required permissions and they make the request
+
+        with the value of “admin” as this header and include an admin scope, the request will be made using their admin
+
+        permissions.
+
+        '
+      schema:
+        type: string
+      example: admin
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            account.audit.logs: View audit logs on your account.
+            account.info: View basic information about your account (e.g., account ID and account name) .
+            account.user: Create, view, edit, and delete users on your account.
+            account.user:readonly: View users on your account.
+            account.users:admin.readonly: View all users and their roles on your account.
+            account.user.transfercontent: Transfer ownership of a user's resources to another user on your account.
+            account.settings:readonly: View settings on your account.
+            account.legalhold: Create, view, and expire legal holds on your account.
+            account.legalhold:readonly: View legal holds on your account.
+            account.legalhold.users: Manage legal hold users on your account.
+            account.legalhold.users:readonly: View legal hold users on your account.
+            folder: Create, view, edit, share, and delete your folders. Organize your folders and their contents.
+            folder:readonly: View any of your folders and list their contents.
+            folder:admin: Perform admin actions on folders belonging to the account.
+            folder:admin.readonly: View all folders belonging to the account with admin permissions.
+            invitation: Accept document and folder share links.
+            invitation.accept: Accept document and folder share links.
+            cloud.credential: Manage cloud credentials.
+            cloud.credential:readonly: View cloud credentials.
+            cloud.datasource: Manage cloud data sources.
+            cloud.datasource:readonly: View cloud data sources.
+            cloud.model: Manage cloud models.
+            repository: Manage repositories.
+            repository:readonly: View repositories.
+            repository:admin: Perform admin actions on repositories.
+            lucid.document.content: Create, view, edit, and delete any Lucid document accessible by the user.
+            lucid.document.content:readonly: View and download any Lucid document accessible by the user.
+            lucid.document.content:admin: Perform admin actions on Lucid documents belonging to the account.
+            lucid.document.content:admin.readonly: View all Lucid documents belonging to the account with admin permissions.
+            lucid.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share:readonly: View document collaborators, embeds, and share links for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.collaborator:readonly: View document collaborators for any Lucid document accessible by the user.
+            lucid.document.content.share.embed: Create, view, edit, and delete document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.embed:readonly: View document embeds for any Lucid document accessible by the user.
+            lucid.document.content.share.link: Create, view, edit, and delete share links for any Lucid document accessible by the user.
+            lucid.document.content.share.link:readonly: View share links for any Lucid document accessible by the user.
+            lucid.document.storage:admin.readonly: Perform admin actions backing up Lucid documents belonging to the account.
+            lucid.document.app: View, edit, create, and manage folders and documents within an app.
+            lucid.document.app.folder: Create, view, edit, and manage any Lucid document within its app-specific folder.
+            lucid.document.app.picker: View, edit, and manage any Lucid document selected within an app.
+            lucid.document.app.picker:readonly: View and download any Lucid document selected within an app.
+            lucid.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator: Create, view, edit, and delete document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.collaborator:readonly: View document collaborators for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed: Create, view, edit, and delete document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.embed:readonly: View document embeds for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link: Create, view, edit, and delete share links for any Lucid document selected within an app.
+            lucid.document.app.picker.share.link:readonly: View share links for any Lucid document selected within an app.
+            lucid.document.accessRequest: Request access to Lucid documents.
+            licenses:admin: Perform admin actions on licenses and subscriptions belonging to the account.
+            licenses:admin.readonly: View licenses and subscriptions belonging to the account with admin permissions.
+            teams: Create, view, and edit, archive, and restore any teams on your account. Control which users belong to teams.
+            teams:readonly: View any teams on your account and list which users belong to them.
+            teams:admin: Manage teams on your account.
+            lucidchart.document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            lucidchart.document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidchart document selected for this third-party application.
+            lucidchart.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.embed:readonly: View embeds of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidchart document on your team or enterprise account selected for the third-party application.
+            lucidchart.document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            lucidchart.document.content:readonly: View and download any Lucidchart document on your account.
+            lucidchart.document.content:admin: Perform admin actions on Lucidchart documents belonging to the account.
+            lucidchart.document.content:admin.readonly: View all Lucidchart documents belonging to the account with admin permissions.
+            lucidchart.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidchart documents.
+            lucidchart.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.embed:readonly: View embeds for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.content.share.link:readonly: View the third party application's share links for any of your Lucidchart documents on your team or enterprise account.
+            lucidchart.document.storage:admin.readonly: Perform admin actions backing up Lucidchart documents belonging to the account.
+            lucidchart.document.accessRequest: Request access to Lucidchart documents.
+            lucidspark.document.app: View, edit, and manage any Lucidspark board selected for this third-party application. Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.folder: Create, view, edit, and manage any Lucidspark board within its app-specific folder.
+            lucidspark.document.app.picker: View, edit, and manage any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker:readonly: View and download any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidspark board selected for this third-party application.
+            lucidspark.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.embed:readonly: View embeds of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidspark board on your team or enterprise account selected for the third-party application.
+            lucidspark.document.content: Create, view, edit, and delete any Lucidspark board on your account.
+            lucidspark.document.content:readonly: View and download any Lucidspark board on your account.
+            lucidspark.document.content:admin: Perform admin actions on Lucidspark boards belonging to the account.
+            lucidspark.document.content:admin.readonly: View all Lucidspark boards belonging to the account with admin permissions.
+            lucidspark.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidspark boards.
+            lucidspark.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.embed:readonly: View embeds for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.content.share.link:readonly: View the third party application's share links for any of your Lucidspark boards on your team or enterprise account.
+            lucidspark.document.storage:admin.readonly: Perform admin actions backing up Lucidspark boards belonging to the account.
+            lucidspark.document.accessRequest: Request access to Lucidspark boards.
+            lucidscale.document.app: View, edit, and manage any Lucidscale model selected for this third-party application. Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.folder: Create, view, edit, and manage any Lucidscale model within its app-specific folder.
+            lucidscale.document.app.picker: View, edit, and manage any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker:readonly: View and download any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share: Create, view, edit, and delete document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share:readonly: View document collaborators, embeds, and share links for any Lucidscale model selected for this third-party application.
+            lucidscale.document.app.picker.share.collaborator: Create, view, edit, and delete collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.collaborator:readonly: View collaborators and invitations of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed: Create, view, edit, and delete embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.embed:readonly: View embeds of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link: Create, view, edit, and delete the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.app.picker.share.link:readonly: View the third party application's share links of any Lucidscale model on your team or enterprise account selected for the third-party application.
+            lucidscale.document.content: Create, view, edit, and delete any Lucidscale model on your account.
+            lucidscale.document.content:readonly: View and download any Lucidscale model on your account.
+            lucidscale.document.content:admin: Perform admin actions on Lucidscale models belonging to the account.
+            lucidscale.document.content:admin.readonly: View all Lucidscale models belonging to the account with admin permissions.
+            lucidscale.document.content.share: Create, view, edit, and delete document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share:readonly: View document collaborators, embeds, and share links for any of your Lucidscale models.
+            lucidscale.document.content.share.collaborator: Create, view, edit, and delete collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.collaborator:readonly: View collaborators and invitations for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed: Create, view, edit, and delete embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.embed:readonly: View embeds for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link: Create, view, edit, and delete the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.content.share.link:readonly: View the third party application's share links for any of your Lucidscale models on your team or enterprise account.
+            lucidscale.document.storage:admin.readonly: Perform admin actions backing up Lucidscale models belonging to the account.
+            lucidscale.document.accessRequest: Request access to Lucidscale models.
+            offline_access: Continue to perform authorized actions when you're not logged in (required to refresh tokens).
+            user.profile: Allow applications to view basic information about you (e.g., full name, username, and email).
+            document.app: View, edit, and manage any Lucidchart document selected for this third-party application. Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.folder: Create, view, edit, and manage any Lucidchart document within its app-specific folder.
+            document.app.picker: View, edit, and manage any Lucidchart document selected for this third-party application.
+            document.app.picker:readonly: View and download any Lucidchart document selected for this third-party application.
+            document.content: Create, view, edit, and delete any Lucidchart document on your account.
+            document.content:readonly: View and download any Lucidchart document on your account.
+    ApiKey:
+      type: http
+      scheme: bearer
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-rest-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'

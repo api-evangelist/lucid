@@ -1,0 +1,751 @@
+openapi: 3.2.0
+info:
+  title: Lucid Data Data Source API
+  version: '1.0'
+  description: The Lucid Data API enables external applications to create, read, update, and delete structured data linked to Lucid documents. Use it to sync data sets, collections, and schemas between your data sources and Lucid diagrams. Authenticate via OAuth 2.0.
+  contact:
+    name: Lucid Developer Platform
+    url: https://developer.lucid.co/
+  x-documentation: https://developer.lucid.co/reference/data-api
+servers:
+- url: https://data.lucid.app
+tags:
+- name: Data Source
+  description: Create, retrieve, update, and delete data sources within a data set. A data source represents an external system whose data is synced into Lucid.
+paths:
+  /dataSources:
+    head:
+      summary: Get Total Data Sources Count
+      description: 'This endpoint returns the number of data sources a user has access to. The return value is in the response headers as `Lucid-DataSources-Total`
+
+        '
+      operationId: getDataSourceCount
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      responses:
+        '200':
+          description: OK with lucid-datasources-total header in response
+          headers:
+            lucid-datasources-total:
+              description: Total number of data sources
+              schema:
+                type: integer
+                example: 123
+    get:
+      summary: Get All Data Sources
+      description: 'This endpoint returns all data sources that the user has access to. The results will be paginated. If the number of data sources exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns data sources in the range from start to start + pagination limit. Items in the response are determined based on their creation order.
+
+        '
+      operationId: getAllDataSources
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: start
+        in: query
+        description: Starting 1-based index of data sources to retreive. Defaults to 1.
+        required: false
+        schema:
+          type: integer
+      - name: end
+        in: query
+        description: Ending index of data sources to retreive. Defaults to 100.
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with paginated list of Data Source objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataSources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        uri:
+                          type: string
+                          description: URI of the data source
+                          example: https://data.lucid.app/dataSources/2967
+                        name:
+                          type: string
+                          description: Name of the data source
+                          example: Internal Org Chart
+                        sourceGrants:
+                          type: string
+                          description: Link to get grants for the data source
+                          example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                        adapterType:
+                          type: string
+                          description: Type of adapter used to create the data source. Valid values are `CSV`, `DATA_API`, and `UNKNOWN`
+                          example: CSV
+                        collections:
+                          type: string
+                          description: Link to get collections for the data source
+                          example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                        created:
+                          type: string
+                          description: Date the data source was created
+                          example: '2021-01-01T00:00:00Z'
+                        lastModified:
+                          type: string
+                          description: Date the data source was last modified
+                          example: '2021-01-01T00:00:00Z'
+                        pending:
+                          type: boolean
+                          description: If a data source is marked pending it won't be availble for users to select within Lucid
+                          example: false
+                        dataSet:
+                          type: string
+                          description: Link to get the data set for the data source
+                          example: https://data.lucid.app/dataSets/2168
+                        linkParameters:
+                          type: object
+                          description: Link parameters for the data source
+                          example:
+                            param1: value1
+                            param2: value2
+                        deleted:
+                          type: string
+                          description: Date the data source was deleted
+                          example: '2021-01-01T00:00:00Z'
+                      required:
+                      - uri
+                      - name
+                      - sourceGrants
+                      - adapterType
+                      - collections
+                      - created
+                      - lastModified
+                      - pending
+                      - dataSet
+                      example:
+                        uri: https://data.lucid.app/dataSources/2967
+                        name: Internal Org Chart
+                        sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                        adapterType: CSV
+                        collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                        created: '2021-01-01T00:00:00Z'
+                        lastModified: '2021-01-01T00:00:00Z'
+                        pending: false
+                        dataSet: https://data.lucid.app/dataSets/2168
+                        linkParameters:
+                          param1: value1
+                          param2: value2
+                        deleted: '2021-01-01T00:00:00Z'
+                  total:
+                    type: integer
+                    description: Total number of data sources
+                    example: 125
+                  prev:
+                    type: string
+                    description: Link to get the previous set of data sources
+                    example: https://data.lucid.app/dataSources?start=80&end=90
+                  next:
+                    type: string
+                    description: Link to get the next set of data sources
+                    example: https://data.lucid.app/dataSources?start=100&end=110
+    post:
+      summary: Create Data Source
+      description: 'Creates a new data source and a corresponding new data source grant for the user.
+
+        '
+      operationId: createDataSource
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Name to give the new data source
+                  example: New Data Source
+                adapterType:
+                  type: string
+                  description: Type of adapter used to create the data source. Valid values are `CSV`, `DATA_API`, and `UNKNOWN`. (Defaults to `UNKNOWN`)
+                  example: CSV
+              required:
+              - name
+              example:
+                name: Internal Org Chart
+                adapterType: CSV
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: Internal Org Chart
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`, `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: New Data Source
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+  /dataSources/{dataSourceId}:
+    get:
+      summary: Get Data Source
+      description: 'Gets a specific existing data source from Lucid. If the creator of the data source is the user making the request, the link parameters will be returned with the data source.
+
+        '
+      operationId: getDataSource
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSourceId
+        in: path
+        description: ID of data source to return
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: Internal Org Chart
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`, `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: Internal Org Chart
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    param1: value1
+                    param2: value2
+                  deleted: '2021-01-01T00:00:00Z'
+    patch:
+      summary: Update Data Source
+      description: 'This endpoint takes a JSON object and uses it to update the data source''s name and/or adapter type. The JSON object of the updated data source is returned. Updates will only occur if the user has access to the data source.
+
+        '
+      operationId: updateDataSource
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSourceId
+        in: path
+        description: ID of data source to update
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: New name for the data source being updated
+                  example: Updated Data Source name
+                adapterType:
+                  type: string
+                  description: New adapter type for the data source being update. Valid values are `CSV`, `DATA_API`, and `UNKNOWN`
+                  example: CSV
+              example:
+                name: Updated Data Source name
+                adapterType: CSV
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: Internal Org Chart
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`, `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: Updated Data Source name
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+    delete:
+      summary: Delete Data Source
+      description: 'This removes the specified data source and anything related to it (collections, schema, items, link parameters). Once deleted, none of the information can be recovered.
+
+        '
+      operationId: deleteDataSource
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSourceId
+        in: path
+        description: ID of data source to delete
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK
+  /adapter/csv:
+    post:
+      summary: Create Data Source from CSV
+      description: 'If able to successfully parse the attached file as a CSV file, a new data source with be created (with the same name as the attached file) that includes a single collection. The single collection in the newly created data source will contain the data from the CSV file. Each row will be an item, and each column will be labelled A, B, C, …, AA, AB, AC, .. in the order in which they were in the original file. There will be a single metadata collection created which represents the mapping between the id of each created item and the original row number of the row it was created from.
+
+        '
+      operationId: createDataSourceFromCSV
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CSV file to upload
+              required:
+              - file
+              example:
+                file: file=@location/file.csv
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: file
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`, `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: file
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    param1: value1
+                    param2: value2
+                  deleted: '2021-01-01T00:00:00Z'
+        '400':
+          description: Bad Request if no file provided or unable to read file
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: Invalid file format
+    put:
+      summary: Update Data Source from CSV
+      description: 'If able to successfully parse the attached file as a CSV file, the endpoint will overwrite the contents of the single collection with the new data. The collection reference is left unchanged, but will have new items.
+
+
+        A specific collection in a data source can be replaced by including both the data source and collection query parameters. In this case, the items in that single collection will be overwritten with the values from the CSV. The target collection''s id will remain the same, i.e., the original collection is the same, just the items have changed. The specified collection must belong to the specified data source.
+
+        '
+      operationId: updateDataSourceFromCSV
+      tags:
+      - Data Source
+      security:
+      - OAuth2:
+        - data-service.admin
+      parameters:
+      - name: dataSource
+        in: query
+        description: URI of Data source to update
+        required: true
+        schema:
+          type: string
+      - name: collection
+        in: query
+        description: URI of Collection to update
+        required: false
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CSV file to upload
+              required:
+              - file
+              example:
+                file: file=@location/file.csv
+      responses:
+        '200':
+          description: OK with Data Source
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uri:
+                    type: string
+                    description: URI of the data source
+                    example: https://data.lucid.app/dataSources/2967
+                  name:
+                    type: string
+                    description: Name of the data source
+                    example: file
+                  sourceGrants:
+                    type: string
+                    description: Link to get grants for the data source
+                    example: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType:
+                    type: string
+                    description: Type of adapter used to create the data source. Valid values are `CSV`, `DATA_API`, and `UNKNOWN`
+                    example: CSV
+                  collections:
+                    type: string
+                    description: Link to get collections for the data source
+                    example: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created:
+                    type: string
+                    description: Date the data source was created
+                    example: '2021-01-01T00:00:00Z'
+                  lastModified:
+                    type: string
+                    description: Date the data source was last modified
+                    example: '2021-01-01T00:00:00Z'
+                  pending:
+                    type: boolean
+                    description: If a data source is marked pending it won't be availble for users to select within Lucid
+                    example: false
+                  dataSet:
+                    type: string
+                    description: Link to get the data set for the data source
+                    example: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    type: object
+                    description: Link parameters for the data source
+                    example:
+                      param1: value1
+                      param2: value2
+                  deleted:
+                    type: string
+                    description: Date the data source was deleted
+                    example: '2021-01-01T00:00:00Z'
+                required:
+                - uri
+                - name
+                - sourceGrants
+                - adapterType
+                - collections
+                - created
+                - lastModified
+                - pending
+                - dataSet
+                example:
+                  uri: https://data.lucid.app/dataSources/2967
+                  name: file
+                  sourceGrants: https://data.lucid.app/sourceGrants?dataSource=https://data.lucid.app/dataSources/2967
+                  adapterType: CSV
+                  collections: https://data.lucid.app/collections?dataSource=https://data.lucid.app/dataSources/2967
+                  created: '2021-01-01T00:00:00Z'
+                  lastModified: '2021-01-01T00:00:00Z'
+                  pending: false
+                  dataSet: https://data.lucid.app/dataSets/2168
+                  linkParameters:
+                    param1: value1
+                    param2: value2
+                  deleted: '2021-01-01T00:00:00Z'
+        '400':
+          description: Bad Request if no file provided, unable to read file, or datasource query parameter is missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: Invalid file format
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://lucid.app/oauth2/authorize
+          tokenUrl: https://api.lucid.co/oauth2/token
+          refreshUrl: https://api.lucid.co/oauth2/token
+          scopes:
+            data-service.admin: Scope needed for access to the Data APIs.
+x-harvest:
+  harvested: '2026-08-01'
+  method: searched
+  source: https://lucid-developer-docs.readme.io/mcp
+  note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'
