@@ -218,26 +218,6 @@ apis:
     url: https://developer.lucid.co/reference/api
   - type: APIReference
     url: https://developer.lucid.co/reference/overview-scim
-- aid: lucid:lucid-data-set-api
-  name: Lucid Data Set API
-  description: >-
-    Create, retrieve, update, and delete data sets. A data set is a top-level container that groups related
-    data sources and their collections.
-  humanURL: https://developer.lucid.co/reference/api
-  baseURL: https://api.lucid.co
-  tags:
-  - Dataset
-  tags_raw:
-  - Data Set
-  properties:
-  - type: OpenAPI
-    url: openapi/lucid-data-set-api-openapi.yml
-  - type: Documentation
-    url: https://developer.lucid.co/docs/welcome
-  - type: APIReference
-    url: https://developer.lucid.co/reference/api
-  - type: APIReference
-    url: https://developer.lucid.co/reference/overview-scim
 - aid: lucid:lucid-data-set-grant-api
   name: Lucid Data Set Grant API
   description: >-
@@ -726,6 +706,24 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/lucid-users-api-openapi.yml
+  - type: Documentation
+    url: https://developer.lucid.co/docs/welcome
+  - type: APIReference
+    url: https://developer.lucid.co/reference/api
+  - type: APIReference
+    url: https://developer.lucid.co/reference/overview-scim
+- aid: lucid:lucid-dataset-api
+  name: Lucid Dataset API
+  description: >-
+    Create, retrieve, update, and delete data sets. A data set is a top-level container that groups related
+    data sources and their collections.
+  humanURL: https://developer.lucid.co/docs/mcp
+  baseURL: https://mcp.lucid.app/mcp
+  tags:
+  - Dataset
+  properties:
+  - type: OpenAPI
+    url: openapi/lucid-dataset-api-openapi.yml
   - type: Documentation
     url: https://developer.lucid.co/docs/welcome
   - type: APIReference
