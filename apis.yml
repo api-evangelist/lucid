@@ -473,6 +473,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - Legal Hold
+  tags_raw:
   - Legal Holds
   properties:
   - type: OpenAPI
@@ -575,6 +577,8 @@ apis:
   humanURL: https://developer.lucid.co/reference/api
   baseURL: https://api.lucid.co
   tags:
+  - Schema
+  tags_raw:
   - Schemas
   properties:
   - type: OpenAPI
@@ -720,6 +724,8 @@ apis:
   humanURL: https://developer.lucid.co/docs/mcp
   baseURL: https://mcp.lucid.app/mcp
   tags:
+  - Datasets
+  tags_raw:
   - Dataset
   properties:
   - type: OpenAPI
