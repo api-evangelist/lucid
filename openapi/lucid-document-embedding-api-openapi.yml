@@ -90,16 +90,6 @@ paths:
           description: The embed id in the parameter is not found.
 components:
   schemas:
-    ViewerCustomSettings:
-      type: string
-      enum:
-      - postMessage
-      - none
-      description: '- postMessage: Display a "Settings for <app>" link in the embed settings view where users can update the settings. When clicked, the OpenCustomSettings postMessage event would be fired so the app can display its own customized settings view.
-
-        - none: "Settings for <app>" link would not be available in the settings editor.
-
-        '
     SessionConfig:
       type: object
       properties:
@@ -118,16 +108,14 @@ components:
           $ref: '#/components/schemas/UI'
         customSettings:
           $ref: '#/components/schemas/ViewerCustomSettings'
-    ViewerType:
+    Product:
       type: string
       enum:
-      - rich
-      - simple
-      description: '- rich: The standard Lucid viewer experience. A fully interactive viewer with zoom, panning, and support for hotspots and other interactive elements.
-
-        - simple: A basic Lucid viewer experience that can be used in place of the rich viewer if there are performance or load time concerns. The simple viewer renders non-interactive raster images instead of a high-fidelity vector experience and is a poorer fit for viewing larger documents.
-
-        '
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
     UI:
       type: string
       enum:
@@ -138,14 +126,26 @@ components:
         - settings: When loading an existing embed, show the user the embed settings interface before taking them to the standard embed view of the document.
 
         '
-    Product:
+    ViewerCustomSettings:
       type: string
       enum:
-      - lucidchart
-      - lucidscale
-      - lucidspark
-      description: The Lucid Suite product that a document was created in.
-      example: lucidchart
+      - postMessage
+      - none
+      description: '- postMessage: Display a "Settings for <app>" link in the embed settings view where users can update the settings. When clicked, the OpenCustomSettings postMessage event would be fired so the app can display its own customized settings view.
+
+        - none: "Settings for <app>" link would not be available in the settings editor.
+
+        '
+    ViewerType:
+      type: string
+      enum:
+      - rich
+      - simple
+      description: '- rich: The standard Lucid viewer experience. A fully interactive viewer with zoom, panning, and support for hotspots and other interactive elements.
+
+        - simple: A basic Lucid viewer experience that can be used in place of the rich viewer if there are performance or load time concerns. The simple viewer renders non-interactive raster images instead of a high-fidelity vector experience and is a poorer fit for viewing larger documents.
+
+        '
   securitySchemes:
     OAuth2:
       type: oauth2

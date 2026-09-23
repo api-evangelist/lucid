@@ -16,9 +16,7 @@ paths:
   /collections/{collectionId}/schema/{fieldDefinitionId}:
     get:
       summary: Get Field Definition
-      description: 'Gets a specific existing field definition for a given collection
-
-        '
+      description: Gets a specific existing field definition for a given collection
       operationId: getFieldDefinition
       tags:
       - Schema
@@ -94,9 +92,7 @@ paths:
                   default: 'null'
     patch:
       summary: Update Field Definition
-      description: 'This endpoint takes a Field Definition, which is used to update the specified field definition. The easiest way to accomplish this is to modify the values in the response from the GET field definition endpoint and send a PATCH request.
-
-        '
+      description: This endpoint takes a Field Definition, which is used to update the specified field definition. The easiest way to accomplish this is to modify the values in the response from the GET field definition endpoint and send a PATCH request.
       operationId: updateFieldDefinition
       tags:
       - Schema
@@ -216,9 +212,7 @@ paths:
                   label: User Friendly Field Name
     delete:
       summary: Delete Field Definition
-      description: 'This removes the field definition from the collection''s schema. This results of this action cannot be undone. The delete will only occur if the user has access to the data source. This action will also remove all data item values associated with the deleted field.
-
-        '
+      description: This removes the field definition from the collection's schema. This results of this action cannot be undone. The delete will only occur if the user has access to the data source. This action will also remove all data item values associated with the deleted field.
       operationId: deleteFieldDefinition
       tags:
       - Schema
@@ -244,9 +238,7 @@ paths:
   /collections/{collectionId}/schema:
     get:
       summary: Get All Field Definitions
-      description: 'This endpoint returns all field definitions for a given collection if the user has access.
-
-        '
+      description: This endpoint returns all field definitions for a given collection if the user has access.
       operationId: getAllFieldDefinitions
       tags:
       - Schema
@@ -319,9 +311,7 @@ paths:
                     label: User Friendly Field Name
     patch:
       summary: Update Field Definitions
-      description: 'This endpoint allows updating multiple field definitions at once. The easiest way to accomplish this is to modify the values in the response from the get all field definitions endpoint and send a PATCH request. Changing the values will update existing field definitions within the collection''s schema. Any fields sent without a uri field will result in an addition to the schema if the name field is unique within the schema. Fields cannot be deleted with this endpoint.
-
-        '
+      description: This endpoint allows updating multiple field definitions at once. The easiest way to accomplish this is to modify the values in the response from the get all field definitions endpoint and send a PATCH request. Changing the values will update existing field definitions within the collection's schema. Any fields sent without a uri field will result in an addition to the schema if the name field is unique within the schema. Fields cannot be deleted with this endpoint.
       operationId: updateFieldDefinitions
       tags:
       - Schema
@@ -453,9 +443,7 @@ paths:
       summary: Delete Field Definitions
       description: 'This endpoint removes only the field definitions provided in the query parameter. The fields in the query parameter must belong to the collection specified. The results of this deletion cannot be undone. The deletion will only occur if the user has access to the data source.
 
-        NOTE: If the entire schema is removed then all of the values of each data item are also removed.
-
-        '
+        NOTE: If the entire schema is removed then all of the values of each data item are also removed.'
       operationId: deleteFieldDefinitions
       tags:
       - Schema

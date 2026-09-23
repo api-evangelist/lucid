@@ -238,6 +238,28 @@ paths:
           description: Forbidden. Occurs when the access token isn't allowed to change the embed version.
 components:
   schemas:
+    EmbedDocument:
+      type: object
+      properties:
+        embedId:
+          type: string
+          format: uuid
+          example: ec890631-c150-461c-992f-b96533aa05f4
+          description: Unique identifier of the embed.
+        documentId:
+          type: string
+          format: uuid
+          example: 001bd56d-1b10-4196-8ac6-45e3c22bd1c6
+          description: Unique identifier of the document.
+        pageCount:
+          type: number
+          example: 5
+          description: The number of pages on the document
+        title:
+          type: string
+          example: Documentation example document
+          description: The title of the document.
+      description: Information about the docuement correlated to the requested Embed.
     EmbedInformation:
       type: object
       properties:
@@ -266,28 +288,6 @@ components:
           example: '2021-10-01T20:49:36.169Z'
           description: When the embed was last modified.
       description: Information about the requested Embed.
-    EmbedDocument:
-      type: object
-      properties:
-        embedId:
-          type: string
-          format: uuid
-          example: ec890631-c150-461c-992f-b96533aa05f4
-          description: Unique identifier of the embed.
-        documentId:
-          type: string
-          format: uuid
-          example: 001bd56d-1b10-4196-8ac6-45e3c22bd1c6
-          description: Unique identifier of the document.
-        pageCount:
-          type: number
-          example: 5
-          description: The number of pages on the document
-        title:
-          type: string
-          example: Documentation example document
-          description: The title of the document.
-      description: Information about the docuement correlated to the requested Embed.
   securitySchemes:
     OAuth2:
       type: oauth2

@@ -1,0 +1,33 @@
+# Front Door AI Index — lucid — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: lucid
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: lucid.co
+  final_host: lucid.co
+  ownership: own
+  owner: lucid
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 33
+  host_score: 33
+  density: 31.67
+  words: 1042
+  tiers:
+    agentic: 23
+    core: 10
+    model: 0
+  ambiguous: 9
+  top_terms:
+    MCP: 15
+    AI: 9
+    agent: 6
+    AI agent: 4
+    prompts: 3
+    smart: 2
+    LLMs: 1
+    agentic: 1
+    automation: 1

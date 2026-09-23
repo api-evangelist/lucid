@@ -16,9 +16,7 @@ paths:
   /rateLimits:
     get:
       summary: Get Rate Limits
-      description: 'See what your current rate limits are.
-
-        '
+      description: See what your current rate limits are.
       operationId: getRateLimits
       tags:
       - Rate Limits

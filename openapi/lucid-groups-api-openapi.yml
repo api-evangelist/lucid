@@ -134,9 +134,7 @@ paths:
   /Groups:
     get:
       summary: Get All Groups or Teams
-      description: 'Gets all org groups or teams on an account. Supports pagination and filtering.
-
-        '
+      description: Gets all org groups or teams on an account. Supports pagination and filtering.
       operationId: getAllGroups
       tags:
       - Groups
@@ -222,6 +220,32 @@ paths:
           description: Conflict. Occurs if the group name already exists on the account.
 components:
   schemas:
+    GroupOperation:
+      type: object
+      required:
+      - op
+      properties:
+        op:
+          type: string
+          enum:
+          - add
+          - remove
+          - replace
+          description: The operation to perform.
+          example: add
+        path:
+          type: string
+          description: Path to the field you want to change.
+          example: members
+        value:
+          oneOf:
+          - type: string
+          - type: array
+            items: {}
+          description: Value to be added/replaced.
+          example:
+          - value: lucid-1234
+          - value: lucid-5678
     Group:
       type: object
       properties:
@@ -254,6 +278,23 @@ components:
             display: Subgroup A
         meta:
           type: object
+    Member:
+      type: object
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: The ID of the member. For org groups, this can be a user ID (e.g. "lucid-1234") or a subgroup ID (e.g. "lucid-group-5678"). For teams, only user IDs are supported.
+          example: lucid-1433
+        $ref:
+          type: string
+          description: The URI of the member. Points to /Users/{id} for user members, or for org groups, /Groups/{id} for subgroup members.
+          example: https://users.lucid.app/scim/v2/Users/lucid-1433
+        display:
+          type: string
+          description: The display name of the member (the user's name, or for org group subgroups, the subgroup's name).
+          example: User 2
     CreateOrUpdateGroup:
       type: object
       properties:
@@ -272,49 +313,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Member'
-    GroupOperation:
-      type: object
-      required:
-      - op
-      properties:
-        op:
-          type: string
-          enum:
-          - add
-          - remove
-          - replace
-          description: The operation to perform.
-          example: add
-        path:
-          type: string
-          description: Path to the field you want to change.
-          example: members
-        value:
-          oneOf:
-          - type: string
-          - type: array
-            items: {}
-          description: Value to be added/replaced.
-          example:
-          - value: lucid-1234
-          - value: lucid-5678
-    Member:
-      type: object
-      required:
-      - value
-      properties:
-        value:
-          type: string
-          description: The ID of the member. For org groups, this can be a user ID (e.g. "lucid-1234") or a subgroup ID (e.g. "lucid-group-5678"). For teams, only user IDs are supported.
-          example: lucid-1433
-        $ref:
-          type: string
-          description: The URI of the member. Points to /Users/{id} for user members, or for org groups, /Groups/{id} for subgroup members.
-          example: https://users.lucid.app/scim/v2/Users/lucid-1433
-        display:
-          type: string
-          description: The display name of the member (the user's name, or for org group subgroups, the subgroup's name).
-          example: User 2
     GetAllGroups:
       type: object
       properties:

@@ -163,6 +163,32 @@ paths:
           description: Forbidden if the app making the request does not have permission to the document, or if the document has been deleted, or does not exist.
 components:
   schemas:
+    DocumentLinkSecurity:
+      type: object
+      properties:
+        restrictToAccount:
+          type: boolean
+          description: Whether or not users outside the document's account can accept the share link. Changing this value to true will immediately revoke access for any external users who previously gained access through this link.
+        expires:
+          type: string
+          format: date-time
+          description: If defined, the date and time the share link expires.
+        passcode:
+          type: string
+          description: If defined, the required passcode to accept the share link. The passcode length must be between 1 – 80 characters.
+          minLength: 1
+          maxLength: 80
+        allowAnonymous:
+          type: boolean
+          description: Whether or not the share link allows for anonymous guests.
+      required:
+      - restrictToAccount
+      - allowAnonymous
+      example:
+        restrictToAccount: false
+        expires: '2023-12-11T21:48:35.293Z'
+        passcode: password
+        allowAnonymous: false
     SharingRole:
       type: string
       enum:
@@ -225,40 +251,7 @@ components:
       - createdBy
       - lastModified
       - acceptUrl
-    DocumentLinkSecurity:
-      type: object
-      properties:
-        restrictToAccount:
-          type: boolean
-          description: Whether or not users outside the document's account can accept the share link. Changing this value to true will immediately revoke access for any external users who previously gained access through this link.
-        expires:
-          type: string
-          format: date-time
-          description: If defined, the date and time the share link expires.
-        passcode:
-          type: string
-          description: If defined, the required passcode to accept the share link. The passcode length must be between 1 – 80 characters.
-          minLength: 1
-          maxLength: 80
-        allowAnonymous:
-          type: boolean
-          description: Whether or not the share link allows for anonymous guests.
-      required:
-      - restrictToAccount
-      - allowAnonymous
-      example:
-        restrictToAccount: false
-        expires: '2023-12-11T21:48:35.293Z'
-        passcode: password
-        allowAnonymous: false
   parameters:
-    DocumentShareLinkShareLinkId:
-      name: shareLinkId
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Id of the share link to retrieve information for.
     DocumentShareLinkDocumentId:
       name: id
       in: path
@@ -267,6 +260,13 @@ components:
         type: string
         format: uuid
       description: ID of the document.
+    DocumentShareLinkShareLinkId:
+      name: shareLinkId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Id of the share link to retrieve information for.
   securitySchemes:
     OAuth2:
       type: oauth2

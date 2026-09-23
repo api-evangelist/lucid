@@ -16,9 +16,7 @@ paths:
   /collections/{collectionId}/properties:
     get:
       summary: Get Collection Properties
-      description: 'Gets all properties for the specified collection if the user has access to the data source.
-
-        '
+      description: Gets all properties for the specified collection if the user has access to the data source.
       operationId: getCollectionProperties
       tags:
       - Collection Properties
@@ -46,9 +44,7 @@ paths:
                   font: Times New Roman
     patch:
       summary: Update Collection Properties
-      description: 'Allows a user to update the properties on a collection. This endpoint uses the supplied values to either update existing properties or add new properties.
-
-        '
+      description: Allows a user to update the properties on a collection. This endpoint uses the supplied values to either update existing properties or add new properties.
       operationId: updateCollectionProperties
       tags:
       - Collection Properties
@@ -86,9 +82,7 @@ paths:
                   font: Times New Roman
     delete:
       summary: Delete Collection Properties
-      description: 'Removes only the properties provided in the query parameter. The deleted properties cannot be undone. The deletion will only occur if the user has access to the collection.
-
-        '
+      description: Removes only the properties provided in the query parameter. The deleted properties cannot be undone. The deletion will only occur if the user has access to the collection.
       operationId: deleteCollectionProperties
       tags:
       - Collection Properties

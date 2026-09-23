@@ -166,26 +166,6 @@ paths:
           description: Forbidden if the app making the request does not have permission to the folder, or if the folder has been deleted, or does not exist.
 components:
   schemas:
-    FolderLinkSecurity:
-      type: object
-      properties:
-        restrictToAccount:
-          type: boolean
-          description: Whether the share link is restricted to users within the folder's account. Changing this value to true will immediately revoke access for any external users who previously gained access through this link.
-          example: true
-        expires:
-          type: string
-          format: date-time
-          description: If defined, the date and time the share link expires.
-          example: '2025-11-11T21:48:35.293Z'
-        passcode:
-          type: string
-          description: If defined, the required passcode to accept the share link. The passcode length must be between 1 – 80 characters.
-          minLength: 1
-          maxLength: 80
-          example: passcode
-      required:
-      - restrictToAccount
     FolderShareLink:
       type: object
       properties:
@@ -229,6 +209,26 @@ components:
       - createdBy
       - lastModified
       - acceptUrl
+    FolderLinkSecurity:
+      type: object
+      properties:
+        restrictToAccount:
+          type: boolean
+          description: Whether the share link is restricted to users within the folder's account. Changing this value to true will immediately revoke access for any external users who previously gained access through this link.
+          example: true
+        expires:
+          type: string
+          format: date-time
+          description: If defined, the date and time the share link expires.
+          example: '2025-11-11T21:48:35.293Z'
+        passcode:
+          type: string
+          description: If defined, the required passcode to accept the share link. The passcode length must be between 1 – 80 characters.
+          minLength: 1
+          maxLength: 80
+          example: passcode
+      required:
+      - restrictToAccount
     SharingRole:
       type: string
       enum:

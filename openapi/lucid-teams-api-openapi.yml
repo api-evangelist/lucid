@@ -22,9 +22,7 @@ paths:
         The list of teams returned depends on whether the request was made using user or admin permissions. User permissions return teams the requesting user has access to. Admin permissions return all teams belonging to the account.
 
 
-        This endpoint is paginated.
-
-        '
+        This endpoint is paginated.'
       operationId: listTeams
       tags:
       - Teams
@@ -60,9 +58,7 @@ paths:
       description: 'Creates a new team for the authenticated user, populated with the given team members. Hidden teams cannot be created via the REST API.
 
 
-        Whether the requesting user is automatically added to the team depends on the permission type. With user permissions, the user is automatically added to the team. With admin permissions, the user is not automatically added.
-
-        '
+        Whether the requesting user is automatically added to the team depends on the permission type. With user permissions, the user is automatically added to the team. With admin permissions, the user is not automatically added.'
       operationId: createTeam
       tags:
       - Teams
@@ -171,9 +167,7 @@ paths:
       description: 'Retrieves basic information about users on a specified team. With user permissions, the authenticated user must have access to the team. With admin permissions, users from any team belonging to the account can be retrieved.
 
 
-        This endpoint is paginated.
-
-        '
+        This endpoint is paginated.'
       operationId: listUsersOnTeam
       tags:
       - Teams
@@ -329,7 +323,80 @@ paths:
         '403':
           description: Forbidden. * if the user making the request does not have permission to edit teams. * if the user making the request does not have access to the specified team. * if the team is managed via SCIM. Use the SCIM Groups API to modify SCIM-managed teams.
 components:
+  parameters:
+    RequestAs-Teams:
+      in: header
+      name: Lucid-Request-As
+      required: false
+      description: 'If the requesting user is an account owner, team admin, or team manager with the required permissions and they make
+
+        the request with the value of “admin” as this header and include an admin scope, the request will be made using
+
+        their admin permissions.
+
+        '
+      schema:
+        type: string
+      example: admin
   schemas:
+    CreateTeamBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The team's name. Max length of name is 80 characters.
+          example: Team Name
+        type:
+          $ref: '#/components/schemas/TeamType'
+        users:
+          type: array
+          items:
+            type: integer
+          description: Array of IDs of users to be on the team.
+          example:
+          - 321
+          - 654
+          - 987
+      required:
+      - name
+      - type
+      - users
+    RemoveUsersFromTeamBody:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: integer
+          description: Array of IDs of users to remove from the team.
+          example:
+          - 321
+          - 654
+          - 987
+      required:
+      - users
+    TeamRole:
+      type: string
+      enum:
+      - TEAM_MANAGER
+      - EDIT_SHARE_MEMBER
+      - EDIT_MEMBER
+      - COMMENT_MEMBER
+      - VIEW_MEMBER
+      description: 'The role to assign to a user on a team. Team roles determine what permissions a user has on documents shared with the team:
+
+        - `TEAM_MANAGER`: Can manage team settings, members, and has full access to team content
+
+        - `EDIT_SHARE_MEMBER`: Can view, comment on, edit, and share team documents
+
+        - `EDIT_MEMBER`: Can view, comment on, and edit team documents
+
+        - `COMMENT_MEMBER`: Can view and comment on team documents
+
+        - `VIEW_MEMBER`: Can only view team documents
+
+        '
+      example: EDIT_MEMBER
     Avatar:
       type: object
       properties:
@@ -360,61 +427,40 @@ components:
       - userId
       - role
       description: A user with a specific role to add to a team
-    TeamRole:
-      type: string
-      enum:
-      - TEAM_MANAGER
-      - EDIT_SHARE_MEMBER
-      - EDIT_MEMBER
-      - COMMENT_MEMBER
-      - VIEW_MEMBER
-      description: 'The role to assign to a user on a team. Team roles determine what permissions a user has on documents shared with the team:
-
-        - `TEAM_MANAGER`: Can manage team settings, members, and has full access to team content
-
-        - `EDIT_SHARE_MEMBER`: Can view, comment on, edit, and share team documents
-
-        - `EDIT_MEMBER`: Can view, comment on, and edit team documents
-
-        - `COMMENT_MEMBER`: Can view and comment on team documents
-
-        - `VIEW_MEMBER`: Can only view team documents
-
-        '
-      example: EDIT_MEMBER
-    UpdateTeamBody:
+    Team:
       type: object
+      description: A standard representation of a team.
       properties:
+        id:
+          type: number
+          description: The unique ID for the team.
+          example: 123456789
         name:
           type: string
-          description: The team's name. Max length of name is 80 characters.
+          description: The team's name.
           example: Team Name
-      required:
-      - name
-    AddUsersToTeamBody:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/TeamUser'
-          description: Array of users with their assigned roles to add to the team
-      required:
-      - users
-    RemoveUsersFromTeamBody:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            type: integer
-          description: Array of IDs of users to remove from the team.
-          example:
-          - 321
-          - 654
-          - 987
-      required:
-      - users
+        type:
+          $ref: '#/components/schemas/TeamType'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the team was created.
+          example: '2024-01-30T16:29:37Z'
+        archived:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: Date and time when the team was archived (if it has been archived).
+          example: null
+    TeamType:
+      type: string
+      enum:
+      - hidden
+      - closed
+      - open
+      description: The type of the team
+      example: open
     Profile:
       type: object
       properties:
@@ -442,77 +488,25 @@ components:
           $ref: '#/components/schemas/Avatar'
           description: A reference to the user's avatar image, falling back to their Gravatar image.
       description: The Profile resource contains basic profile information about a user.
-    Team:
+    AddUsersToTeamBody:
       type: object
-      description: A standard representation of a team.
       properties:
-        id:
-          type: number
-          description: The unique ID for the team.
-          example: 123456789
-        name:
-          type: string
-          description: The team's name.
-          example: Team Name
-        type:
-          $ref: '#/components/schemas/TeamType'
-        created:
-          type: string
-          format: date-time
-          description: Date and time when the team was created.
-          example: '2024-01-30T16:29:37Z'
-        archived:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: Date and time when the team was archived (if it has been archived).
-          example: null
-    CreateTeamBody:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamUser'
+          description: Array of users with their assigned roles to add to the team
+      required:
+      - users
+    UpdateTeamBody:
       type: object
       properties:
         name:
           type: string
           description: The team's name. Max length of name is 80 characters.
           example: Team Name
-        type:
-          $ref: '#/components/schemas/TeamType'
-        users:
-          type: array
-          items:
-            type: integer
-          description: Array of IDs of users to be on the team.
-          example:
-          - 321
-          - 654
-          - 987
       required:
       - name
-      - type
-      - users
-    TeamType:
-      type: string
-      enum:
-      - hidden
-      - closed
-      - open
-      description: The type of the team
-      example: open
-  parameters:
-    RequestAs-Teams:
-      in: header
-      name: Lucid-Request-As
-      required: false
-      description: 'If the requesting user is an account owner, team admin, or team manager with the required permissions and they make
-
-        the request with the value of “admin” as this header and include an admin scope, the request will be made using
-
-        their admin permissions.
-
-        '
-      schema:
-        type: string
-      example: admin
   securitySchemes:
     OAuth2:
       type: oauth2

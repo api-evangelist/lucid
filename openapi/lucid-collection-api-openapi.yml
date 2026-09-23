@@ -16,9 +16,7 @@ paths:
   /collections:
     head:
       summary: Get Total Collections Count
-      description: 'This endpoint returns the number of collections a user has access to. The return value is in the response headers as Lucid-Collections-Total.
-
-        '
+      description: This endpoint returns the number of collections a user has access to. The return value is in the response headers as Lucid-Collections-Total.
       operationId: getTotalCollectionsCount
       tags:
       - Collection
@@ -35,9 +33,7 @@ paths:
                 example: 123
     get:
       summary: Get All Collections
-      description: 'This endpoint returns all collections that the user has access to. The results will be paginated. If the number of collections exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns collections in the range from start to start + pagination limit. Items in the response are determined based on their creation order.
-
-        '
+      description: This endpoint returns all collections that the user has access to. The results will be paginated. If the number of collections exceeds the pagination limit, links will be provided to get the next set of results or the previous set of results (if applicable). The range of returned values can be determined by optional start and end parameters. If the difference between the end and start values is greater than the pagination limit, the endpoint returns collections in the range from start to start + pagination limit. Items in the response are determined based on their creation order.
       operationId: getAllCollections
       tags:
       - Collection
@@ -165,9 +161,7 @@ paths:
                     example: https://data.lucid.app/collections?start=100&end=110
     post:
       summary: Create Collection
-      description: 'Creates a new collection for the specified data source. Only succeeds if the user has access to the data source.
-
-        '
+      description: Creates a new collection for the specified data source. Only succeeds if the user has access to the data source.
       operationId: createCollection
       tags:
       - Collection
@@ -362,9 +356,7 @@ paths:
   /collections/{collectionId}:
     get:
       summary: Get Collection
-      description: 'Gets a specific existing collection from Lucid.
-
-        '
+      description: Gets a specific existing collection from Lucid.
       operationId: getCollection
       tags:
       - Collection
@@ -472,9 +464,7 @@ paths:
                   metadata: https://data.lucid.app/collections/3/metadata
     patch:
       summary: Update Collection
-      description: 'This endpoint takes a JSON object and uses it to update the collection''s name and/or data source. The JSON object of the updated collection is returned. Updates will only occur if the user has access to the data source. Only top level collections can be updated. Metadata collections cannot be updated.
-
-        '
+      description: This endpoint takes a JSON object and uses it to update the collection's name and/or data source. The JSON object of the updated collection is returned. Updates will only occur if the user has access to the data source. Only top level collections can be updated. Metadata collections cannot be updated.
       operationId: updateCollection
       tags:
       - Collection
@@ -600,9 +590,7 @@ paths:
                   metadata: https://data.lucid.app/collections/3/metadata
     delete:
       summary: Delete Collection
-      description: 'This removes the collection and anything that belongs to it (metadata collections, schema, and items). Data sources will not be removed. This action cannot be undone and will only occur if the user has access to the data source.
-
-        '
+      description: This removes the collection and anything that belongs to it (metadata collections, schema, and items). Data sources will not be removed. This action cannot be undone and will only occur if the user has access to the data source.
       operationId: deleteCollection
       tags:
       - Collection
@@ -622,9 +610,7 @@ paths:
   /collections/{collectionId}/metadata:
     get:
       summary: Get All Metadata Collections
-      description: 'This endpoint returns a list of Collections for any metadata collections that exist on the requested collection. The return will only occur if the user has access to the data source. Each metadata collection will have a link to its parent collection in the parent field.
-
-        '
+      description: This endpoint returns a list of Collections for any metadata collections that exist on the requested collection. The return will only occur if the user has access to the data source. Each metadata collection will have a link to its parent collection in the parent field.
       operationId: getAllMetadataCollections
       tags:
       - Collection
@@ -734,9 +720,7 @@ paths:
                     metadata: https://data.lucid.app/collections/3/metadata
     post:
       summary: Create Metadata Collection
-      description: 'Create a new metadata collection for a given collection. The user must have access to the data source in order to create a metadata collection. Metadata collections cannot be updated.
-
-        '
+      description: Create a new metadata collection for a given collection. The user must have access to the data source in order to create a metadata collection. Metadata collections cannot be updated.
       operationId: createMetadataCollection
       tags:
       - Collection

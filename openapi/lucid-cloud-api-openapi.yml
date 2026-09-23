@@ -1571,10 +1571,137 @@ paths:
           description: Forbidden. Occurs when the job does not exist or the user does not have access to it.
 components:
   schemas:
-    AwsDataSourceId:
+    CreateModelFromAzureDataSourceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The name to give the created model
+          example: Azure Infrastructure Diagram
+        dataSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/AzureDataSourceForModelCreation'
+          description: The Azure Data Sources to include in the model
+        autosync:
+          type: boolean
+          description: Whether this model should automatically update with changes to its data source(s)
+          example: true
+        viewTemplates:
+          type: array
+          items:
+            type: string
+          description: The view templates to create in the generated model. Use the "Get Supported Azure View Templates" endpoint to see a list of all supported view templates.
+          example:
+          - virtual-network-topology
+          - resources
+      required:
+      - title
+      - dataSources
+      - autosync
+    AwsCredentialId:
       type: string
-      description: AWS data source ID
-      pattern: ^awsds_[0-9]+$
+      description: AWS credential ID
+      pattern: ^aws_[0-9]+$
+      example: aws_12345
+    AzureDataSourceJobResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Example Azure Data Source
+          description: The name of the Azure data source affected by the job
+        dataSourceId:
+          $ref: '#/components/schemas/AzureDataSourceId'
+          description: The ID of the Azure data source affected by the job
+        message:
+          type: string
+          example: ''
+      required:
+      - name
+      - dataSourceId
+      - message
+    EditAzureDataSourceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The new display name to give to the Azure data source
+          example: Example Azure Data Source - Updated
+    EditGoogleCloudDataSourceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The new display name to give to the Google Cloud data source
+          example: Example Google Cloud Data Source - Updated
+    UpdateAwsCredentialRequest:
+      type: object
+      properties:
+        arn:
+          type: string
+          description: When provided, the AWS resource identifier with which the trust relationship was formed via the externalId
+          example: arn:aws:iam::123456789012:role/LucidCloudRole
+        name:
+          type: string
+          description: When provided, the name to give the credential
+          example: Example AWS Credential - Updated
+        orgMemberAccountRoleName:
+          type: string
+          description: When provided, the IAM role that exists in each of your AWS member accounts to be included by Lucid when making requests on your behalf
+          example: OrganizationAccountAccessRole
+    JobErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message describing what went wrong
+          example: Failed to authenticate with cloud provider
+      required:
+      - message
+    AddAzureCredentialRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name to give the created credential
+          example: Example Azure Credential
+        clientId:
+          type: string
+          format: uuid
+          description: The ID of the application from which to import resource metadata for your subscriptions
+          example: 76cd2065-b065-43fa-ad55-316927945439
+        tenantId:
+          type: string
+          format: uuid
+          description: The ID of the directory to be used during authentication
+          example: de991a0e-5765-429a-bc8e-1a053bb61911
+        clientSecret:
+          type: string
+          description: The secret to be used for authentication
+          example: example-azure-secret
+        linkType:
+          $ref: '#/components/schemas/AzureCredentialLinkType'
+          description: When provided, the type of credential to create
+      required:
+      - name
+      - clientId
+      - tenantId
+      - clientSecret
+    GoogleCloudDataSourceForModelCreation:
+      type: object
+      properties:
+        dataSourceId:
+          $ref: '#/components/schemas/GoogleCloudDataSourceId'
+        filter:
+          $ref: '#/components/schemas/GoogleCloudDataSourceFilter'
+          description: Filter to apply when creating a model with the Google Cloud data source
+      required:
+      - dataSourceId
+    DataSourceId:
+      type: string
+      description: Cloud data source ID
+      pattern: ^(awsds_|azureds_|googlecloudds_)[0-9]+$
       example: awsds_12345
     AzureDataSourceObject:
       type: object
@@ -1616,39 +1743,17 @@ components:
       - dataSourceId
       - type
       - params
-    JobReferenceIdResponse:
+    UpdateGoogleCloudDataSourceRequest:
       type: object
       properties:
-        jobId:
-          $ref: '#/components/schemas/JobReferenceId'
-      required:
-      - jobId
-    UpdateAwsCredentialRequest:
-      type: object
-      properties:
-        arn:
-          type: string
-          description: When provided, the AWS resource identifier with which the trust relationship was formed via the externalId
-          example: arn:aws:iam::123456789012:role/LucidCloudRole
-        name:
-          type: string
-          description: When provided, the name to give the credential
-          example: Example AWS Credential - Updated
-        orgMemberAccountRoleName:
-          type: string
-          description: When provided, the IAM role that exists in each of your AWS member accounts to be included by Lucid when making requests on your behalf
-          example: OrganizationAccountAccessRole
-    DataSourceObject:
-      oneOf:
-      - $ref: '#/components/schemas/AwsDataSourceObject'
-      - $ref: '#/components/schemas/AzureDataSourceObject'
-      - $ref: '#/components/schemas/GoogleCloudDataSourceObject'
-      discriminator:
-        propertyName: type
-        mapping:
-          aws: '#/AwsDataSourceObject'
-          azure: '#/AzureDataSourceObject'
-          googleCloud: '#/GoogleCloudDataSourceObject'
+        resourceSelection:
+          type: array
+          items:
+            type: string
+          description: The Google Cloud resources to include in the data source. Use the "Get Fully Supported Google Cloud Resources" endpoint to see a list of all supported resources.
+          example:
+          - compute.googleapis.com/Instance
+          - storage.googleapis.com/Bucket
     EditAwsDataSourceRequest:
       type: object
       properties:
@@ -1656,62 +1761,39 @@ components:
           type: string
           description: The new display name to give to the AWS data source
           example: Example AWS Data Source - Updated
-    AwsCredentialObject:
+    AzureDataSourceFilter:
       type: object
       properties:
-        credentialId:
-          $ref: '#/components/schemas/AwsCredentialId'
-        type:
-          type: string
-          enum:
-          - aws
-        params:
-          type: object
-          properties:
-            name:
-              type: string
-              description: Name of the credential
-              example: Example AWS Credential
-            arn:
-              type: string
-              description: The AWS resource identifier corresponding to the credential
-              example: arn:aws:iam::123456789012:role/lucidimport
-            orgMemberAccountRoleName:
-              type: string
-              description: If not null, then the IAM role that exists in each of your AWS member accounts that was included by Lucid when making requests on your behalf to create or update the credential
-              example: LucidCloudMemberAccountRole
-          required:
-          - name
-          - arn
-          - orgMemberAccountRoleName
-      required:
-      - credentialId
-      - type
-      - params
-    AwsDataSourceJobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          $ref: '#/components/schemas/JobReferenceId'
-        status:
-          $ref: '#/components/schemas/JobStatus'
-        response:
-          oneOf:
-          - $ref: '#/components/schemas/AwsDataSourceJobResponse'
-          - $ref: '#/components/schemas/JobErrorResponse'
-      required:
-      - jobId
-      - status
-    AzureDataSourceJobResponse:
+        azureTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagOrLabel'
+        includeUntaggedResources:
+          type: boolean
+          description: Whether to include resources that do not have any tags
+          example: true
+        resourceGroups:
+          type: array
+          items:
+            type: string
+          description: The Azure resource groups to include in the model
+          example:
+          - Some-Azure-Resource::Some-Azure-Server
+    GoogleCloudCredentialId:
+      type: string
+      description: Google Cloud credential ID
+      pattern: ^googlecloud_[0-9]+$
+      example: googlecloud_56789
+    AwsDataSourceJobResponse:
       type: object
       properties:
         name:
           type: string
-          example: Example Azure Data Source
-          description: The name of the Azure data source affected by the job
+          example: Example AWS Data Source
+          description: The name of the AWS data source affected by the job
         dataSourceId:
-          $ref: '#/components/schemas/AzureDataSourceId'
-          description: The ID of the Azure data source affected by the job
+          $ref: '#/components/schemas/AwsDataSourceId'
+          description: The ID of the AWS data source affected by the job
         message:
           type: string
           example: ''
@@ -1719,9 +1801,58 @@ components:
       - name
       - dataSourceId
       - message
-    UpdateAzureDataSourceRequest:
+    AwsModelJobResponse:
       type: object
       properties:
+        viewURL:
+          type: string
+          format: uri
+          description: URL to view the created document
+          example: https://lucid.app/documents/view/8e7b19ec-27ff-40e3-beb8-03f51b1661b2
+        editURL:
+          type: string
+          format: uri
+          description: URL to edit the created document
+          example: https://lucid.app/documents/edit/8e7b19ec-27ff-40e3-beb8-03f51b1661b2
+        documentId:
+          type: string
+          format: uuid
+          description: ID of the created document
+          example: 8e7b19ec-27ff-40e3-beb8-03f51b1661b2
+        dataSources:
+          type: array
+          items:
+            type: string
+          description: List of AWS data source IDs used in the model
+          example:
+          - awsds_12345
+      required:
+      - viewURL
+      - editURL
+      - documentId
+      - dataSources
+    CreateAzureDataSourceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name to give the data source
+          example: Example Azure Data Source
+        azureCredentialId:
+          $ref: '#/components/schemas/AzureCredentialId'
+          description: The ID of the existing Azure credential to use to create the data source
+        tenantId:
+          type: string
+          format: uuid
+          description: The ID of the Azure directory which contains the data from which to create the data source
+          example: de991a0e-5765-429a-bc8e-1a053bb61911
+        subscriptionIds:
+          type: array
+          items:
+            type: string
+          description: The IDs of the subscriptions which contain the data from which to create the data source
+          example:
+          - a1b2c3d4-e5f6-7890-abcd-ef1234567890
         resourceSelection:
           type: array
           items:
@@ -1730,20 +1861,19 @@ components:
           example:
           - Microsoft.Compute/virtualMachines
           - Microsoft.Storage/storageAccounts
-    JobStatus:
-      type: string
-      enum:
-      - PENDING
-      - RUNNING
-      - SUCCEEDED
-      - FAILED
-      description: Status of an asynchronous job
-      example: SUCCEEDED
-    GoogleCloudCredentialId:
-      type: string
-      description: Google Cloud credential ID
-      pattern: ^googlecloud_[0-9]+$
-      example: googlecloud_56789
+      required:
+      - name
+      - cloudCredentialId
+      - tenantId
+      - subscriptionIds
+      - resourceSelection
+    JobReferenceIdResponse:
+      type: object
+      properties:
+        jobId:
+          $ref: '#/components/schemas/JobReferenceId'
+      required:
+      - jobId
     AzureDataSourceForModelCreation:
       type: object
       properties:
@@ -1754,85 +1884,52 @@ components:
           description: Filter to apply when creating a model with the Azure data source
       required:
       - dataSourceId
-    CloudCredentialId:
+    JobStatus:
       type: string
-      description: Cloud credential ID with provider prefix
-      pattern: ^(aws_|azure_|googlecloud_)[0-9]+$
-      example: aws_12345
-    AwsCredentialId:
-      type: string
-      description: AWS credential ID
-      pattern: ^aws_[0-9]+$
-      example: aws_12345
-    EditGoogleCloudDataSourceRequest:
+      enum:
+      - PENDING
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      description: Status of an asynchronous job
+      example: SUCCEEDED
+    AzureCredentialObject:
       type: object
       properties:
-        name:
+        credentialId:
+          $ref: '#/components/schemas/AzureCredentialId'
+        type:
           type: string
-          description: The new display name to give to the Google Cloud data source
-          example: Example Google Cloud Data Source - Updated
-    GoogleCloudDataSourceJobResponse:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Example Google Cloud Data Source
-          description: The name of the Google Cloud data source affected by the job
-        dataSourceId:
-          $ref: '#/components/schemas/GoogleCloudDataSourceId'
-          description: The ID of the Google Cloud data source affected by the job
-        message:
-          type: string
-          example: ''
+          enum:
+          - azure
+        params:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the credential
+              example: Example Azure Credential
+            clientId:
+              type: string
+              format: uuid
+              description: The ID of the application from which resource metadata was imported for your subscriptions
+              example: 76cd2065-b065-43fa-ad55-316927945439
+            tenantId:
+              type: string
+              format: uuid
+              description: The ID of the directory that was used during authentication
+              example: de991a0e-5765-429a-bc8e-1a053bb61911
+            linkType:
+              $ref: '#/components/schemas/AzureCredentialLinkType'
+          required:
+          - name
+          - clientId
+          - tenantId
+          - linkType
       required:
-      - name
-      - dataSourceId
-      - message
-    CreateAwsDataSourceRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name to give the data source
-          example: Example AWS Data Source
-        awsCredentialId:
-          $ref: '#/components/schemas/AwsCredentialId'
-          description: The ID of the existing AWS credential to use to create the data source
-        awsAccountId:
-          type: string
-          description: The ID of the AWS account which contains the data from which to create the data source
-          example: '123456789012'
-        regions:
-          type: array
-          items:
-            type: string
-          description: The AWS regions which contain the data from which to create the data source. Use the "Get Supported AWS Regions" endpoint to see a list of all supported regions.
-          example:
-          - us-east-1
-          - us-west-2
-        resourceSelection:
-          type: array
-          items:
-            type: string
-          description: The AWS resources to include in the data source. Use the "Get Fully Supported AWS Resources" endpoint to see a list of all supported resources.
-          example:
-          - AWS::EC2::Instance
-          - AWS::S3::Bucket
-      required:
-      - name
-      - cloudCredentialId
-      - awsAccountId
-      - regions
-    AzureCredentialId:
-      type: string
-      description: Azure credential ID
-      pattern: ^azure_[0-9]+$
-      example: azure_34567
-    DataSourceId:
-      type: string
-      description: Cloud data source ID
-      pattern: ^(awsds_|azureds_|googlecloudds_)[0-9]+$
-      example: awsds_12345
+      - credentialId
+      - type
+      - params
     AddAwsCredentialRequest:
       type: object
       properties:
@@ -1851,25 +1948,82 @@ components:
       required:
       - name
       - arn
-    UpdateAwsDataSourceRequest:
+    AwsDataSourceFilter:
       type: object
       properties:
-        regions:
+        awsTags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagOrLabel'
+        includeUntaggedResources:
+          type: boolean
+          description: Whether to include resources that do not have any tags
+          example: true
+        resourceGroups:
           type: array
           items:
             type: string
-          description: The AWS regions which contain the data from which to update the data source. Use the "Get Supported AWS Regions" endpoint to see a list of all supported regions.
+          description: The AWS resource groups to include in the model
           example:
-          - us-east-1
-          - us-west-2
-        resourceSelection:
-          type: array
-          items:
-            type: string
-          description: The AWS resources to include in the data source. Use the "Get Fully Supported AWS Resources" endpoint to see a list of all supported resources.
-          example:
-          - AWS::EC2::Instance
-          - AWS::S3::Bucket
+          - Some-AWS-Resource::Some-AWS-Server
+    CloudCredentialId:
+      type: string
+      description: Cloud credential ID with provider prefix
+      pattern: ^(aws_|azure_|googlecloud_)[0-9]+$
+      example: aws_12345
+    CredentialObject:
+      oneOf:
+      - $ref: '#/components/schemas/AwsCredentialObject'
+      - $ref: '#/components/schemas/AzureCredentialObject'
+      - $ref: '#/components/schemas/GoogleCloudCredentialObject'
+      discriminator:
+        propertyName: type
+        mapping:
+          aws: '#/AwsCredentialObject'
+          azure: '#/AzureCredentialObject'
+          googleCloud: '#/GoogleCloudCredentialObject'
+    UpdateAzureCredentialRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: When provided, the name to give the updated credential
+          example: Example Azure Credential - Updated
+        clientId:
+          type: string
+          format: uuid
+          description: When provided, the ID of the application from which to import resource metadata for your subscriptions
+          example: 76cd2065-b065-43fa-ad55-316927945439
+        tenantId:
+          type: string
+          format: uuid
+          description: When provided, the ID of the directory to be used during authentication
+          example: de991a0e-5765-429a-bc8e-1a053bb61911
+        clientSecret:
+          type: string
+          description: When provided, the secret to be used for authentication
+          example: example-azure-secret
+        linkType:
+          $ref: '#/components/schemas/AzureCredentialLinkType'
+    AzureCredentialId:
+      type: string
+      description: Azure credential ID
+      pattern: ^azure_[0-9]+$
+      example: azure_34567
+    AwsDataSourceJobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          $ref: '#/components/schemas/JobReferenceId'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        response:
+          oneOf:
+          - $ref: '#/components/schemas/AwsDataSourceJobResponse'
+          - $ref: '#/components/schemas/JobErrorResponse'
+      required:
+      - jobId
+      - status
     GoogleCloudDataSourceObject:
       type: object
       properties:
@@ -1912,539 +2066,25 @@ components:
       - dataSourceId
       - type
       - params
-    UpdateGoogleCloudDataSourceRequest:
+    UpdateAwsDataSourceRequest:
       type: object
       properties:
+        regions:
+          type: array
+          items:
+            type: string
+          description: The AWS regions which contain the data from which to update the data source. Use the "Get Supported AWS Regions" endpoint to see a list of all supported regions.
+          example:
+          - us-east-1
+          - us-west-2
         resourceSelection:
           type: array
           items:
             type: string
-          description: The Google Cloud resources to include in the data source. Use the "Get Fully Supported Google Cloud Resources" endpoint to see a list of all supported resources.
+          description: The AWS resources to include in the data source. Use the "Get Fully Supported AWS Resources" endpoint to see a list of all supported resources.
           example:
-          - compute.googleapis.com/Instance
-          - storage.googleapis.com/Bucket
-    GoogleCloudModelJobResponse:
-      type: object
-      properties:
-        viewURL:
-          type: string
-          format: uri
-          description: URL to view the created document
-          example: https://lucid.app/documents/view/8e7b19ec-27ff-40e3-beb8-03f51b1661b2
-        editURL:
-          type: string
-          format: uri
-          description: URL to edit the created document
-          example: https://lucid.app/documents/edit/8e7b19ec-27ff-40e3-beb8-03f51b1661b2
-        documentId:
-          type: string
-          format: uuid
-          description: ID of the created document
-          example: 8e7b19ec-27ff-40e3-beb8-03f51b1661b2
-        dataSources:
-          type: array
-          items:
-            type: string
-          description: List of Google Cloud data source IDs used in the model
-          example:
-          - googlecloudds_56789
-      required:
-      - viewURL
-      - editURL
-      - documentId
-      - dataSources
-    EditAzureDataSourceRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The new display name to give to the Azure data source
-          example: Example Azure Data Source - Updated
-    UpdateAzureCredentialRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: When provided, the name to give the updated credential
-          example: Example Azure Credential - Updated
-        clientId:
-          type: string
-          format: uuid
-          description: When provided, the ID of the application from which to import resource metadata for your subscriptions
-          example: 76cd2065-b065-43fa-ad55-316927945439
-        tenantId:
-          type: string
-          format: uuid
-          description: When provided, the ID of the directory to be used during authentication
-          example: de991a0e-5765-429a-bc8e-1a053bb61911
-        clientSecret:
-          type: string
-          description: When provided, the secret to be used for authentication
-          example: example-azure-secret
-        linkType:
-          $ref: '#/components/schemas/AzureCredentialLinkType'
-    GoogleCloudDataSourceFilter:
-      type: object
-      properties:
-        googleCloudLabels:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagOrLabel'
-        includeUnlabeledResources:
-          type: boolean
-          description: Whether to include resources that do not have any labels
-          example: true
-    AwsModelJobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          $ref: '#/components/schemas/JobReferenceId'
-        status:
-          $ref: '#/components/schemas/JobStatus'
-        response:
-          oneOf:
-          - $ref: '#/components/schemas/AwsModelJobResponse'
-          - $ref: '#/components/schemas/JobErrorResponse'
-          description: Job result (present when status is completed or failed)
-      required:
-      - jobId
-      - status
-    JobErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Error message describing what went wrong
-          example: Failed to authenticate with cloud provider
-      required:
-      - message
-    AzureModelJobResponse:
-      type: object
-      properties:
-        viewURL:
-          type: string
-          format: uri
-          description: URL to view the created document
-          example: https://lucid.app/documents/view/8e7b19ec-27ff-40e3-beb8-03f51b1661b2
-        editURL:
-          type: string
-          format: uri
-          description: URL to edit the created document
-          example: https://lucid.app/documents/edit/8e7b19ec-27ff-40e3-beb8-03f51b1661b2
-        documentId:
-          type: string
-          format: uuid
-          description: ID of the created document
-          example: 8e7b19ec-27ff-40e3-beb8-03f51b1661b2
-        dataSources:
-          type: array
-          items:
-            type: string
-          description: List of Azure data source IDs used in the model
-          example:
-          - azureds_34567
-      required:
-      - viewURL
-      - editURL
-      - documentId
-      - dataSources
-    AzureDataSourceJobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          $ref: '#/components/schemas/JobReferenceId'
-        status:
-          $ref: '#/components/schemas/JobStatus'
-        response:
-          oneOf:
-          - $ref: '#/components/schemas/AzureDataSourceJobResponse'
-          - $ref: '#/components/schemas/JobErrorResponse'
-      required:
-      - jobId
-      - status
-    GoogleCloudDataSourceForModelCreation:
-      type: object
-      properties:
-        dataSourceId:
-          $ref: '#/components/schemas/GoogleCloudDataSourceId'
-        filter:
-          $ref: '#/components/schemas/GoogleCloudDataSourceFilter'
-          description: Filter to apply when creating a model with the Google Cloud data source
-      required:
-      - dataSourceId
-    AddAzureCredentialRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name to give the created credential
-          example: Example Azure Credential
-        clientId:
-          type: string
-          format: uuid
-          description: The ID of the application from which to import resource metadata for your subscriptions
-          example: 76cd2065-b065-43fa-ad55-316927945439
-        tenantId:
-          type: string
-          format: uuid
-          description: The ID of the directory to be used during authentication
-          example: de991a0e-5765-429a-bc8e-1a053bb61911
-        clientSecret:
-          type: string
-          description: The secret to be used for authentication
-          example: example-azure-secret
-        linkType:
-          $ref: '#/components/schemas/AzureCredentialLinkType'
-          description: When provided, the type of credential to create
-      required:
-      - name
-      - clientId
-      - tenantId
-      - clientSecret
-    CredentialObject:
-      oneOf:
-      - $ref: '#/components/schemas/AwsCredentialObject'
-      - $ref: '#/components/schemas/AzureCredentialObject'
-      - $ref: '#/components/schemas/GoogleCloudCredentialObject'
-      discriminator:
-        propertyName: type
-        mapping:
-          aws: '#/AwsCredentialObject'
-          azure: '#/AzureCredentialObject'
-          googleCloud: '#/GoogleCloudCredentialObject'
-    AzureDataSourceFilter:
-      type: object
-      properties:
-        azureTags:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagOrLabel'
-        includeUntaggedResources:
-          type: boolean
-          description: Whether to include resources that do not have any tags
-          example: true
-        resourceGroups:
-          type: array
-          items:
-            type: string
-          description: The Azure resource groups to include in the model
-          example:
-          - Some-Azure-Resource::Some-Azure-Server
-    JobReferenceId:
-      type: string
-      description: Unique identifier for an asynchronous job
-      pattern: ^jobr_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-      example: jobr_2f5e5b82-6f1d-4c9f-932a-14e43cf30454
-    AwsDataSourceFilter:
-      type: object
-      properties:
-        awsTags:
-          type: array
-          items:
-            $ref: '#/components/schemas/TagOrLabel'
-        includeUntaggedResources:
-          type: boolean
-          description: Whether to include resources that do not have any tags
-          example: true
-        resourceGroups:
-          type: array
-          items:
-            type: string
-          description: The AWS resource groups to include in the model
-          example:
-          - Some-AWS-Resource::Some-AWS-Server
-    AzureCredentialObject:
-      type: object
-      properties:
-        credentialId:
-          $ref: '#/components/schemas/AzureCredentialId'
-        type:
-          type: string
-          enum:
-          - azure
-        params:
-          type: object
-          properties:
-            name:
-              type: string
-              description: Name of the credential
-              example: Example Azure Credential
-            clientId:
-              type: string
-              format: uuid
-              description: The ID of the application from which resource metadata was imported for your subscriptions
-              example: 76cd2065-b065-43fa-ad55-316927945439
-            tenantId:
-              type: string
-              format: uuid
-              description: The ID of the directory that was used during authentication
-              example: de991a0e-5765-429a-bc8e-1a053bb61911
-            linkType:
-              $ref: '#/components/schemas/AzureCredentialLinkType'
-          required:
-          - name
-          - clientId
-          - tenantId
-          - linkType
-      required:
-      - credentialId
-      - type
-      - params
-    TagOrLabel:
-      type: object
-      properties:
-        key:
-          type: string
-          description: The tag or label key
-          example: Environment
-        value:
-          type: string
-          description: The tag or label value
-          example: Production
-      required:
-      - key
-      description: An AWS or Azure tag, or a Google Cloud label
-      example:
-        key: Environment
-        value: Production
-    GoogleCloudModelJobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          $ref: '#/components/schemas/JobReferenceId'
-        status:
-          $ref: '#/components/schemas/JobStatus'
-        response:
-          oneOf:
-          - $ref: '#/components/schemas/GoogleCloudModelJobResponse'
-          - $ref: '#/components/schemas/JobErrorResponse'
-          description: Job result (present when status is completed or failed)
-      required:
-      - jobId
-      - status
-    CreateAzureDataSourceRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name to give the data source
-          example: Example Azure Data Source
-        azureCredentialId:
-          $ref: '#/components/schemas/AzureCredentialId'
-          description: The ID of the existing Azure credential to use to create the data source
-        tenantId:
-          type: string
-          format: uuid
-          description: The ID of the Azure directory which contains the data from which to create the data source
-          example: de991a0e-5765-429a-bc8e-1a053bb61911
-        subscriptionIds:
-          type: array
-          items:
-            type: string
-          description: The IDs of the subscriptions which contain the data from which to create the data source
-          example:
-          - a1b2c3d4-e5f6-7890-abcd-ef1234567890
-        resourceSelection:
-          type: array
-          items:
-            type: string
-          description: The Azure resources to include in the data source. Use the "Get Fully Supported Azure Resources" endpoint to see a list of all supported resources.
-          example:
-          - Microsoft.Compute/virtualMachines
-          - Microsoft.Storage/storageAccounts
-      required:
-      - name
-      - cloudCredentialId
-      - tenantId
-      - subscriptionIds
-      - resourceSelection
-    CreateModelFromGoogleCloudDataSourceRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          description: The name to give the created model
-          example: Google Cloud Infrastructure Diagram
-        dataSources:
-          type: array
-          items:
-            $ref: '#/components/schemas/GoogleCloudDataSourceForModelCreation'
-          description: The Google Cloud Data Sources to include in the model
-        autosync:
-          type: boolean
-          description: Whether this model should automatically update with changes to its data source(s)
-          example: true
-        viewTemplates:
-          type: array
-          items:
-            type: string
-          description: The view templates to create in the generated model. Use the "Get Supported Google Cloud View Templates" endpoint to see a list of all supported view templates.
-          example:
-          - summarized-infrastructure
-          - gke-clusters
-      required:
-      - title
-      - dataSources
-      - autosync
-    GoogleCloudDataSourceId:
-      type: string
-      description: Google Cloud data source ID
-      pattern: ^googlecloudds_[0-9]+$
-      example: googlecloudds_56789
-    AzureCredentialLinkType:
-      type: string
-      enum:
-      - global
-      - government
-      description: The type of Azure environment the credential is for
-      example: global
-    AzureModelJobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          $ref: '#/components/schemas/JobReferenceId'
-        status:
-          $ref: '#/components/schemas/JobStatus'
-        response:
-          oneOf:
-          - $ref: '#/components/schemas/AzureModelJobResponse'
-          - $ref: '#/components/schemas/JobErrorResponse'
-          description: Job result (present when status is completed or failed)
-      required:
-      - jobId
-      - status
-    AzureDataSourceId:
-      type: string
-      description: Azure data source ID
-      pattern: ^azureds_[0-9]+$
-      example: azureds_34567
-    AwsCredentialExternalId:
-      type: object
-      properties:
-        externalId:
-          type: string
-          format: uuid
-          description: External ID to be provided to AWS when creating the trust relationship
-          example: 31981475-0021-444e-9aa0-68c1456025ab
-      required:
-      - externalId
-    CreateModelFromAzureDataSourceRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          description: The name to give the created model
-          example: Azure Infrastructure Diagram
-        dataSources:
-          type: array
-          items:
-            $ref: '#/components/schemas/AzureDataSourceForModelCreation'
-          description: The Azure Data Sources to include in the model
-        autosync:
-          type: boolean
-          description: Whether this model should automatically update with changes to its data source(s)
-          example: true
-        viewTemplates:
-          type: array
-          items:
-            type: string
-          description: The view templates to create in the generated model. Use the "Get Supported Azure View Templates" endpoint to see a list of all supported view templates.
-          example:
-          - virtual-network-topology
-          - resources
-      required:
-      - title
-      - dataSources
-      - autosync
-    CreateModelFromAwsDataSourceRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          description: The name to give the created model
-          example: AWS Infrastructure Diagram
-        dataSources:
-          type: array
-          items:
-            $ref: '#/components/schemas/AwsDataSourceForModelCreation'
-          description: The AWS Data Sources to include in the model
-        autosync:
-          type: boolean
-          description: Whether this model should automatically update with changes to its data source(s)
-          example: true
-        viewTemplates:
-          type: array
-          items:
-            type: string
-          description: The view templates to create in the generated model. Use the "Get Supported AWS View Templates" endpoint to see a list of all supported view templates.
-          example:
-          - vpc-topology
-          - ecs
-      required:
-      - title
-      - dataSources
-      - autosync
-    GoogleCloudDataSourceJobStatusResponse:
-      type: object
-      properties:
-        jobId:
-          $ref: '#/components/schemas/JobReferenceId'
-        status:
-          $ref: '#/components/schemas/JobStatus'
-        response:
-          oneOf:
-          - $ref: '#/components/schemas/GoogleCloudDataSourceJobResponse'
-          - $ref: '#/components/schemas/JobErrorResponse'
-      required:
-      - jobId
-      - status
-    CreateGoogleCloudDataSourceRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The name to give the data source
-          example: Example Google Cloud Data Source
-        googleCloudCredentialId:
-          $ref: '#/components/schemas/GoogleCloudCredentialId'
-          description: The ID of the existing Google Cloud credential to use to create the data source
-        projectIds:
-          type: array
-          items:
-            type: string
-          description: The IDs of the Google Cloud projects which contain the data from which to create the data source
-          example:
-          - my-gcp-project-123
-        resourceSelection:
-          type: array
-          items:
-            type: string
-          description: The Google Cloud resources to include in the data source. Use the "Get Fully Supported Google Cloud Resources" endpoint to see a list of all supported resources.
-          example:
-          - compute.googleapis.com/Instance
-          - storage.googleapis.com/Bucket
-      required:
-      - name
-      - cloudCredentialId
-      - projectIds
-      - resourceSelection
-    AwsDataSourceJobResponse:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Example AWS Data Source
-          description: The name of the AWS data source affected by the job
-        dataSourceId:
-          $ref: '#/components/schemas/AwsDataSourceId'
-          description: The ID of the AWS data source affected by the job
-        message:
-          type: string
-          example: ''
-      required:
-      - name
-      - dataSourceId
-      - message
+          - AWS::EC2::Instance
+          - AWS::S3::Bucket
     GoogleCloudCredentialObject:
       type: object
       properties:
@@ -2477,16 +2117,6 @@ components:
       - credentialId
       - type
       - params
-    AwsDataSourceForModelCreation:
-      type: object
-      properties:
-        dataSourceId:
-          $ref: '#/components/schemas/AwsDataSourceId'
-        filter:
-          $ref: '#/components/schemas/AwsDataSourceFilter'
-          description: Filter to apply when creating a model with the AWS data source
-      required:
-      - dataSourceId
     AwsDataSourceObject:
       type: object
       properties:
@@ -2535,7 +2165,138 @@ components:
       - dataSourceId
       - type
       - params
-    AwsModelJobResponse:
+    TagOrLabel:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The tag or label key
+          example: Environment
+        value:
+          type: string
+          description: The tag or label value
+          example: Production
+      required:
+      - key
+      description: An AWS or Azure tag, or a Google Cloud label
+      example:
+        key: Environment
+        value: Production
+    AwsDataSourceId:
+      type: string
+      description: AWS data source ID
+      pattern: ^awsds_[0-9]+$
+      example: awsds_12345
+    AwsModelJobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          $ref: '#/components/schemas/JobReferenceId'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        response:
+          oneOf:
+          - $ref: '#/components/schemas/AwsModelJobResponse'
+          - $ref: '#/components/schemas/JobErrorResponse'
+          description: Job result (present when status is completed or failed)
+      required:
+      - jobId
+      - status
+    GoogleCloudDataSourceId:
+      type: string
+      description: Google Cloud data source ID
+      pattern: ^googlecloudds_[0-9]+$
+      example: googlecloudds_56789
+    DataSourceObject:
+      oneOf:
+      - $ref: '#/components/schemas/AwsDataSourceObject'
+      - $ref: '#/components/schemas/AzureDataSourceObject'
+      - $ref: '#/components/schemas/GoogleCloudDataSourceObject'
+      discriminator:
+        propertyName: type
+        mapping:
+          aws: '#/AwsDataSourceObject'
+          azure: '#/AzureDataSourceObject'
+          googleCloud: '#/GoogleCloudDataSourceObject'
+    AzureDataSourceJobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          $ref: '#/components/schemas/JobReferenceId'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        response:
+          oneOf:
+          - $ref: '#/components/schemas/AzureDataSourceJobResponse'
+          - $ref: '#/components/schemas/JobErrorResponse'
+      required:
+      - jobId
+      - status
+    AzureCredentialLinkType:
+      type: string
+      enum:
+      - global
+      - government
+      description: The type of Azure environment the credential is for
+      example: global
+    CreateGoogleCloudDataSourceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name to give the data source
+          example: Example Google Cloud Data Source
+        googleCloudCredentialId:
+          $ref: '#/components/schemas/GoogleCloudCredentialId'
+          description: The ID of the existing Google Cloud credential to use to create the data source
+        projectIds:
+          type: array
+          items:
+            type: string
+          description: The IDs of the Google Cloud projects which contain the data from which to create the data source
+          example:
+          - my-gcp-project-123
+        resourceSelection:
+          type: array
+          items:
+            type: string
+          description: The Google Cloud resources to include in the data source. Use the "Get Fully Supported Google Cloud Resources" endpoint to see a list of all supported resources.
+          example:
+          - compute.googleapis.com/Instance
+          - storage.googleapis.com/Bucket
+      required:
+      - name
+      - cloudCredentialId
+      - projectIds
+      - resourceSelection
+    UpdateAzureDataSourceRequest:
+      type: object
+      properties:
+        resourceSelection:
+          type: array
+          items:
+            type: string
+          description: The Azure resources to include in the data source. Use the "Get Fully Supported Azure Resources" endpoint to see a list of all supported resources.
+          example:
+          - Microsoft.Compute/virtualMachines
+          - Microsoft.Storage/storageAccounts
+    GoogleCloudDataSourceFilter:
+      type: object
+      properties:
+        googleCloudLabels:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagOrLabel'
+        includeUnlabeledResources:
+          type: boolean
+          description: Whether to include resources that do not have any labels
+          example: true
+    JobReferenceId:
+      type: string
+      description: Unique identifier for an asynchronous job
+      pattern: ^jobr_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+      example: jobr_2f5e5b82-6f1d-4c9f-932a-14e43cf30454
+    GoogleCloudModelJobResponse:
       type: object
       properties:
         viewURL:
@@ -2557,14 +2318,253 @@ components:
           type: array
           items:
             type: string
-          description: List of AWS data source IDs used in the model
+          description: List of Google Cloud data source IDs used in the model
           example:
-          - awsds_12345
+          - googlecloudds_56789
       required:
       - viewURL
       - editURL
       - documentId
       - dataSources
+    GoogleCloudModelJobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          $ref: '#/components/schemas/JobReferenceId'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        response:
+          oneOf:
+          - $ref: '#/components/schemas/GoogleCloudModelJobResponse'
+          - $ref: '#/components/schemas/JobErrorResponse'
+          description: Job result (present when status is completed or failed)
+      required:
+      - jobId
+      - status
+    AwsCredentialObject:
+      type: object
+      properties:
+        credentialId:
+          $ref: '#/components/schemas/AwsCredentialId'
+        type:
+          type: string
+          enum:
+          - aws
+        params:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the credential
+              example: Example AWS Credential
+            arn:
+              type: string
+              description: The AWS resource identifier corresponding to the credential
+              example: arn:aws:iam::123456789012:role/lucidimport
+            orgMemberAccountRoleName:
+              type: string
+              description: If not null, then the IAM role that exists in each of your AWS member accounts that was included by Lucid when making requests on your behalf to create or update the credential
+              example: LucidCloudMemberAccountRole
+          required:
+          - name
+          - arn
+          - orgMemberAccountRoleName
+      required:
+      - credentialId
+      - type
+      - params
+    GoogleCloudDataSourceJobResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Example Google Cloud Data Source
+          description: The name of the Google Cloud data source affected by the job
+        dataSourceId:
+          $ref: '#/components/schemas/GoogleCloudDataSourceId'
+          description: The ID of the Google Cloud data source affected by the job
+        message:
+          type: string
+          example: ''
+      required:
+      - name
+      - dataSourceId
+      - message
+    AwsDataSourceForModelCreation:
+      type: object
+      properties:
+        dataSourceId:
+          $ref: '#/components/schemas/AwsDataSourceId'
+        filter:
+          $ref: '#/components/schemas/AwsDataSourceFilter'
+          description: Filter to apply when creating a model with the AWS data source
+      required:
+      - dataSourceId
+    AwsCredentialExternalId:
+      type: object
+      properties:
+        externalId:
+          type: string
+          format: uuid
+          description: External ID to be provided to AWS when creating the trust relationship
+          example: 31981475-0021-444e-9aa0-68c1456025ab
+      required:
+      - externalId
+    AzureDataSourceId:
+      type: string
+      description: Azure data source ID
+      pattern: ^azureds_[0-9]+$
+      example: azureds_34567
+    CreateAwsDataSourceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name to give the data source
+          example: Example AWS Data Source
+        awsCredentialId:
+          $ref: '#/components/schemas/AwsCredentialId'
+          description: The ID of the existing AWS credential to use to create the data source
+        awsAccountId:
+          type: string
+          description: The ID of the AWS account which contains the data from which to create the data source
+          example: '123456789012'
+        regions:
+          type: array
+          items:
+            type: string
+          description: The AWS regions which contain the data from which to create the data source. Use the "Get Supported AWS Regions" endpoint to see a list of all supported regions.
+          example:
+          - us-east-1
+          - us-west-2
+        resourceSelection:
+          type: array
+          items:
+            type: string
+          description: The AWS resources to include in the data source. Use the "Get Fully Supported AWS Resources" endpoint to see a list of all supported resources.
+          example:
+          - AWS::EC2::Instance
+          - AWS::S3::Bucket
+      required:
+      - name
+      - cloudCredentialId
+      - awsAccountId
+      - regions
+    GoogleCloudDataSourceJobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          $ref: '#/components/schemas/JobReferenceId'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        response:
+          oneOf:
+          - $ref: '#/components/schemas/GoogleCloudDataSourceJobResponse'
+          - $ref: '#/components/schemas/JobErrorResponse'
+      required:
+      - jobId
+      - status
+    CreateModelFromAwsDataSourceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The name to give the created model
+          example: AWS Infrastructure Diagram
+        dataSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/AwsDataSourceForModelCreation'
+          description: The AWS Data Sources to include in the model
+        autosync:
+          type: boolean
+          description: Whether this model should automatically update with changes to its data source(s)
+          example: true
+        viewTemplates:
+          type: array
+          items:
+            type: string
+          description: The view templates to create in the generated model. Use the "Get Supported AWS View Templates" endpoint to see a list of all supported view templates.
+          example:
+          - vpc-topology
+          - ecs
+      required:
+      - title
+      - dataSources
+      - autosync
+    AzureModelJobStatusResponse:
+      type: object
+      properties:
+        jobId:
+          $ref: '#/components/schemas/JobReferenceId'
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        response:
+          oneOf:
+          - $ref: '#/components/schemas/AzureModelJobResponse'
+          - $ref: '#/components/schemas/JobErrorResponse'
+          description: Job result (present when status is completed or failed)
+      required:
+      - jobId
+      - status
+    AzureModelJobResponse:
+      type: object
+      properties:
+        viewURL:
+          type: string
+          format: uri
+          description: URL to view the created document
+          example: https://lucid.app/documents/view/8e7b19ec-27ff-40e3-beb8-03f51b1661b2
+        editURL:
+          type: string
+          format: uri
+          description: URL to edit the created document
+          example: https://lucid.app/documents/edit/8e7b19ec-27ff-40e3-beb8-03f51b1661b2
+        documentId:
+          type: string
+          format: uuid
+          description: ID of the created document
+          example: 8e7b19ec-27ff-40e3-beb8-03f51b1661b2
+        dataSources:
+          type: array
+          items:
+            type: string
+          description: List of Azure data source IDs used in the model
+          example:
+          - azureds_34567
+      required:
+      - viewURL
+      - editURL
+      - documentId
+      - dataSources
+    CreateModelFromGoogleCloudDataSourceRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The name to give the created model
+          example: Google Cloud Infrastructure Diagram
+        dataSources:
+          type: array
+          items:
+            $ref: '#/components/schemas/GoogleCloudDataSourceForModelCreation'
+          description: The Google Cloud Data Sources to include in the model
+        autosync:
+          type: boolean
+          description: Whether this model should automatically update with changes to its data source(s)
+          example: true
+        viewTemplates:
+          type: array
+          items:
+            type: string
+          description: The view templates to create in the generated model. Use the "Get Supported Google Cloud View Templates" endpoint to see a list of all supported view templates.
+          example:
+          - summarized-infrastructure
+          - gke-clusters
+      required:
+      - title
+      - dataSources
+      - autosync
   securitySchemes:
     OAuth2:
       type: oauth2

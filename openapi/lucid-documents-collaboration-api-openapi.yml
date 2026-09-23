@@ -357,15 +357,6 @@ paths:
           description: Forbidden * if the token does not have permission to the document, or if the document has been deleted or does not exist. * when attempting to revoke the collaboration for the document owner.
 components:
   schemas:
-    Role:
-      type: string
-      enum:
-      - owner
-      - editandshare
-      - edit
-      - comment
-      - view
-      description: The Collaborator Role on the document or folder
     DocumentTeamCollaborator:
       type: object
       properties:
@@ -387,6 +378,15 @@ components:
       - teamId
       - role
       - created
+    Role:
+      type: string
+      enum:
+      - owner
+      - editandshare
+      - edit
+      - comment
+      - view
+      description: The Collaborator Role on the document or folder
     DocumentUserCollaborator:
       type: object
       properties:

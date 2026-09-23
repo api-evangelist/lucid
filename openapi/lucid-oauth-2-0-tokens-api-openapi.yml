@@ -151,6 +151,51 @@ paths:
           description: Unauthorized if the client credentials are invalid.
 components:
   schemas:
+    OAuth2IntrospectToken:
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: A boolean value indicating whether or not the token is active.
+          example: true
+        client_id:
+          type: string
+          description: The client ID.
+          example: 30VYbvlkqZv-SmJd7fTdpH9B9et2yqZA6Wvi5NY_
+        expires_in:
+          type: number
+          description: The remaining lifetime in seconds of the access token.
+          example: 3500
+        expires:
+          type: number
+          format: int64
+          description: Timestamp for when this token expires (expressed in milliseconds since Unix epoch).
+          example: 1605732868411
+        scope:
+          type: string
+          description: Space-separated list of scopes allowed on this token.
+          example: document.app offline_access
+        token_type:
+          type: string
+          description: The type of token returned (currently, always "bearer").
+          example: bearer
+        user_id:
+          type: number
+          description: ID of the user this token is on behalf of. Only returned when the token was granted on behalf of a user. Mutually exclusive with `account_id`.
+          example: 1001
+        account_id:
+          type: number
+          description: ID of the account this token is on behalf of. Only returned when the token was granted on behalf of an account. Mutually exclusive with `user_id`.
+          example: 52
+      required:
+      - active
+      - user_id
+      - account_id
+      - client_id
+      - token_type
+      - scope
+      - expires_in
+      - expires
     OAuth2Token:
       type: object
       properties:
@@ -204,51 +249,6 @@ components:
       - expires
       - scopes
       - token_type
-    OAuth2IntrospectToken:
-      type: object
-      properties:
-        active:
-          type: boolean
-          description: A boolean value indicating whether or not the token is active.
-          example: true
-        client_id:
-          type: string
-          description: The client ID.
-          example: 30VYbvlkqZv-SmJd7fTdpH9B9et2yqZA6Wvi5NY_
-        expires_in:
-          type: number
-          description: The remaining lifetime in seconds of the access token.
-          example: 3500
-        expires:
-          type: number
-          format: int64
-          description: Timestamp for when this token expires (expressed in milliseconds since Unix epoch).
-          example: 1605732868411
-        scope:
-          type: string
-          description: Space-separated list of scopes allowed on this token.
-          example: document.app offline_access
-        token_type:
-          type: string
-          description: The type of token returned (currently, always "bearer").
-          example: bearer
-        user_id:
-          type: number
-          description: ID of the user this token is on behalf of. Only returned when the token was granted on behalf of a user. Mutually exclusive with `account_id`.
-          example: 1001
-        account_id:
-          type: number
-          description: ID of the account this token is on behalf of. Only returned when the token was granted on behalf of an account. Mutually exclusive with `user_id`.
-          example: 52
-      required:
-      - active
-      - user_id
-      - account_id
-      - client_id
-      - token_type
-      - scope
-      - expires_in
-      - expires
   securitySchemes:
     OAuth2:
       type: oauth2

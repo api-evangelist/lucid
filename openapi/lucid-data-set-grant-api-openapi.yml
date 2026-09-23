@@ -16,9 +16,7 @@ paths:
   /dataSetGrants/{dataSetId}:
     get:
       summary: Get Data Set Grant
-      description: 'Gets the requested data set grant if the access tokens are valid and the user has access to the data set. Note that the id in the URI is the number at the end of the data set grant''s uri, not the identifier field of the object.
-
-        '
+      description: Gets the requested data set grant if the access tokens are valid and the user has access to the data set. Note that the id in the URI is the number at the end of the data set grant's uri, not the identifier field of the object.
       operationId: getDataSetGrant
       tags:
       - Data Set Grant
@@ -74,9 +72,7 @@ paths:
                   role: edit
     delete:
       summary: Delete Data Set Grant
-      description: 'Removes the specified data set grant ONLY if it''s not the last data set grant. There must always be at least one data set grant for a given data set, therefore the last data set grant cannot be deleted. A response message is returned with the result of the deletion. Note that the id in the URI is the number at the end of the data set grant''s URI, not the identifier field of the Data Set Grant.
-
-        '
+      description: Removes the specified data set grant ONLY if it's not the last data set grant. There must always be at least one data set grant for a given data set, therefore the last data set grant cannot be deleted. A response message is returned with the result of the deletion. Note that the id in the URI is the number at the end of the data set grant's URI, not the identifier field of the Data Set Grant.
       operationId: deleteDataSetGrant
       tags:
       - Data Set Grant
@@ -96,9 +92,7 @@ paths:
   /dataSetGrants:
     get:
       summary: Get All Data Set Grants
-      description: 'Finds and returns all data set grants for the queried data set if the user has access to the data set.
-
-        '
+      description: Finds and returns all data set grants for the queried data set if the user has access to the data set.
       operationId: getAllDataSetGrants
       tags:
       - Data Set Grant
@@ -156,9 +150,7 @@ paths:
                     role: edit
     post:
       summary: Create Data Set Grant
-      description: 'Creates a new data set grant for the specified data set. The requesting user must have access to the data set in order for it to succeed.
-
-        '
+      description: Creates a new data set grant for the specified data set. The requesting user must have access to the data set in order for it to succeed.
       operationId: createDataSetGrant
       tags:
       - Data Set Grant

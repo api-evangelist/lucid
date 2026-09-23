@@ -298,63 +298,54 @@ paths:
         '404':
           description: The specified legal hold id was not found.
 components:
+  parameters:
+    LegalHoldIdPath:
+      in: path
+      name: legalHoldId
+      required: true
+      description: Unique ID of the legal hold.
+      schema:
+        type: string
+        format: uuid
   schemas:
-    Avatar:
+    Repository:
       type: object
       properties:
-        type:
+        repositoryId:
           type: string
-          enum:
-          - url
-          example: url
-          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
-        link:
-          type: string
-          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
-          description: A URL pointing to the user's avatar image.
-      required:
-      - type
-      - link
-      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
-    User:
+          description: the ID of the repository
+          example: repo_2000008
+    UserRole:
+      type: string
+      enum:
+      - account-owner
+      - billing-admin
+      - enterprise-shield-admin
+      - developer
+      - document-admin
+      - group-admin
+      - organizational-group-admin
+      - team-admin
+      - team-manager
+      - template-admin
+      - unknown-role
+      description: Allows various administrative actions.
+    DataPair:
       type: object
       properties:
-        accountId:
-          type: number
-          example: 100
-          description: The unique ID for the user's account.
-        enabled:
-          type: boolean
-          example: true
-          description: Whether the user can authenticate to Lucid. Corresponds to the SCIM active attribute.
-        email:
-          type: string
-          example: john-doe@example.com
-          description: The user's email.
         name:
           type: string
-          example: John Doe
-          description: The user's full name.
-        userId:
-          type: number
-          example: 101
-          description: The unique ID for the user.
-        username:
+          description: Custom data key
+        value:
           type: string
-          example: johndoe
-          description: The user's username.
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserRole'
-          example:
-          - billing-admin
-          - team-admin
-          description: A list of administrative roles assigned to the user.
-        avatar:
-          $ref: '#/components/schemas/Avatar'
-          description: A reference to the user's avatar image, falling back to their Gravatar image.
-      description: A standard representation of a user.
+          description: Custom data value
+      description: Object representing a key-value pair of data.
+      required:
+      - name
+      - value
+      example:
+        name: City
+        value: New York
     LegalHold:
       type: object
       properties:
@@ -407,21 +398,6 @@ components:
       - Title
       - Created
       - Modified
-    UserRole:
-      type: string
-      enum:
-      - account-owner
-      - billing-admin
-      - enterprise-shield-admin
-      - developer
-      - document-admin
-      - group-admin
-      - organizational-group-admin
-      - team-admin
-      - team-manager
-      - template-admin
-      - unknown-role
-      description: Allows various administrative actions.
     CustomAttribute:
       type: object
       properties:
@@ -454,22 +430,85 @@ components:
       description: Object representing a custom attribute value for a document.
       required:
       - type
-    DataPair:
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
+    User:
       type: object
       properties:
+        accountId:
+          type: number
+          example: 100
+          description: The unique ID for the user's account.
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the user can authenticate to Lucid. Corresponds to the SCIM active attribute.
+        email:
+          type: string
+          example: john-doe@example.com
+          description: The user's email.
         name:
           type: string
-          description: Custom data key
-        value:
+          example: John Doe
+          description: The user's full name.
+        userId:
+          type: number
+          example: 101
+          description: The unique ID for the user.
+        username:
           type: string
-          description: Custom data value
-      description: Object representing a key-value pair of data.
+          example: johndoe
+          description: The user's username.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          example:
+          - billing-admin
+          - team-admin
+          description: A list of administrative roles assigned to the user.
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+          description: A reference to the user's avatar image, falling back to their Gravatar image.
+      description: A standard representation of a user.
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
       required:
-      - name
-      - value
-      example:
-        name: City
-        value: New York
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
+    DocumentOwner:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Id of either the user or the account, depending on the type of the document user resource.
+          example: 123456
+        type:
+          type: string
+          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
+          example: user
+        name:
+          type: string
+          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
+          example: John Doe
     Document:
       type: object
       properties:
@@ -621,45 +660,6 @@ components:
           type: user
           name: John Doe
         accountId: 1234
-    DocumentOwner:
-      type: object
-      properties:
-        id:
-          type: number
-          description: Id of either the user or the account, depending on the type of the document user resource.
-          example: 123456
-        type:
-          type: string
-          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
-          example: user
-        name:
-          type: string
-          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
-          example: John Doe
-    Repository:
-      type: object
-      properties:
-        repositoryId:
-          type: string
-          description: the ID of the repository
-          example: repo_2000008
-    Product:
-      type: string
-      enum:
-      - lucidchart
-      - lucidscale
-      - lucidspark
-      description: The Lucid Suite product that a document was created in.
-      example: lucidchart
-  parameters:
-    LegalHoldIdPath:
-      in: path
-      name: legalHoldId
-      required: true
-      description: Unique ID of the legal hold.
-      schema:
-        type: string
-        format: uuid
   securitySchemes:
     OAuth2:
       type: oauth2

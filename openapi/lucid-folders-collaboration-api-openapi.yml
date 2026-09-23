@@ -452,46 +452,6 @@ paths:
           description: Forbidden if the token does not have permission to the folder, or if the folder has been deleted or does not exist.
 components:
   schemas:
-    FolderTeamCollaborator:
-      type: object
-      properties:
-        folderId:
-          type: integer
-          description: Folder ID
-        teamId:
-          type: integer
-          description: Team ID
-        role:
-          $ref: '#/components/schemas/Role'
-        created:
-          type: string
-          format: date-time
-          description: Date and time when the collaboration was created
-      required:
-      - folderId
-      - teamId
-      - role
-      - created
-    FolderUserCollaborator:
-      type: object
-      properties:
-        folderId:
-          type: integer
-          description: Folder ID
-        userId:
-          type: integer
-          description: User ID
-        role:
-          $ref: '#/components/schemas/Role'
-        created:
-          type: string
-          format: date-time
-          description: Date and time when the collaboration was created
-      required:
-      - folderId
-      - userId
-      - role
-      - created
     FolderGroupCollaborator:
       type: object
       properties:
@@ -521,6 +481,46 @@ components:
       - comment
       - view
       description: The Collaborator Role on the document or folder
+    FolderUserCollaborator:
+      type: object
+      properties:
+        folderId:
+          type: integer
+          description: Folder ID
+        userId:
+          type: integer
+          description: User ID
+        role:
+          $ref: '#/components/schemas/Role'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the collaboration was created
+      required:
+      - folderId
+      - userId
+      - role
+      - created
+    FolderTeamCollaborator:
+      type: object
+      properties:
+        folderId:
+          type: integer
+          description: Folder ID
+        teamId:
+          type: integer
+          description: Team ID
+        role:
+          $ref: '#/components/schemas/Role'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the collaboration was created
+      required:
+      - folderId
+      - teamId
+      - role
+      - created
   securitySchemes:
     OAuth2:
       type: oauth2

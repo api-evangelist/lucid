@@ -59,32 +59,6 @@ paths:
           description: Unauthorized. Occurs if the bearer token is invalid.
 components:
   schemas:
-    GetAllSchemas:
-      type: object
-      properties:
-        schemas:
-          type: array
-          items:
-            type: string
-          example:
-          - urn:ietf:params:scim:api:messages:2.0:ListResponse
-        totalResults:
-          type: integer
-          description: The total number of schemas to be returned.
-          example: 1
-        startIndex:
-          type: integer
-          description: The index of the first schema in the "Resources" list (for paginated results).
-          example: 1
-        itemsPerPage:
-          type: integer
-          description: The maximum number of schemas returned in the "Resources" list (for paginated results).
-          example: 50
-        Resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/Schema'
-          description: The list of schemas returned by the query.
     SubAttribute:
       type: object
       description: A leaf-level attribute definition. Like Attribute but without subAttributes, since sub-attributes cannot themselves be complex.
@@ -141,6 +115,17 @@ components:
           - none
           - server
           - global
+    Attribute:
+      description: An attribute definition for a SCIM schema resource. Complex attributes may contain subAttributes.
+      allOf:
+      - $ref: '#/components/schemas/SubAttribute'
+      - type: object
+        properties:
+          subAttributes:
+            type: array
+            description: Defines nested attributes for complex attribute types.
+            items:
+              $ref: '#/components/schemas/SubAttribute'
     Schema:
       type: object
       properties:
@@ -168,17 +153,32 @@ components:
             $ref: '#/components/schemas/Attribute'
         meta:
           type: object
-    Attribute:
-      description: An attribute definition for a SCIM schema resource. Complex attributes may contain subAttributes.
-      allOf:
-      - $ref: '#/components/schemas/SubAttribute'
-      - type: object
-        properties:
-          subAttributes:
-            type: array
-            description: Defines nested attributes for complex attribute types.
-            items:
-              $ref: '#/components/schemas/SubAttribute'
+    GetAllSchemas:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          example:
+          - urn:ietf:params:scim:api:messages:2.0:ListResponse
+        totalResults:
+          type: integer
+          description: The total number of schemas to be returned.
+          example: 1
+        startIndex:
+          type: integer
+          description: The index of the first schema in the "Resources" list (for paginated results).
+          example: 1
+        itemsPerPage:
+          type: integer
+          description: The maximum number of schemas returned in the "Resources" list (for paginated results).
+          example: 50
+        Resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schema'
+          description: The list of schemas returned by the query.
   securitySchemes:
     Bearer:
       type: http
