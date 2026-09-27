@@ -220,32 +220,50 @@ paths:
           description: Conflict. Occurs if the group name already exists on the account.
 components:
   schemas:
-    GroupOperation:
+    Member:
       type: object
       required:
-      - op
+      - value
       properties:
-        op:
-          type: string
-          enum:
-          - add
-          - remove
-          - replace
-          description: The operation to perform.
-          example: add
-        path:
-          type: string
-          description: Path to the field you want to change.
-          example: members
         value:
-          oneOf:
-          - type: string
-          - type: array
-            items: {}
-          description: Value to be added/replaced.
+          type: string
+          description: The ID of the member. For org groups, this can be a user ID (e.g. "lucid-1234") or a subgroup ID (e.g. "lucid-group-5678"). For teams, only user IDs are supported.
+          example: lucid-1433
+        $ref:
+          type: string
+          description: The URI of the member. Points to /Users/{id} for user members, or for org groups, /Groups/{id} for subgroup members.
+          example: https://users.lucid.app/scim/v2/Users/lucid-1433
+        display:
+          type: string
+          description: The display name of the member (the user's name, or for org group subgroups, the subgroup's name).
+          example: User 2
+    GetAllGroups:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          description: SCIM schema URIs for the list response.
           example:
-          - value: lucid-1234
-          - value: lucid-5678
+          - urn:ietf:params:scim:api:messages:2.0:ListResponse
+        totalResults:
+          type: integer
+          description: The total number of org groups or teams matching the query (across all pages, not just the current page).
+          example: 42
+        startIndex:
+          type: integer
+          description: The 1-based index of the first result in the "Resources" list (for paginated results). Reflects the startIndex parameter sent in the request.
+          example: 1
+        itemsPerPage:
+          type: integer
+          description: The maximum number of results returned in the "Resources" list (for paginated results). Reflects the count parameter sent in the request.
+          example: 100
+        Resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+          description: The list of org groups or teams returned by the query.
     Group:
       type: object
       properties:
@@ -278,23 +296,32 @@ components:
             display: Subgroup A
         meta:
           type: object
-    Member:
+    GroupOperation:
       type: object
       required:
-      - value
+      - op
       properties:
+        op:
+          type: string
+          enum:
+          - add
+          - remove
+          - replace
+          description: The operation to perform.
+          example: add
+        path:
+          type: string
+          description: Path to the field you want to change.
+          example: members
         value:
-          type: string
-          description: The ID of the member. For org groups, this can be a user ID (e.g. "lucid-1234") or a subgroup ID (e.g. "lucid-group-5678"). For teams, only user IDs are supported.
-          example: lucid-1433
-        $ref:
-          type: string
-          description: The URI of the member. Points to /Users/{id} for user members, or for org groups, /Groups/{id} for subgroup members.
-          example: https://users.lucid.app/scim/v2/Users/lucid-1433
-        display:
-          type: string
-          description: The display name of the member (the user's name, or for org group subgroups, the subgroup's name).
-          example: User 2
+          oneOf:
+          - type: string
+          - type: array
+            items: {}
+          description: Value to be added/replaced.
+          example:
+          - value: lucid-1234
+          - value: lucid-5678
     CreateOrUpdateGroup:
       type: object
       properties:
@@ -313,33 +340,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Member'
-    GetAllGroups:
-      type: object
-      properties:
-        schemas:
-          type: array
-          items:
-            type: string
-          description: SCIM schema URIs for the list response.
-          example:
-          - urn:ietf:params:scim:api:messages:2.0:ListResponse
-        totalResults:
-          type: integer
-          description: The total number of org groups or teams matching the query (across all pages, not just the current page).
-          example: 42
-        startIndex:
-          type: integer
-          description: The 1-based index of the first result in the "Resources" list (for paginated results). Reflects the startIndex parameter sent in the request.
-          example: 1
-        itemsPerPage:
-          type: integer
-          description: The maximum number of results returned in the "Resources" list (for paginated results). Reflects the count parameter sent in the request.
-          example: 100
-        Resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/Group'
-          description: The list of org groups or teams returned by the query.
   securitySchemes:
     Bearer:
       type: http

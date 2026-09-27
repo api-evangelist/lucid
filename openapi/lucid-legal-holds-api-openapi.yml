@@ -298,54 +298,46 @@ paths:
         '404':
           description: The specified legal hold id was not found.
 components:
-  parameters:
-    LegalHoldIdPath:
-      in: path
-      name: legalHoldId
-      required: true
-      description: Unique ID of the legal hold.
-      schema:
-        type: string
-        format: uuid
   schemas:
-    Repository:
+    User:
       type: object
       properties:
-        repositoryId:
+        accountId:
+          type: number
+          example: 100
+          description: The unique ID for the user's account.
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the user can authenticate to Lucid. Corresponds to the SCIM active attribute.
+        email:
           type: string
-          description: the ID of the repository
-          example: repo_2000008
-    UserRole:
-      type: string
-      enum:
-      - account-owner
-      - billing-admin
-      - enterprise-shield-admin
-      - developer
-      - document-admin
-      - group-admin
-      - organizational-group-admin
-      - team-admin
-      - team-manager
-      - template-admin
-      - unknown-role
-      description: Allows various administrative actions.
-    DataPair:
-      type: object
-      properties:
+          example: john-doe@example.com
+          description: The user's email.
         name:
           type: string
-          description: Custom data key
-        value:
+          example: John Doe
+          description: The user's full name.
+        userId:
+          type: number
+          example: 101
+          description: The unique ID for the user.
+        username:
           type: string
-          description: Custom data value
-      description: Object representing a key-value pair of data.
-      required:
-      - name
-      - value
-      example:
-        name: City
-        value: New York
+          example: johndoe
+          description: The user's username.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          example:
+          - billing-admin
+          - team-admin
+          description: A list of administrative roles assigned to the user.
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+          description: A reference to the user's avatar image, falling back to their Gravatar image.
+      description: A standard representation of a user.
     LegalHold:
       type: object
       properties:
@@ -398,117 +390,21 @@ components:
       - Title
       - Created
       - Modified
-    CustomAttribute:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - singleLineText
-          - multiLineText
-          - singleSelectDropdown
-          - multiSelectDropdown
-          - webLink
-          - numericalRange
-          - hierarchicalDropdown
-          description: The custom attribute type
-          example: singleLineText
-        name:
-          type: string
-          description: Title of the custom attribute. hierarchicalDropdown attributes do not have names.
-          example: Sample Label
-        value:
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              oneOf:
-              - $ref: '#/components/schemas/DataPair'
-              - type: string
-          description: The value assigned to the custom attribute. The type of this value is determined by the Attribute Type.
-          example: null
-      description: Object representing a custom attribute value for a document.
-      required:
-      - type
-    Product:
+    UserRole:
       type: string
       enum:
-      - lucidchart
-      - lucidscale
-      - lucidspark
-      description: The Lucid Suite product that a document was created in.
-      example: lucidchart
-    User:
-      type: object
-      properties:
-        accountId:
-          type: number
-          example: 100
-          description: The unique ID for the user's account.
-        enabled:
-          type: boolean
-          example: true
-          description: Whether the user can authenticate to Lucid. Corresponds to the SCIM active attribute.
-        email:
-          type: string
-          example: john-doe@example.com
-          description: The user's email.
-        name:
-          type: string
-          example: John Doe
-          description: The user's full name.
-        userId:
-          type: number
-          example: 101
-          description: The unique ID for the user.
-        username:
-          type: string
-          example: johndoe
-          description: The user's username.
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserRole'
-          example:
-          - billing-admin
-          - team-admin
-          description: A list of administrative roles assigned to the user.
-        avatar:
-          $ref: '#/components/schemas/Avatar'
-          description: A reference to the user's avatar image, falling back to their Gravatar image.
-      description: A standard representation of a user.
-    Avatar:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - url
-          example: url
-          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
-        link:
-          type: string
-          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
-          description: A URL pointing to the user's avatar image.
-      required:
-      - type
-      - link
-      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
-    DocumentOwner:
-      type: object
-      properties:
-        id:
-          type: number
-          description: Id of either the user or the account, depending on the type of the document user resource.
-          example: 123456
-        type:
-          type: string
-          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
-          example: user
-        name:
-          type: string
-          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
-          example: John Doe
+      - account-owner
+      - billing-admin
+      - enterprise-shield-admin
+      - developer
+      - document-admin
+      - group-admin
+      - organizational-group-admin
+      - team-admin
+      - team-manager
+      - template-admin
+      - unknown-role
+      description: Allows various administrative actions.
     Document:
       type: object
       properties:
@@ -660,6 +556,110 @@ components:
           type: user
           name: John Doe
         accountId: 1234
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
+    CustomAttribute:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - singleLineText
+          - multiLineText
+          - singleSelectDropdown
+          - multiSelectDropdown
+          - webLink
+          - numericalRange
+          - hierarchicalDropdown
+          description: The custom attribute type
+          example: singleLineText
+        name:
+          type: string
+          description: Title of the custom attribute. hierarchicalDropdown attributes do not have names.
+          example: Sample Label
+        value:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              oneOf:
+              - $ref: '#/components/schemas/DataPair'
+              - type: string
+          description: The value assigned to the custom attribute. The type of this value is determined by the Attribute Type.
+          example: null
+      description: Object representing a custom attribute value for a document.
+      required:
+      - type
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
+    Repository:
+      type: object
+      properties:
+        repositoryId:
+          type: string
+          description: the ID of the repository
+          example: repo_2000008
+    DataPair:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Custom data key
+        value:
+          type: string
+          description: Custom data value
+      description: Object representing a key-value pair of data.
+      required:
+      - name
+      - value
+      example:
+        name: City
+        value: New York
+    DocumentOwner:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Id of either the user or the account, depending on the type of the document user resource.
+          example: 123456
+        type:
+          type: string
+          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
+          example: user
+        name:
+          type: string
+          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
+          example: John Doe
+  parameters:
+    LegalHoldIdPath:
+      in: path
+      name: legalHoldId
+      required: true
+      description: Unique ID of the legal hold.
+      schema:
+        type: string
+        format: uuid
   securitySchemes:
     OAuth2:
       type: oauth2

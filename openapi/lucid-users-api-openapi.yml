@@ -160,7 +160,7 @@ paths:
     get:
       summary: Get User
       description: Get a specific user on the account.
-      operationId: getUser
+      operationId: getUsersById
       tags:
       - Users
       parameters:
@@ -186,6 +186,8 @@ paths:
           description: Not Found. Occurs if the user was not found.
       security:
       - Bearer: []
+      x-operation-id-source: normalized
+      x-operation-id-original: getUser
     put:
       summary: Modify User
       description: Modify an existing user. To deactivate a user, set the `active` field to `false`.
@@ -352,7 +354,7 @@ paths:
     post:
       summary: Create User
       description: Create a new user.
-      operationId: createUser
+      operationId: postUsers
       tags:
       - Users
       requestBody:
@@ -377,27 +379,12 @@ paths:
           description: Failed Dependency. Occurs if add-on license requires base license to be active.
       security:
       - Bearer: []
+      x-operation-id-source: normalized
+      x-operation-id-original: createUser
     servers:
     - url: https://users.lucid.app/scim/v2
 components:
   schemas:
-    Avatar:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - url
-          example: url
-          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
-        link:
-          type: string
-          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
-          description: A URL pointing to the user's avatar image.
-      required:
-      - type
-      - link
-      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
     CreateUserBody:
       type: object
       properties:
@@ -433,6 +420,38 @@ components:
       - email
       - firstName
       - lastName
+    UserRole:
+      type: string
+      enum:
+      - account-owner
+      - billing-admin
+      - enterprise-shield-admin
+      - developer
+      - document-admin
+      - group-admin
+      - organizational-group-admin
+      - team-admin
+      - team-manager
+      - template-admin
+      - unknown-role
+      description: Allows various administrative actions.
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
     User:
       type: object
       properties:
@@ -499,104 +518,6 @@ components:
           $ref: '#/components/schemas/Avatar'
           description: A reference to the user's avatar image, falling back to their Gravatar image.
       description: The Profile resource contains basic profile information about a user.
-    UserRole:
-      type: string
-      enum:
-      - account-owner
-      - billing-admin
-      - enterprise-shield-admin
-      - developer
-      - document-admin
-      - group-admin
-      - organizational-group-admin
-      - team-admin
-      - team-manager
-      - template-admin
-      - unknown-role
-      description: Allows various administrative actions.
-    Role:
-      type: object
-      required:
-      - value
-      properties:
-        value:
-          type: string
-          description: Administrative role type.
-          example: DocumentAdmin
-          enum:
-          - AccountAdmin
-          - BillingAdmin
-          - Developer
-          - DocumentAdmin
-          - EnterpriseShieldAdmin
-          - TemplateAdmin
-    CreateUser:
-      allOf:
-      - $ref: '#/components/schemas/UserBase'
-      - type: object
-        required:
-        - schemas
-        - userName
-        - emails
-        properties:
-          password:
-            type: string
-            example: password
-            description: Passwords must be at least 8 characters in length.
-    Name:
-      type: object
-      properties:
-        formatted:
-          type: string
-          description: The users first and last name.
-          example: John Doe
-        givenName:
-          type: string
-          description: The user's first name.
-          example: John
-        familyName:
-          type: string
-          description: The user's last name.
-          example: Doe
-      description: An object representing a user's name in various formats.
-    GetAllUsers:
-      type: object
-      properties:
-        schemas:
-          type: array
-          items:
-            type: string
-          example:
-          - urn:ietf:params:scim:api:messages:2.0:ListResponse
-        totalResults:
-          type: integer
-          description: The total number of users matching the query.
-          example: 1
-        startIndex:
-          type: integer
-          description: The index of the first user in the "Resources" list (for paginated results).
-          example: 1
-        itemsPerPage:
-          type: integer
-          description: The maximum number of users returned in the "Resources" list (for paginated results).
-          example: 100
-        Resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/User_2'
-          description: The list of users returned by the query.
-    UserGroup:
-      type: object
-      properties:
-        value:
-          type: string
-          description: Id of group.
-          example: lucid-group-1234
-        display:
-          type: string
-          description: Display name of group.
-          example: Group A
-      description: An object representing a user's group.
     Email:
       type: object
       properties:
@@ -652,6 +573,18 @@ components:
           description: Value to be added/replaced.
           example:
           - value: Billing Admin
+    UserGroup:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Id of group.
+          example: lucid-group-1234
+        display:
+          type: string
+          description: Display name of group.
+          example: Group A
+      description: An object representing a user's group.
     EnterpriseUserExtension:
       type: object
       description: Enterprise extension attributes for the user.
@@ -680,6 +613,35 @@ components:
               type: string
               description: The ID of the manager user. Will be in the form "lucid-1234" with 1234 being the ID of the Lucid user.
               example: lucid-5678
+    CreateUser:
+      allOf:
+      - $ref: '#/components/schemas/UserBase'
+      - type: object
+        required:
+        - schemas
+        - userName
+        - emails
+        properties:
+          password:
+            type: string
+            example: password
+            description: Passwords must be at least 8 characters in length.
+    Name:
+      type: object
+      properties:
+        formatted:
+          type: string
+          description: The users first and last name.
+          example: John Doe
+        givenName:
+          type: string
+          description: The user's first name.
+          example: John
+        familyName:
+          type: string
+          description: The user's last name.
+          example: Doe
+      description: An object representing a user's name in various formats.
     UserBase:
       type: object
       description: Core attributes shared by all user representations.
@@ -746,6 +708,48 @@ components:
             items:
               $ref: '#/components/schemas/UserGroup'
       description: A standard representation of a user.
+    Role:
+      type: object
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: Administrative role type.
+          example: DocumentAdmin
+          enum:
+          - AccountAdmin
+          - BillingAdmin
+          - Developer
+          - DocumentAdmin
+          - EnterpriseShieldAdmin
+          - TemplateAdmin
+    GetAllUsers:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          example:
+          - urn:ietf:params:scim:api:messages:2.0:ListResponse
+        totalResults:
+          type: integer
+          description: The total number of users matching the query.
+          example: 1
+        startIndex:
+          type: integer
+          description: The index of the first user in the "Resources" list (for paginated results).
+          example: 1
+        itemsPerPage:
+          type: integer
+          description: The maximum number of users returned in the "Resources" list (for paginated results).
+          example: 100
+        Resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/User_2'
+          description: The list of users returned by the query.
   securitySchemes:
     OAuth2:
       type: oauth2

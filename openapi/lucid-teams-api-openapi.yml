@@ -323,58 +323,7 @@ paths:
         '403':
           description: Forbidden. * if the user making the request does not have permission to edit teams. * if the user making the request does not have access to the specified team. * if the team is managed via SCIM. Use the SCIM Groups API to modify SCIM-managed teams.
 components:
-  parameters:
-    RequestAs-Teams:
-      in: header
-      name: Lucid-Request-As
-      required: false
-      description: 'If the requesting user is an account owner, team admin, or team manager with the required permissions and they make
-
-        the request with the value of “admin” as this header and include an admin scope, the request will be made using
-
-        their admin permissions.
-
-        '
-      schema:
-        type: string
-      example: admin
   schemas:
-    CreateTeamBody:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The team's name. Max length of name is 80 characters.
-          example: Team Name
-        type:
-          $ref: '#/components/schemas/TeamType'
-        users:
-          type: array
-          items:
-            type: integer
-          description: Array of IDs of users to be on the team.
-          example:
-          - 321
-          - 654
-          - 987
-      required:
-      - name
-      - type
-      - users
-    RemoveUsersFromTeamBody:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            type: integer
-          description: Array of IDs of users to remove from the team.
-          example:
-          - 321
-          - 654
-          - 987
-      required:
-      - users
     TeamRole:
       type: string
       enum:
@@ -397,36 +346,47 @@ components:
 
         '
       example: EDIT_MEMBER
-    Avatar:
+    AddUsersToTeamBody:
       type: object
       properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamUser'
+          description: Array of users with their assigned roles to add to the team
+      required:
+      - users
+    CreateTeamBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The team's name. Max length of name is 80 characters.
+          example: Team Name
         type:
-          type: string
-          enum:
-          - url
-          example: url
-          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
-        link:
-          type: string
-          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
-          description: A URL pointing to the user's avatar image.
+          $ref: '#/components/schemas/TeamType'
+        users:
+          type: array
+          items:
+            type: integer
+          description: Array of IDs of users to be on the team.
+          example:
+          - 321
+          - 654
+          - 987
       required:
+      - name
       - type
-      - link
-      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
-    TeamUser:
+      - users
+    UpdateTeamBody:
       type: object
       properties:
-        userId:
-          type: integer
-          description: The ID of the user to add to the team
-          example: 321
-        role:
-          $ref: '#/components/schemas/TeamRole'
+        name:
+          type: string
+          description: The team's name. Max length of name is 80 characters.
+          example: Team Name
       required:
-      - userId
-      - role
-      description: A user with a specific role to add to a team
+      - name
     Team:
       type: object
       description: A standard representation of a team.
@@ -453,6 +413,37 @@ components:
           format: date-time
           description: Date and time when the team was archived (if it has been archived).
           example: null
+    RemoveUsersFromTeamBody:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: integer
+          description: Array of IDs of users to remove from the team.
+          example:
+          - 321
+          - 654
+          - 987
+      required:
+      - users
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
     TeamType:
       type: string
       enum:
@@ -461,6 +452,19 @@ components:
       - open
       description: The type of the team
       example: open
+    TeamUser:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user to add to the team
+          example: 321
+        role:
+          $ref: '#/components/schemas/TeamRole'
+      required:
+      - userId
+      - role
+      description: A user with a specific role to add to a team
     Profile:
       type: object
       properties:
@@ -488,25 +492,21 @@ components:
           $ref: '#/components/schemas/Avatar'
           description: A reference to the user's avatar image, falling back to their Gravatar image.
       description: The Profile resource contains basic profile information about a user.
-    AddUsersToTeamBody:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/TeamUser'
-          description: Array of users with their assigned roles to add to the team
-      required:
-      - users
-    UpdateTeamBody:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The team's name. Max length of name is 80 characters.
-          example: Team Name
-      required:
-      - name
+  parameters:
+    RequestAs-Teams:
+      in: header
+      name: Lucid-Request-As
+      required: false
+      description: 'If the requesting user is an account owner, team admin, or team manager with the required permissions and they make
+
+        the request with the value of “admin” as this header and include an admin scope, the request will be made using
+
+        their admin permissions.
+
+        '
+      schema:
+        type: string
+      example: admin
   securitySchemes:
     OAuth2:
       type: oauth2

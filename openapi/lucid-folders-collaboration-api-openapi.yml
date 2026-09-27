@@ -452,6 +452,26 @@ paths:
           description: Forbidden if the token does not have permission to the folder, or if the folder has been deleted or does not exist.
 components:
   schemas:
+    FolderTeamCollaborator:
+      type: object
+      properties:
+        folderId:
+          type: integer
+          description: Folder ID
+        teamId:
+          type: integer
+          description: Team ID
+        role:
+          $ref: '#/components/schemas/Role'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the collaboration was created
+      required:
+      - folderId
+      - teamId
+      - role
+      - created
     FolderGroupCollaborator:
       type: object
       properties:
@@ -499,26 +519,6 @@ components:
       required:
       - folderId
       - userId
-      - role
-      - created
-    FolderTeamCollaborator:
-      type: object
-      properties:
-        folderId:
-          type: integer
-          description: Folder ID
-        teamId:
-          type: integer
-          description: Team ID
-        role:
-          $ref: '#/components/schemas/Role'
-        created:
-          type: string
-          format: date-time
-          description: Date and time when the collaboration was created
-      required:
-      - folderId
-      - teamId
       - role
       - created
   securitySchemes:

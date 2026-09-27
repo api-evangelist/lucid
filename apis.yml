@@ -724,8 +724,6 @@ apis:
   humanURL: https://developer.lucid.co/docs/mcp
   baseURL: https://mcp.lucid.app/mcp
   tags:
-  - Datasets
-  tags_raw:
   - Dataset
   properties:
   - type: OpenAPI

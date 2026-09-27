@@ -252,6 +252,13 @@ components:
       - lastModified
       - acceptUrl
   parameters:
+    DocumentShareLinkShareLinkId:
+      name: shareLinkId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Id of the share link to retrieve information for.
     DocumentShareLinkDocumentId:
       name: id
       in: path
@@ -260,13 +267,6 @@ components:
         type: string
         format: uuid
       description: ID of the document.
-    DocumentShareLinkShareLinkId:
-      name: shareLinkId
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Id of the share link to retrieve information for.
   securitySchemes:
     OAuth2:
       type: oauth2

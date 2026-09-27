@@ -356,17 +356,6 @@ paths:
                   $ref: '#/components/schemas/FolderContent'
 components:
   schemas:
-    FolderContentType:
-      type: string
-      description: '* folder  -  Type denoting that the Folder Content Resource is a folder and will have a Number id field and no product field.
-
-        * document  -  Type denoting that the Folder Content Resource is a document and will have a UUID id field and will contain a product field.
-
-        '
-      enum:
-      - folder
-      - document
-      example: document
     Folder:
       type: object
       description: A standard representation of a folder.
@@ -407,17 +396,14 @@ components:
       - type
       - name
       - created
-    FolderAttribute:
-      type: object
-      description: An attribute assigned to the folder.
-      properties:
-        name:
-          type: string
-          description: Name of the attribute
-          example: Sample Label
-        value:
-          description: Value of the attribute. Can be any type, but attributes with the same name will always have the same type.
-          example: Sample Value
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
     FolderType:
       type: string
       description: '* folder - Folders can live in other folders, team folders, or the root of a user’s folder manager ("My Documents"). A folder in "My Documents" will have a null parent field.
@@ -429,14 +415,6 @@ components:
       - folder
       - team
       example: folder
-    Product:
-      type: string
-      enum:
-      - lucidchart
-      - lucidscale
-      - lucidspark
-      description: The Lucid Suite product that a document was created in.
-      example: lucidchart
     FolderContent:
       type: object
       description: A representation of a single item contained in a folder.
@@ -465,6 +443,28 @@ components:
       - type
       - name
       - isShortcut
+    FolderAttribute:
+      type: object
+      description: An attribute assigned to the folder.
+      properties:
+        name:
+          type: string
+          description: Name of the attribute
+          example: Sample Label
+        value:
+          description: Value of the attribute. Can be any type, but attributes with the same name will always have the same type.
+          example: Sample Value
+    FolderContentType:
+      type: string
+      description: '* folder  -  Type denoting that the Folder Content Resource is a folder and will have a Number id field and no product field.
+
+        * document  -  Type denoting that the Folder Content Resource is a document and will have a UUID id field and will contain a product field.
+
+        '
+      enum:
+      - folder
+      - document
+      example: document
   parameters:
     RequestAs-Folders:
       in: header

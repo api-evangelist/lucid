@@ -291,6 +291,35 @@ paths:
           description: Forbidden. Occurs when the user does not have permission to modify the repository.
 components:
   schemas:
+    RepositoryGroupsRequest:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            type: integer
+          description: Array of group IDs.
+          example:
+          - 123456
+          - 789123
+      required:
+      - groups
+    AddRepositoryUserRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: Unique identifier of the user to add or update
+          example: 1234567
+        role:
+          $ref: '#/components/schemas/RepositoryRole'
+      required:
+      - userId
+      - role
+    RepositoryId:
+      type: string
+      description: Unique identifier for a repository folder, prefixed with `repo_`
+      example: repo_1234321
     RepositoryRole:
       type: string
       enum:
@@ -298,35 +327,6 @@ components:
       - REPOSITORY_MEMBER
       description: Role of a user on a repository
       example: REPOSITORY_OWNER
-    RepositoryUser:
-      type: object
-      properties:
-        repositoryId:
-          type: string
-          description: Unique identifier of the repository
-          example: repo_2000719
-        userId:
-          type: integer
-          description: Unique identifier of the user
-          example: 1234567
-        role:
-          $ref: '#/components/schemas/RepositoryRole'
-        created:
-          type: string
-          format: date-time
-          description: Date and time when the user was added to the repository
-          example: '2026-01-21T01:10:41Z'
-    RepositoryId:
-      type: string
-      description: Unique identifier for a repository folder, prefixed with `repo_`
-      example: repo_1234321
-    RepositoryAccessType:
-      type: string
-      enum:
-      - UNRESTRICTED
-      - RESTRICTED
-      description: Determines repository visibility. UNRESTRICTED repositories are visible to all users on the account, RESTRICTED are visible to specific authorized groups and individuals.
-      example: UNRESTRICTED
     CreateRepositoryRequest:
       type: object
       properties:
@@ -353,19 +353,13 @@ components:
       required:
       - name
       - users
-    RepositoryGroupsRequest:
-      type: object
-      properties:
-        groups:
-          type: array
-          items:
-            type: integer
-          description: Array of group IDs.
-          example:
-          - 123456
-          - 789123
-      required:
-      - groups
+    RepositoryAccessType:
+      type: string
+      enum:
+      - UNRESTRICTED
+      - RESTRICTED
+      description: Determines repository visibility. UNRESTRICTED repositories are visible to all users on the account, RESTRICTED are visible to specific authorized groups and individuals.
+      example: UNRESTRICTED
     AddRepositoryUsersRequest:
       type: object
       properties:
@@ -376,6 +370,24 @@ components:
           description: Array of users and their roles to add or update on the repository
       required:
       - users
+    RepositoryUser:
+      type: object
+      properties:
+        repositoryId:
+          type: string
+          description: Unique identifier of the repository
+          example: repo_2000719
+        userId:
+          type: integer
+          description: Unique identifier of the user
+          example: 1234567
+        role:
+          $ref: '#/components/schemas/RepositoryRole'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the user was added to the repository
+          example: '2026-01-21T01:10:41Z'
     RepositoryObject:
       type: object
       properties:
@@ -403,18 +415,6 @@ components:
           type: integer
           description: Unique identifier of the group
           example: 123456
-    AddRepositoryUserRequest:
-      type: object
-      properties:
-        userId:
-          type: integer
-          description: Unique identifier of the user to add or update
-          example: 1234567
-        role:
-          $ref: '#/components/schemas/RepositoryRole'
-      required:
-      - userId
-      - role
   securitySchemes:
     OAuth2:
       type: oauth2

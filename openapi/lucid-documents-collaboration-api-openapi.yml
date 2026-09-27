@@ -378,15 +378,6 @@ components:
       - teamId
       - role
       - created
-    Role:
-      type: string
-      enum:
-      - owner
-      - editandshare
-      - edit
-      - comment
-      - view
-      description: The Collaborator Role on the document or folder
     DocumentUserCollaborator:
       type: object
       properties:
@@ -408,6 +399,15 @@ components:
       - userId
       - role
       - created
+    Role:
+      type: string
+      enum:
+      - owner
+      - editandshare
+      - edit
+      - comment
+      - view
+      description: The Collaborator Role on the document or folder
   securitySchemes:
     OAuth2:
       type: oauth2
