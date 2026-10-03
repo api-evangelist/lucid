@@ -59,6 +59,62 @@ paths:
           description: Unauthorized. Occurs if the bearer token is invalid.
 components:
   schemas:
+    SubAttribute:
+      type: object
+      description: A leaf-level attribute definition. Like Attribute but without subAttributes, since sub-attributes cannot themselves be complex.
+      properties:
+        name:
+          type: string
+          description: The name of the attribute.
+          example: id
+        type:
+          type: string
+          enum:
+          - string
+          - boolean
+          - decimal
+          - integer
+          - dateTime
+          - reference
+          - complex
+          description: What the type of the attribute is.
+          example: string
+        multiValued:
+          type: boolean
+          description: Indicates whether the attribute can have multiple values.
+          example: false
+        description:
+          type: string
+          description: Description for the associated attribute.
+          example: A way to identify the user
+        required:
+          type: boolean
+          description: Whether or not the attribute is required.
+          example: false
+        caseExact:
+          type: boolean
+          description: If the attribute is case sensitive.
+          example: false
+        mutability:
+          type: string
+          enum:
+          - readOnly
+          - readWrite
+          - immutable
+          - writeOnly
+        returned:
+          type: string
+          enum:
+          - always
+          - never
+          - default
+          - request
+        uniqueness:
+          type: string
+          enum:
+          - none
+          - server
+          - global
     Schema:
       type: object
       properties:
@@ -123,62 +179,6 @@ components:
           items:
             $ref: '#/components/schemas/Schema'
           description: The list of schemas returned by the query.
-    SubAttribute:
-      type: object
-      description: A leaf-level attribute definition. Like Attribute but without subAttributes, since sub-attributes cannot themselves be complex.
-      properties:
-        name:
-          type: string
-          description: The name of the attribute.
-          example: id
-        type:
-          type: string
-          enum:
-          - string
-          - boolean
-          - decimal
-          - integer
-          - dateTime
-          - reference
-          - complex
-          description: What the type of the attribute is.
-          example: string
-        multiValued:
-          type: boolean
-          description: Indicates whether the attribute can have multiple values.
-          example: false
-        description:
-          type: string
-          description: Description for the associated attribute.
-          example: A way to identify the user
-        required:
-          type: boolean
-          description: Whether or not the attribute is required.
-          example: false
-        caseExact:
-          type: boolean
-          description: If the attribute is case sensitive.
-          example: false
-        mutability:
-          type: string
-          enum:
-          - readOnly
-          - readWrite
-          - immutable
-          - writeOnly
-        returned:
-          type: string
-          enum:
-          - always
-          - never
-          - default
-          - request
-        uniqueness:
-          type: string
-          enum:
-          - none
-          - server
-          - global
   securitySchemes:
     Bearer:
       type: http

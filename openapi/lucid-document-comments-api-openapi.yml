@@ -208,6 +208,31 @@ paths:
           description: Not Found if the specified thread does not exist on the document.
 components:
   schemas:
+    ThreadStatus:
+      type: string
+      enum:
+      - OPEN
+      - CLOSED
+      description: The status of a comment thread. OPEN indicates an unresolved thread, CLOSED indicates a resolved thread.
+    DocumentThread:
+      type: object
+      description: A comment thread on a document.
+      properties:
+        threadId:
+          type: string
+          description: The unique ID of the comment thread.
+          example: abc123
+        created:
+          type: string
+          format: date-time
+          description: The date and time when the thread was created.
+          example: '2024-01-01T00:00:00Z'
+        status:
+          $ref: '#/components/schemas/ThreadStatus'
+      required:
+      - threadId
+      - created
+      - status
     PostCommentRequestBody:
       type: object
       description: Request body for posting a comment to a thread.
@@ -218,12 +243,6 @@ components:
           example: This is a comment
       required:
       - comment
-    ThreadStatus:
-      type: string
-      enum:
-      - OPEN
-      - CLOSED
-      description: The status of a comment thread. OPEN indicates an unresolved thread, CLOSED indicates a resolved thread.
     DocumentComment:
       type: object
       description: A comment within a comment thread on a document.
@@ -256,25 +275,6 @@ components:
       - userId
       - comment
       - created
-    DocumentThread:
-      type: object
-      description: A comment thread on a document.
-      properties:
-        threadId:
-          type: string
-          description: The unique ID of the comment thread.
-          example: abc123
-        created:
-          type: string
-          format: date-time
-          description: The date and time when the thread was created.
-          example: '2024-01-01T00:00:00Z'
-        status:
-          $ref: '#/components/schemas/ThreadStatus'
-      required:
-      - threadId
-      - created
-      - status
   securitySchemes:
     OAuth2:
       type: oauth2

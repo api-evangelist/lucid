@@ -166,24 +166,6 @@ paths:
           description: Forbidden if the app making the request does not have permission to the folder, or if the folder has been deleted, or does not exist.
 components:
   schemas:
-    SharingRole:
-      type: string
-      enum:
-      - editandshare
-      - edit
-      - comment
-      - view
-      description: 'Roles determine what actions an invitation will grant on a document. Invitations to a document only grant the specified level of access to just that one document. If a link''s role is changed, the new role applies immediately to all users who accessed via that link.
-
-        - `editandshare`: View, comment on, edit, and control which users can access the document.
-
-        - `edit`: View, comment on, and edit the document.
-
-        - `comment`: View the document. Leave comments on the document.
-
-        - `view`: View the document.
-
-        '
     FolderLinkSecurity:
       type: object
       properties:
@@ -204,6 +186,24 @@ components:
           example: passcode
       required:
       - restrictToAccount
+    SharingRole:
+      type: string
+      enum:
+      - editandshare
+      - edit
+      - comment
+      - view
+      description: 'Roles determine what actions an invitation will grant on a document. Invitations to a document only grant the specified level of access to just that one document. If a link''s role is changed, the new role applies immediately to all users who accessed via that link.
+
+        - `editandshare`: View, comment on, edit, and control which users can access the document.
+
+        - `edit`: View, comment on, and edit the document.
+
+        - `comment`: View the document. Leave comments on the document.
+
+        - `view`: View the document.
+
+        '
     FolderShareLink:
       type: object
       properties:

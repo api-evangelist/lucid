@@ -36,14 +36,6 @@ paths:
         '404':
           description: Not Found if the share link has expired or does not exist.
 components:
-  parameters:
-    DocumentShareLinkShareLinkId:
-      name: shareLinkId
-      in: path
-      required: true
-      schema:
-        type: string
-      description: Id of the share link to retrieve information for.
   schemas:
     AcceptShareLinkResult:
       type: object
@@ -71,6 +63,14 @@ components:
           example: null
       required:
       - InvitationType
+  parameters:
+    DocumentShareLinkShareLinkId:
+      name: shareLinkId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Id of the share link to retrieve information for.
   securitySchemes:
     OAuth2:
       type: oauth2

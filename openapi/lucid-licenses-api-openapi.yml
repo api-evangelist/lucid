@@ -116,6 +116,17 @@ paths:
           description: Conflict. Occurs when there are no available licenses to grant, or the user is restricted from being granted a license.
 components:
   schemas:
+    GrantLicenseRequest:
+      type: object
+      description: Request body for granting a license to a user
+      properties:
+        subscriptionId:
+          type: string
+          format: uuid
+          description: The subscription ID to grant the license from
+          example: 8e8cf611-d74c-4a2f-8b61-754b22328fbb
+      required:
+      - subscriptionId
     License:
       type: object
       description: A license resource representing a user's license on a subscription
@@ -138,17 +149,6 @@ components:
       - userId
       - subscriptionId
       - created
-    GrantLicenseRequest:
-      type: object
-      description: Request body for granting a license to a user
-      properties:
-        subscriptionId:
-          type: string
-          format: uuid
-          description: The subscription ID to grant the license from
-          example: 8e8cf611-d74c-4a2f-8b61-754b22328fbb
-      required:
-      - subscriptionId
   securitySchemes:
     OAuth2:
       type: oauth2

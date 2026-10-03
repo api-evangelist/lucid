@@ -357,27 +357,6 @@ paths:
           description: Forbidden * if the token does not have permission to the document, or if the document has been deleted or does not exist. * when attempting to revoke the collaboration for the document owner.
 components:
   schemas:
-    DocumentTeamCollaborator:
-      type: object
-      properties:
-        documentId:
-          type: string
-          format: uuid
-          description: Document ID
-        teamId:
-          type: integer
-          description: Team ID
-        role:
-          $ref: '#/components/schemas/Role'
-        created:
-          type: string
-          format: date-time
-          description: Date and time when the collaboration was created
-      required:
-      - documentId
-      - teamId
-      - role
-      - created
     DocumentUserCollaborator:
       type: object
       properties:
@@ -408,6 +387,27 @@ components:
       - comment
       - view
       description: The Collaborator Role on the document or folder
+    DocumentTeamCollaborator:
+      type: object
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          description: Document ID
+        teamId:
+          type: integer
+          description: Team ID
+        role:
+          $ref: '#/components/schemas/Role'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the collaboration was created
+      required:
+      - documentId
+      - teamId
+      - role
+      - created
   securitySchemes:
     OAuth2:
       type: oauth2

@@ -59,6 +59,20 @@ paths:
           description: Forbidden. Token does not have the required scope.
 components:
   schemas:
+    AccountInformationResource:
+      type: object
+      properties:
+        id:
+          type: number
+          description: The unique ID for the authenticated account.
+        name:
+          type:
+          - string
+          - 'null'
+          description: The name assigned to the account. This field is null if no name has been assigned. Names are usually set by an admin and can be a helpful way to orient a user by informing them about which account an app will interact with.
+      required:
+      - id
+      - name
     Classification:
       type: object
       properties:
@@ -91,20 +105,6 @@ components:
       - id
       - label
       - priority
-    AccountInformationResource:
-      type: object
-      properties:
-        id:
-          type: number
-          description: The unique ID for the authenticated account.
-        name:
-          type:
-          - string
-          - 'null'
-          description: The name assigned to the account. This field is null if no name has been assigned. Names are usually set by an admin and can be a helpful way to orient a user by informing them about which account an app will interact with.
-      required:
-      - id
-      - name
   securitySchemes:
     OAuth2:
       type: oauth2
