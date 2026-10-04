@@ -45,6 +45,9 @@ specificationVersion: '0.23'
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/lucidchart.png
 created: '2026-08-01'
 modified: '2026-08-01'
+x-docs-platform: readme
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-10-03
 tags:
 - Visual Collaboration
 - Diagramming
@@ -724,6 +727,8 @@ apis:
   humanURL: https://developer.lucid.co/docs/mcp
   baseURL: https://mcp.lucid.app/mcp
   tags:
+  - Datasets
+  tags_raw:
   - Dataset
   properties:
   - type: OpenAPI
