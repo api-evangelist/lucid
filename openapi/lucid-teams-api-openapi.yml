@@ -338,28 +338,77 @@ components:
           - 987
       required:
       - users
-    TeamRole:
-      type: string
-      enum:
-      - TEAM_MANAGER
-      - EDIT_SHARE_MEMBER
-      - EDIT_MEMBER
-      - COMMENT_MEMBER
-      - VIEW_MEMBER
-      description: 'The role to assign to a user on a team. Team roles determine what permissions a user has on documents shared with the team:
-
-        - `TEAM_MANAGER`: Can manage team settings, members, and has full access to team content
-
-        - `EDIT_SHARE_MEMBER`: Can view, comment on, edit, and share team documents
-
-        - `EDIT_MEMBER`: Can view, comment on, and edit team documents
-
-        - `COMMENT_MEMBER`: Can view and comment on team documents
-
-        - `VIEW_MEMBER`: Can only view team documents
-
-        '
-      example: EDIT_MEMBER
+    CreateTeamBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The team's name. Max length of name is 80 characters.
+          example: Team Name
+        type:
+          $ref: '#/components/schemas/TeamType'
+        users:
+          type: array
+          items:
+            type: integer
+          description: Array of IDs of users to be on the team.
+          example:
+          - 321
+          - 654
+          - 987
+      required:
+      - name
+      - type
+      - users
+    AddUsersToTeamBody:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamUser'
+          description: Array of users with their assigned roles to add to the team
+      required:
+      - users
+    TeamUser:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: The ID of the user to add to the team
+          example: 321
+        role:
+          $ref: '#/components/schemas/TeamRole'
+      required:
+      - userId
+      - role
+      description: A user with a specific role to add to a team
+    UpdateTeamBody:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The team's name. Max length of name is 80 characters.
+          example: Team Name
+      required:
+      - name
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
     Profile:
       type: object
       properties:
@@ -387,62 +436,6 @@ components:
           $ref: '#/components/schemas/Avatar'
           description: A reference to the user's avatar image, falling back to their Gravatar image.
       description: The Profile resource contains basic profile information about a user.
-    CreateTeamBody:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The team's name. Max length of name is 80 characters.
-          example: Team Name
-        type:
-          $ref: '#/components/schemas/TeamType'
-        users:
-          type: array
-          items:
-            type: integer
-          description: Array of IDs of users to be on the team.
-          example:
-          - 321
-          - 654
-          - 987
-      required:
-      - name
-      - type
-      - users
-    TeamType:
-      type: string
-      enum:
-      - hidden
-      - closed
-      - open
-      description: The type of the team
-      example: open
-    UpdateTeamBody:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The team's name. Max length of name is 80 characters.
-          example: Team Name
-      required:
-      - name
-    Avatar:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - url
-          example: url
-          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
-        link:
-          type: string
-          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
-          description: A URL pointing to the user's avatar image.
-      required:
-      - type
-      - link
-      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
     Team:
       type: object
       description: A standard representation of a team.
@@ -469,29 +462,36 @@ components:
           format: date-time
           description: Date and time when the team was archived (if it has been archived).
           example: null
-    TeamUser:
-      type: object
-      properties:
-        userId:
-          type: integer
-          description: The ID of the user to add to the team
-          example: 321
-        role:
-          $ref: '#/components/schemas/TeamRole'
-      required:
-      - userId
-      - role
-      description: A user with a specific role to add to a team
-    AddUsersToTeamBody:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/TeamUser'
-          description: Array of users with their assigned roles to add to the team
-      required:
-      - users
+    TeamType:
+      type: string
+      enum:
+      - hidden
+      - closed
+      - open
+      description: The type of the team
+      example: open
+    TeamRole:
+      type: string
+      enum:
+      - TEAM_MANAGER
+      - EDIT_SHARE_MEMBER
+      - EDIT_MEMBER
+      - COMMENT_MEMBER
+      - VIEW_MEMBER
+      description: 'The role to assign to a user on a team. Team roles determine what permissions a user has on documents shared with the team:
+
+        - `TEAM_MANAGER`: Can manage team settings, members, and has full access to team content
+
+        - `EDIT_SHARE_MEMBER`: Can view, comment on, edit, and share team documents
+
+        - `EDIT_MEMBER`: Can view, comment on, and edit team documents
+
+        - `COMMENT_MEMBER`: Can view and comment on team documents
+
+        - `VIEW_MEMBER`: Can only view team documents
+
+        '
+      example: EDIT_MEMBER
   parameters:
     RequestAs-Teams:
       in: header

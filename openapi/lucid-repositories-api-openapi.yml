@@ -291,6 +291,65 @@ paths:
           description: Forbidden. Occurs when the user does not have permission to modify the repository.
 components:
   schemas:
+    CreateRepositoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Display name for the repository
+          example: Example Process Repository
+        accessType:
+          $ref: '#/components/schemas/RepositoryAccessType'
+          description: Optional. Determines repository visibility. Defaults to UNRESTRICTED.
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddRepositoryUserRequest'
+          description: List of users to add to the repository. Must contain at least one owner.
+        groups:
+          type: array
+          items:
+            type: integer
+          description: Optional. Group Ids of groups whose members should have access to this repository. Only applicable to RESTRICTED repositories.
+          example:
+          - 123456
+          - 789123
+      required:
+      - name
+      - users
+    AddRepositoryUsersRequest:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddRepositoryUserRequest'
+          description: Array of users and their roles to add or update on the repository
+      required:
+      - users
+    RepositoryGroupCollaborator:
+      type: object
+      properties:
+        repositoryId:
+          type: string
+          description: Unique identifier of the repository
+          example: repo_987654
+        groupId:
+          type: integer
+          description: Unique identifier of the group
+          example: 123456
+    AddRepositoryUserRequest:
+      type: object
+      properties:
+        userId:
+          type: integer
+          description: Unique identifier of the user to add or update
+          example: 1234567
+        role:
+          $ref: '#/components/schemas/RepositoryRole'
+      required:
+      - userId
+      - role
     RepositoryUser:
       type: object
       properties:
@@ -322,6 +381,13 @@ components:
           - 789123
       required:
       - groups
+    RepositoryAccessType:
+      type: string
+      enum:
+      - UNRESTRICTED
+      - RESTRICTED
+      description: Determines repository visibility. UNRESTRICTED repositories are visible to all users on the account, RESTRICTED are visible to specific authorized groups and individuals.
+      example: UNRESTRICTED
     RepositoryObject:
       type: object
       properties:
@@ -338,23 +404,10 @@ components:
           format: date-time
           description: The date and time the repository was created
           example: '2022-11-11T21:48:35.293Z'
-    AddRepositoryUsersRequest:
-      type: object
-      properties:
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/AddRepositoryUserRequest'
-          description: Array of users and their roles to add or update on the repository
-      required:
-      - users
-    RepositoryAccessType:
+    RepositoryId:
       type: string
-      enum:
-      - UNRESTRICTED
-      - RESTRICTED
-      description: Determines repository visibility. UNRESTRICTED repositories are visible to all users on the account, RESTRICTED are visible to specific authorized groups and individuals.
-      example: UNRESTRICTED
+      description: Unique identifier for a repository folder, prefixed with `repo_`
+      example: repo_1234321
     RepositoryRole:
       type: string
       enum:
@@ -362,59 +415,6 @@ components:
       - REPOSITORY_MEMBER
       description: Role of a user on a repository
       example: REPOSITORY_OWNER
-    RepositoryId:
-      type: string
-      description: Unique identifier for a repository folder, prefixed with `repo_`
-      example: repo_1234321
-    RepositoryGroupCollaborator:
-      type: object
-      properties:
-        repositoryId:
-          type: string
-          description: Unique identifier of the repository
-          example: repo_987654
-        groupId:
-          type: integer
-          description: Unique identifier of the group
-          example: 123456
-    CreateRepositoryRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Display name for the repository
-          example: Example Process Repository
-        accessType:
-          $ref: '#/components/schemas/RepositoryAccessType'
-          description: Optional. Determines repository visibility. Defaults to UNRESTRICTED.
-        users:
-          type: array
-          items:
-            $ref: '#/components/schemas/AddRepositoryUserRequest'
-          description: List of users to add to the repository. Must contain at least one owner.
-        groups:
-          type: array
-          items:
-            type: integer
-          description: Optional. Group Ids of groups whose members should have access to this repository. Only applicable to RESTRICTED repositories.
-          example:
-          - 123456
-          - 789123
-      required:
-      - name
-      - users
-    AddRepositoryUserRequest:
-      type: object
-      properties:
-        userId:
-          type: integer
-          description: Unique identifier of the user to add or update
-          example: 1234567
-        role:
-          $ref: '#/components/schemas/RepositoryRole'
-      required:
-      - userId
-      - role
   securitySchemes:
     OAuth2:
       type: oauth2

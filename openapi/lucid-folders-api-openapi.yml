@@ -356,6 +356,47 @@ paths:
                   $ref: '#/components/schemas/FolderContent'
 components:
   schemas:
+    FolderAttribute:
+      type: object
+      description: An attribute assigned to the folder.
+      properties:
+        name:
+          type: string
+          description: Name of the attribute
+          example: Sample Label
+        value:
+          description: Value of the attribute. Can be any type, but attributes with the same name will always have the same type.
+          example: Sample Value
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
+    FolderContentType:
+      type: string
+      description: '* folder  -  Type denoting that the Folder Content Resource is a folder and will have a Number id field and no product field.
+
+        * document  -  Type denoting that the Folder Content Resource is a document and will have a UUID id field and will contain a product field.
+
+        '
+      enum:
+      - folder
+      - document
+      example: document
+    FolderType:
+      type: string
+      description: '* folder - Folders can live in other folders, team folders, or the root of a user’s folder manager ("My Documents"). A folder in "My Documents" will have a null parent field.
+
+        * team   - Team folders can never live in another folder and are always located in the "Team Folders" section of a user''s folder manager. Team folders will not have a parent field. Learn more
+
+        '
+      enum:
+      - folder
+      - team
+      example: folder
     FolderContent:
       type: object
       description: A representation of a single item contained in a folder.
@@ -384,47 +425,6 @@ components:
       - type
       - name
       - isShortcut
-    Product:
-      type: string
-      enum:
-      - lucidchart
-      - lucidscale
-      - lucidspark
-      description: The Lucid Suite product that a document was created in.
-      example: lucidchart
-    FolderType:
-      type: string
-      description: '* folder - Folders can live in other folders, team folders, or the root of a user’s folder manager ("My Documents"). A folder in "My Documents" will have a null parent field.
-
-        * team   - Team folders can never live in another folder and are always located in the "Team Folders" section of a user''s folder manager. Team folders will not have a parent field. Learn more
-
-        '
-      enum:
-      - folder
-      - team
-      example: folder
-    FolderContentType:
-      type: string
-      description: '* folder  -  Type denoting that the Folder Content Resource is a folder and will have a Number id field and no product field.
-
-        * document  -  Type denoting that the Folder Content Resource is a document and will have a UUID id field and will contain a product field.
-
-        '
-      enum:
-      - folder
-      - document
-      example: document
-    FolderAttribute:
-      type: object
-      description: An attribute assigned to the folder.
-      properties:
-        name:
-          type: string
-          description: Name of the attribute
-          example: Sample Label
-        value:
-          description: Value of the attribute. Can be any type, but attributes with the same name will always have the same type.
-          example: Sample Value
     Folder:
       type: object
       description: A standard representation of a folder.

@@ -298,6 +298,15 @@ paths:
         '404':
           description: The specified legal hold id was not found.
 components:
+  parameters:
+    LegalHoldIdPath:
+      in: path
+      name: legalHoldId
+      required: true
+      description: Unique ID of the legal hold.
+      schema:
+        type: string
+        format: uuid
   schemas:
     User:
       type: object
@@ -338,97 +347,6 @@ components:
           $ref: '#/components/schemas/Avatar'
           description: A reference to the user's avatar image, falling back to their Gravatar image.
       description: A standard representation of a user.
-    Avatar:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - url
-          example: url
-          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
-        link:
-          type: string
-          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
-          description: A URL pointing to the user's avatar image.
-      required:
-      - type
-      - link
-      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
-    DocumentOwner:
-      type: object
-      properties:
-        id:
-          type: number
-          description: Id of either the user or the account, depending on the type of the document user resource.
-          example: 123456
-        type:
-          type: string
-          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
-          example: user
-        name:
-          type: string
-          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
-          example: John Doe
-    LegalHold:
-      type: object
-      properties:
-        LegalHoldId:
-          type: string
-          format: uuid
-          description: Unique ID of the legal hold.
-          example: 110808fd-4553-4316-bccf-4f25ff59a532
-        AccountId:
-          type: number
-          description: Unique ID for the creating admin’s account.
-          example: 100
-        StartTime:
-          type: string
-          format: date-time
-          description: Start time of the legal hold.
-          example: '2025-01-01T16:18:26Z'
-        EndTime:
-          type: string
-          format: date-time
-          description: End time of the legal hold.
-          example: '2025-12-01T16:18:26Z'
-        Title:
-          type: string
-          description: Title of the legal hold.
-          example: New Legal Hold
-        Description:
-          type: string
-          description: Description of the legal hold.
-          example: Legal hold example
-        Keywords:
-          type: string
-          description: Keyword(s) of the legal hold.
-          example: alpha
-        Created:
-          type: string
-          format: date-time
-          description: Time that the legal hold was created.
-          example: '2024-12-01T16:25:44Z'
-        Modified:
-          type: string
-          format: date-time
-          description: Time that the legal hold was last modified.
-          example: '2024-12-01T16:25:44Z'
-      required:
-      - LegalHoldId
-      - AccountId
-      - StartTime
-      - EndTime
-      - Title
-      - Created
-      - Modified
-    Repository:
-      type: object
-      properties:
-        repositoryId:
-          type: string
-          description: the ID of the repository
-          example: repo_2000008
     UserRole:
       type: string
       enum:
@@ -595,6 +513,21 @@ components:
           type: user
           name: John Doe
         accountId: 1234
+    DocumentOwner:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Id of either the user or the account, depending on the type of the document user resource.
+          example: 123456
+        type:
+          type: string
+          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
+          example: user
+        name:
+          type: string
+          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
+          example: John Doe
     DataPair:
       type: object
       properties:
@@ -611,6 +544,58 @@ components:
       example:
         name: City
         value: New York
+    LegalHold:
+      type: object
+      properties:
+        LegalHoldId:
+          type: string
+          format: uuid
+          description: Unique ID of the legal hold.
+          example: 110808fd-4553-4316-bccf-4f25ff59a532
+        AccountId:
+          type: number
+          description: Unique ID for the creating admin’s account.
+          example: 100
+        StartTime:
+          type: string
+          format: date-time
+          description: Start time of the legal hold.
+          example: '2025-01-01T16:18:26Z'
+        EndTime:
+          type: string
+          format: date-time
+          description: End time of the legal hold.
+          example: '2025-12-01T16:18:26Z'
+        Title:
+          type: string
+          description: Title of the legal hold.
+          example: New Legal Hold
+        Description:
+          type: string
+          description: Description of the legal hold.
+          example: Legal hold example
+        Keywords:
+          type: string
+          description: Keyword(s) of the legal hold.
+          example: alpha
+        Created:
+          type: string
+          format: date-time
+          description: Time that the legal hold was created.
+          example: '2024-12-01T16:25:44Z'
+        Modified:
+          type: string
+          format: date-time
+          description: Time that the legal hold was last modified.
+          example: '2024-12-01T16:25:44Z'
+      required:
+      - LegalHoldId
+      - AccountId
+      - StartTime
+      - EndTime
+      - Title
+      - Created
+      - Modified
     Product:
       type: string
       enum:
@@ -619,6 +604,23 @@ components:
       - lucidspark
       description: The Lucid Suite product that a document was created in.
       example: lucidchart
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
     CustomAttribute:
       type: object
       properties:
@@ -651,15 +653,13 @@ components:
       description: Object representing a custom attribute value for a document.
       required:
       - type
-  parameters:
-    LegalHoldIdPath:
-      in: path
-      name: legalHoldId
-      required: true
-      description: Unique ID of the legal hold.
-      schema:
-        type: string
-        format: uuid
+    Repository:
+      type: object
+      properties:
+        repositoryId:
+          type: string
+          description: the ID of the repository
+          example: repo_2000008
   securitySchemes:
     OAuth2:
       type: oauth2

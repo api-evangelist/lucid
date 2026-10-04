@@ -29,6 +29,14 @@ paths:
       - CreateDiagram
 components:
   schemas:
+    createDiagram:
+      type: object
+      properties:
+        validDiagramCode:
+          description: "The valid Mermaid code for the diagram. `flowchart` diagrams should be preferred, but all Mermaid diagram types are supported.\nMermaid Guidelines:\n - All node labels should be enclosed in square brackets and double quotes. For example, if you wanted node A to display `[Fe(CN)6]4-`, it should be written as `A[\"[Fe(CN)6]4-\"]`\n - A line from node A to node B is denoted `A --> B`\n - Subgraphs should be used sparingly, and not to enclose an entire diagram\n"
+          type: string
+      required:
+      - validDiagramCode
     createDiagramResponse:
       type: object
       properties:
@@ -41,11 +49,3 @@ components:
         editLink:
           description: A link to an editable version of the diagram in Lucidchart for flowchart diagrams.
           type: string
-    createDiagram:
-      type: object
-      properties:
-        validDiagramCode:
-          description: "The valid Mermaid code for the diagram. `flowchart` diagrams should be preferred, but all Mermaid diagram types are supported.\nMermaid Guidelines:\n - All node labels should be enclosed in square brackets and double quotes. For example, if you wanted node A to display `[Fe(CN)6]4-`, it should be written as `A[\"[Fe(CN)6]4-\"]`\n - A line from node A to node B is denoted `A --> B`\n - Subgraphs should be used sparingly, and not to enclose an entire diagram\n"
-          type: string
-      required:
-      - validDiagramCode

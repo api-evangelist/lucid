@@ -71,23 +71,6 @@ paths:
           description: Bad Request
 components:
   schemas:
-    LinkResource:
-      type: object
-      properties:
-        document:
-          $ref: '#/components/schemas/LinkDocument'
-        invitation:
-          $ref: '#/components/schemas/LinkInvitation'
-      description: Resource representing information contained in a Lucid link.
-    LinkInvitation:
-      type: object
-      properties:
-        invitationId:
-          type: string
-          format: uuid
-          example: inv_288b9365-685b-4bf2-9f6f-8aa9e2082542
-          description: Unique identifier of the invitation.
-      description: Information about the Invitation contained in the link if it exists.
     LinkDocument:
       type: object
       properties:
@@ -106,6 +89,23 @@ components:
           example: lucidspark
           description: The Lucid product the document belongs to.
       description: Information about the Document contained in the link if it exists.
+    LinkResource:
+      type: object
+      properties:
+        document:
+          $ref: '#/components/schemas/LinkDocument'
+        invitation:
+          $ref: '#/components/schemas/LinkInvitation'
+      description: Resource representing information contained in a Lucid link.
+    LinkInvitation:
+      type: object
+      properties:
+        invitationId:
+          type: string
+          format: uuid
+          example: inv_288b9365-685b-4bf2-9f6f-8aa9e2082542
+          description: Unique identifier of the invitation.
+      description: Information about the Invitation contained in the link if it exists.
   securitySchemes:
     OAuth2:
       type: oauth2

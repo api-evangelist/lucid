@@ -895,6 +895,84 @@ paths:
           description: Too Many Requests if the account makes more than 100 requests in 5 seconds.
 components:
   schemas:
+    EndpointStyle:
+      type: string
+      description: The visual style of a line endpoint.
+      enum:
+      - none
+      - aggregation
+      - arrow
+      - hollowArrow
+      - openArrow
+      - async1
+      - async2
+      - closedSquare
+      - openSquare
+      - bpmnConditional
+      - bpmnDefault
+      - closedCircle
+      - openCircle
+      - composition
+      - exactlyOne
+      - generalization
+      - many
+      - nesting
+      - one
+      - oneOrMore
+      - zeroOrMore
+      - zeroOrOne
+      example: arrow
+    LucidStandardImportGotoPageAction:
+      type: object
+      description: Navigate to a page in the current document.
+      properties:
+        type:
+          type: string
+          enum:
+          - gotoPage
+        pageId:
+          type: string
+          description: The ID of the target page.
+          example: page2
+      required:
+      - type
+      - pageId
+    DataPair:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Custom data key
+        value:
+          type: string
+          description: Custom data value
+      description: Object representing a key-value pair of data.
+      required:
+      - name
+      - value
+      example:
+        name: City
+        value: New York
+    LinkedData:
+      type: object
+      properties:
+        collection_id:
+          type: string
+          description: Id of the collection containing the data
+          example: ABAuwlf2BTy8
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+          description: Key-value pairs from the dataset
+        primaryKeyValue:
+          type: string
+          description: The value of the primary key of the dataset
+          example: Pkey Value
+      description: Object representing data linked to a resource on a document.
+      required:
+      - data
+      - primaryKeyValue
     LucidStandardImportStyle:
       type: object
       description: Visual style properties for a shape.
@@ -913,6 +991,54 @@ components:
           type: string
           description: Text color as a hex color string.
           example: '#000000'
+    LucidStandardImportGotoDocumentAction:
+      type: object
+      description: Navigate to a page in another document.
+      properties:
+        type:
+          type: string
+          enum:
+          - gotoDocument
+        documentId:
+          type: string
+          description: The ID of the target document.
+        pageId:
+          type: string
+          description: The ID of the target page within the document.
+        newWindow:
+          type: boolean
+          description: Whether to open in a new window.
+      required:
+      - type
+      - documentId
+      - pageId
+    LucidStandardImportStandardPageSize:
+      type: object
+      description: A standard named page size.
+      properties:
+        type:
+          type: string
+          description: The standard page size name.
+          enum:
+          - letter
+          - legal
+          - executive
+          - a3
+          - a4
+          - a5
+          - tabloid
+          - folio
+          - statement
+          example: letter
+        format:
+          type: string
+          description: Page orientation.
+          enum:
+          - landscape
+          - portrait
+          default: portrait
+      required:
+      - type
     LucidStandardImportImageFill:
       type: object
       description: An image fill, either by URL or by reference to an image in the import archive.
@@ -937,6 +1063,33 @@ components:
           - shape
       required:
       - type
+    AbsolutePoint:
+      type: object
+      description: An absolute point on the page canvas.
+      properties:
+        x:
+          type: number
+          description: The x-coordinate. Must be between -1200000 and 1200000, inclusive.
+        y:
+          type: number
+          description: The y-coordinate. Must be between -1200000 and 1200000, inclusive.
+      required:
+      - x
+      - y
+    CreatableProduct:
+      type: string
+      enum:
+      - lucidchart
+      - lucidspark
+      description: The Lucid Suite product types that can be created.
+      example: lucidchart
+    LucidStandardImportPageSize:
+      description: 'Page size configuration. Either a standard page size with an optional format, or a custom size with explicit dimensions.
+
+        '
+      oneOf:
+      - $ref: '#/components/schemas/LucidStandardImportStandardPageSize'
+      - $ref: '#/components/schemas/LucidStandardImportCustomPageSize'
     LucidStandardImportDocumentSettings:
       type: object
       description: Document-level settings for a Lucid Standard Import.
@@ -951,113 +1104,136 @@ components:
           - pt
           default: in
           example: in
-    LucidStandardImportShowLayerAction:
+    LucidStandardImportShape:
       type: object
-      description: Show layers.
-      properties:
-        type:
-          type: string
-          enum:
-          - showLayer
-        layers:
-          type: array
-          description: List of layer names to show.
-          items:
-            type: string
-      required:
-      - type
-      - layers
-    Endpoint:
-      type: object
-      properties:
-        style:
-          type: string
-          description: Line end style
-          example: Arrow
-        connectedTo:
-          type:
-          - string
-          - 'null'
-          description: Id of shape or line the line is connected to
-          example: null
-      description: Object representing the endpoint of a Line.
-      required:
-      - style
-      - connectedTo
-    LucidStandardImportGroup:
-      type: object
-      description: A group of items on a page.
+      description: 'A shape definition within a page. The `type` field determines which kind of shape to create.
+
+        Common shape types include `rectangle`, `circle`, `diamond`, `cloud`, `process`, `document`,
+
+        `database`, `hexagon`, `octagon`, `pill`, `roundedRectangle`, `triangle`, `isoscelesTriangle`,
+
+        `stickyNote`, `image`, `table`, `swimLanes`, and many more including BPMN shapes.
+
+        '
       properties:
         id:
           type: string
-          description: Unique identifier for the group.
-          example: group1
-        items:
-          type: array
-          description: 'List of item IDs (shapes, lines, groups) contained in this group. An item can belong to only one group. If an item ID is specified in multiple groups, it is assigned to the first group encountered, and all subsequent references to that item ID are ignored.
-
-            '
-          items:
-            type: string
+          description: Unique identifier for the shape within the import. Used to reference this shape from lines and groups.
+          example: shape1
+        type:
+          type: string
+          description: The type of shape to create.
+          enum:
+          - bpmnActivity
+          - bpmnBlackBoxPool
+          - bpmnChoreography
+          - bpmnConversation
+          - bpmnDataObject
+          - bpmnDataStore
+          - bpmnEvent
+          - bpmnGateway
+          - bpmnGroup
+          - bpmnPool
+          - bpmnTextAnnotation
+          - braceContainer
+          - braceNote
+          - bracketContainer
+          - circle
+          - circleContainer
+          - cloud
+          - connector
+          - cross
+          - namedContainer
+          - namedShape
+          - data
+          - database
+          - decision
+          - delay
+          - diamond
+          - diamondContainer
+          - directAccessStorage
+          - display
+          - document
+          - doubleArrow
+          - flexiblePolygon
+          - freehandBlock
+          - freehandDrawing
+          - hexagon
+          - hotspot
+          - image
+          - internalStorage
+          - isoscelesTriangle
+          - lucidCard
+          - manualInput
+          - manualOperation
+          - merge
+          - multipleDocuments
+          - note
+          - octagon
+          - offPageLink
+          - or
+          - paperTape
+          - pentagon
+          - pillContainer
+          - polyStar
+          - predefinedProcess
+          - preparation
+          - process
+          - rectangle
+          - rectangleContainer
+          - rightTriangle
+          - roundedRectangleContainer
+          - singleArrow
+          - sparkCalloutSquare
+          - sparkContainer
+          - sparkFrame
+          - stickyNote
+          - storedData
+          - summingJunction
+          - swimLanes
+          - table
+          - terminator
+          - text
+          - umlClass
+          example: rectangle
+        boundingBox:
+          $ref: '#/components/schemas/BoundingBox'
+        text:
+          type: string
+          description: Text content to display inside the shape.
+          example: Hello World
+        opacity:
+          type: integer
+          description: Opacity of the shape, from 0 (fully transparent) to 100 (fully opaque).
+          minimum: 0
+          maximum: 100
+        note:
+          type: string
+          description: A note to attach to the shape.
+        zIndex:
+          type: integer
+          description: The z-order of the shape on the page.
         customData:
           type: array
-          description: Custom key-value data to attach to the group.
+          description: Custom key-value data to attach to the shape.
           items:
             $ref: '#/components/schemas/LucidStandardImportCustomDatum'
+        style:
+          $ref: '#/components/schemas/LucidStandardImportStyle'
+        actions:
+          type: array
+          description: Interactive actions attached to the shape (e.g., navigate to a URL or page).
+          items:
+            $ref: '#/components/schemas/LucidStandardImportAction'
         linkedData:
           type: array
           description: Links to data collection entries.
           items:
             $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
-        note:
-          type: string
-          description: A note to attach to the group.
-        zIndex:
-          type: integer
-          description: The z-order of the group on the page.
       required:
       - id
-    LucidStandardImportLineText:
-      type: object
-      description: A text label on a line.
-      properties:
-        text:
-          type: string
-          description: The text content.
-        position:
-          type: number
-          description: Relative position along the line (0 to 1 inclusive).
-          default: 0.5
-          minimum: 0
-          maximum: 1
-        side:
-          type: string
-          description: Which side of the line the text appears on.
-          enum:
-          - top
-          - middle
-          - bottom
-          default: middle
-      required:
-      - text
-    LucidStandardImportUrlAction:
-      type: object
-      description: Navigate to an external URL.
-      properties:
-        type:
-          type: string
-          enum:
-          - url
-        url:
-          type: string
-          description: The target URL.
-          example: https://example.com
-        newWindow:
-          type: boolean
-          description: Whether to open in a new window.
-      required:
       - type
-      - url
+      - boundingBox
     DocumentContent:
       type: object
       properties:
@@ -1099,288 +1275,13 @@ components:
         accountId: 1234
         data:
           collections: []
-    DocumentOwner:
+    Repository:
       type: object
       properties:
-        id:
-          type: number
-          description: Id of either the user or the account, depending on the type of the document user resource.
-          example: 123456
-        type:
+        repositoryId:
           type: string
-          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
-          example: user
-        name:
-          type: string
-          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
-          example: John Doe
-    Group:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Group ID
-          example: VTAu-dl6qtyx
-        members:
-          type: array
-          items:
-            type: string
-          description: Array of IDs of shapes, lines, & groups contained within the group
-          example:
-          - VTAuCB8~evzW
-          - VTAuo_Y56.q~
-        customData:
-          type: array
-          items:
-            $ref: '#/components/schemas/DataPair'
-        linkedData:
-          type: array
-          items:
-            $ref: '#/components/schemas/LinkedData'
-      description: Object representing a group on the page of a document. Note that the ItemId of a group is unique across all groups, layers, shapes, and lines.
-      required:
-      - id
-      - members
-    Contains:
-      type: object
-      properties:
-        shapes:
-          type: array
-          items:
-            type: string
-          description: Array of IDs of shapes contained within the container
-          example:
-          - VTAuCB8~evzW
-        lines:
-          type: array
-          items:
-            type: string
-          description: Array of IDs of lines contained within the container
-          example:
-          - VTAuo_Y56.q~
-        groups:
-          type: array
-          items:
-            type: string
-          description: Array of IDs of groups contained within the container
-          example:
-          - VTAu-dl6qtyx
-      required:
-      - shapes
-      - lines
-      - groups
-      description: Object listing the IDs of items contained within a container shape (e.g., a frame).
-    LucidStandardImportLine:
-      type: object
-      description: A line definition within a page.
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the line within the import.
-          example: line1
-        lineType:
-          type: string
-          description: The type of line routing.
-          enum:
-          - straight
-          - elbow
-          - curved
-          example: elbow
-        stroke:
-          $ref: '#/components/schemas/LucidStandardImportStroke'
-        endpoint1:
-          $ref: '#/components/schemas/LucidStandardImportEndpoint'
-        endpoint2:
-          $ref: '#/components/schemas/LucidStandardImportEndpoint'
-        text:
-          type: array
-          description: Text labels to display along the line.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportLineText'
-        customData:
-          type: array
-          description: Custom key-value data to attach to the line.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportCustomDatum'
-        linkedData:
-          type: array
-          description: Links to data collection entries.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
-        joints:
-          type: array
-          description: Control points for straight lines.
-          items:
-            $ref: '#/components/schemas/AbsolutePoint'
-        elbowControlPoints:
-          type: array
-          description: Control points for elbow lines.
-          items:
-            $ref: '#/components/schemas/AbsolutePoint'
-        cornerRadius:
-          type: number
-          description: Corner radius for elbow line bends.
-        zIndex:
-          type: integer
-          description: The z-order of the line on the page.
-        lineJumps:
-          type: boolean
-          description: 'Whether this line draws a small hump where it crosses other lines.
-
-            When set, overrides the page-level `lineJumps` setting for this
-
-            line only.
-
-            '
-      required:
-      - id
-      - lineType
-      - endpoint1
-      - endpoint2
-    CustomAttribute:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - singleLineText
-          - multiLineText
-          - singleSelectDropdown
-          - multiSelectDropdown
-          - webLink
-          - numericalRange
-          - hierarchicalDropdown
-          description: The custom attribute type
-          example: singleLineText
-        name:
-          type: string
-          description: Title of the custom attribute. hierarchicalDropdown attributes do not have names.
-          example: Sample Label
-        value:
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              oneOf:
-              - $ref: '#/components/schemas/DataPair'
-              - type: string
-          description: The value assigned to the custom attribute. The type of this value is determined by the Attribute Type.
-          example: null
-      description: Object representing a custom attribute value for a document.
-      required:
-      - type
-    RelativePoint:
-      type: object
-      description: A relative point with coordinates between 0 and 1, inclusive.
-      properties:
-        x:
-          type: number
-          description: The relative x-coordinate (0 to 1).
-          minimum: 0
-          maximum: 1
-        y:
-          type: number
-          description: The relative y-coordinate (0 to 1).
-          minimum: 0
-          maximum: 1
-      required:
-      - x
-      - y
-    LucidStandardImportToggleLayerAction:
-      type: object
-      description: Toggle visibility of layers.
-      properties:
-        type:
-          type: string
-          enum:
-          - toggleLayer
-        layers:
-          type: array
-          description: List of layer names to toggle.
-          items:
-            type: string
-      required:
-      - type
-      - layers
-    LucidStandardImportPageSize:
-      description: 'Page size configuration. Either a standard page size with an optional format, or a custom size with explicit dimensions.
-
-        '
-      oneOf:
-      - $ref: '#/components/schemas/LucidStandardImportStandardPageSize'
-      - $ref: '#/components/schemas/LucidStandardImportCustomPageSize'
-    PatchDocumentRequestBody:
-      type: object
-      description: Request body for updating a document. At least one field should be provided.
-      properties:
-        title:
-          type: string
-          description: New title for the document. Must be non-empty, at most 300 characters, and must not start or end with whitespace.
-          example: My Updated Document
-        parent:
-          description: 'ID of the folder or repository to move the document into. Set to null to move the document to the root folder.
-
-            For repositories, use the repository ID prefixed with `repo_` (e.g., `repo_12345`). For folders, use the numeric folder ID.
-
-            '
-          oneOf:
-          - type: integer
-            description: Numeric folder ID.
-          - type: string
-            description: Repository ID prefixed with `repo_`.
-          example: 12345
-        customTags:
-          type: array
-          items:
-            type: string
-          description: List of custom tags to assign to the document. Including this field overwrites all existing tags on the document with the provided values. Each tag must be non-empty and must not start or end with whitespace. Omitting this field leaves existing tags unchanged; set to an empty array to clear all tags.
-          example:
-          - in progress
-        classificationId:
-          type:
-          - string
-          - 'null'
-          format: uuid
-          description: ID of the classification to assign to the document. Omitting this field leaves the existing classification unchanged; set to null to remove the classification.
-          example: 1cdad938-bf0f-4a0c-a2f8-bf4eb94225ce
-    LucidStandardImportGotoDocumentAction:
-      type: object
-      description: Navigate to a page in another document.
-      properties:
-        type:
-          type: string
-          enum:
-          - gotoDocument
-        documentId:
-          type: string
-          description: The ID of the target document.
-        pageId:
-          type: string
-          description: The ID of the target page within the document.
-        newWindow:
-          type: boolean
-          description: Whether to open in a new window.
-      required:
-      - type
-      - documentId
-      - pageId
-    LucidStandardImportCustomPageDatum:
-      type: object
-      description: A custom key-value pair attached to a page, optionally globally inherited.
-      properties:
-        key:
-          type: string
-          description: The data key.
-        value:
-          type: string
-          description: The data value.
-        global:
-          type: boolean
-          description: When true, this data is globally inherited.
-          default: false
-      required:
-      - key
-      - value
+          description: the ID of the repository
+          example: repo_2000008
     Page:
       type: object
       properties:
@@ -1428,80 +1329,198 @@ components:
           layers: []
         customData: []
         linkedData: []
-    LucidStandardImportGenerator:
+    AccountDocument:
       type: object
-      description: 'A data-backed shape generator that automatically creates shapes from data.
+      properties:
+        documentId:
+          type: string
+          format: uuid
+          description: Unique ID of the document
+          example: 110808fd-4553-4316-bccf-4f25ff59a532
+        title:
+          type: string
+          description: Title of the document
+          example: document title
+        adminViewUrl:
+          type: string
+          format: uri
+          description: Link to view the document
+          example: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/adminView
+        created:
+          type: string
+          format: date-time
+          description: Date and time of when the document was created
+          example: '2019-04-22T13:47:23Z'
+        owner:
+          type: object
+          properties:
+            ownerType:
+              type: string
+              description: user or account
+            id:
+              type: number
+              description: userId or accountId
+        lastModified:
+          type: string
+          format: date-time
+          description: Date and time of when the document was last modified
+          example: '2020-06-26T16:29:37Z'
+        trashed:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: If defined, the timestamp when the document was moved to the trash
+          example: null
+        customTags:
+          type: array
+          items:
+            type: string
+          description: List of any custom tags assigned to the document
+          example:
+          - in progress
+        product:
+          $ref: '#/components/schemas/Product'
+        status:
+          type:
+          - string
+          - 'null'
+          description: Current assigned status of the document
+          example: Complete
+        classification:
+          type:
+          - string
+          - 'null'
+          description: Current assigned classification of the document
+          example: Private
+        parent:
+          type:
+          - integer
+          - 'null'
+          description: ID of the parent folder
+          example: 123456788
+        userCollaboratorIds:
+          type: array
+          items:
+            type: integer
+          description: List of IDs of users that are collaborators on the document
+          example:
+          - 206418105
+          - 206418104
+          - 206418103
+        teamCollaboratorIds:
+          type: array
+          items:
+            type: integer
+          description: List of IDs of teams that are collaborators on the document
+          example:
+          - 111000660
+          - 111000661
+          - 111000659
+      required:
+      - documentId
+      - title
+      - adminViewUrl
+      - created
+      - owner
+      - lastModified
+      - customTags
+      - product
+      - userCollaboratorIds
+      - teamCollaboratorIds
+      example:
+        documentId: 110808fd-4553-4316-bccf-4f25ff59a532
+        title: document title
+        adminViewUrl: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/adminView
+        created: '2019-04-22T13:47:23Z'
+        owner:
+          ownerType: user
+          id: '123456'
+        lastModified: '2020-06-26T16:29:37Z'
+        customTags:
+        - in progress
+        product: lucidchart
+        status: Complete
+        parent: 123456788
+        trashed: null
+        userCollaboratorIds:
+        - 206418105
+        - 206418104
+        - 206418103
+        teamCollaboratorIds:
+        - 111000660
+        - 111000661
+        - 111000659
+    LucidStandardImportEndpoint:
+      type: object
+      description: 'An endpoint of a line. The `type` field determines how the endpoint is positioned.
 
-        The `type` field determines which generator is used.
+        - `shapeEndpoint`: Connects to a shape by its ID.
+
+        - `positionEndpoint`: Connects to an absolute position on the page.
+
+        - `lineEndpoint`: Connects to another line at a relative position.
 
         '
+      discriminator:
+        propertyName: type
+        mapping:
+          shapeEndpoint: '#/LucidStandardImportShapeEndpoint'
+          positionEndpoint: '#/LucidStandardImportPositionEndpoint'
+          lineEndpoint: '#/LucidStandardImportLineEndpoint'
+      oneOf:
+      - $ref: '#/components/schemas/LucidStandardImportShapeEndpoint'
+      - $ref: '#/components/schemas/LucidStandardImportPositionEndpoint'
+      - $ref: '#/components/schemas/LucidStandardImportLineEndpoint'
+    LucidStandardImportFill:
+      description: 'Fill style for a shape. The `type` field determines the fill kind.
+
+        - `color`: A solid color fill.
+
+        - `image`: An image fill, either by URL or by reference to an image in the import archive.
+
+        '
+      discriminator:
+        propertyName: type
+        mapping:
+          color: '#/LucidStandardImportColorFill'
+          image: '#/LucidStandardImportImageFill'
+      oneOf:
+      - $ref: '#/components/schemas/LucidStandardImportColorFill'
+      - $ref: '#/components/schemas/LucidStandardImportImageFill'
+    LucidStandardImportShapeEndpoint:
+      type: object
+      description: An endpoint connected to a shape.
       properties:
         type:
           type: string
-          description: The type of generator.
           enum:
-          - orgChart
-          - mindMap
-          - assistedLayout
-          - umlSequence
-      required:
-      - type
-    LucidStandardImportStroke:
-      type: object
-      description: Stroke styling for a line.
-      properties:
-        color:
-          type: string
-          description: Hex color string for the stroke.
-          default: '#000000'
-          example: '#000000'
-        width:
-          type: number
-          description: Stroke thickness. Must be between 0 and 10, inclusive.
-          default: 2
-          minimum: 0
-          maximum: 10
-          example: 2
+          - shapeEndpoint
         style:
+          $ref: '#/components/schemas/EndpointStyle'
+        shapeId:
           type: string
-          description: The stroke dash style.
-          enum:
-          - solid
-          - dotted
-          - dashed
-          default: solid
-          example: solid
-    LucidStandardImportColorFill:
-      type: object
-      description: A solid color fill.
-      properties:
-        type:
-          type: string
-          enum:
-          - color
-        color:
-          type: string
-          description: Fill color as a hex color string.
-          example: '#ffffff'
+          description: The ID of the shape to connect to.
+          example: shape1
+        position:
+          $ref: '#/components/schemas/RelativePoint'
+          description: Optional relative position on the shape to connect to. If omitted, uses smart auto-linking.
       required:
       - type
-      - color
-    Layer:
+      - style
+      - shapeId
+    Group:
       type: object
       properties:
         id:
           type: string
-          description: Layer ID
+          description: Group ID
           example: VTAu-dl6qtyx
-        name:
-          type: string
-          description: The name of the layer
-          example: Layer 1
         members:
           type: array
           items:
             type: string
-          description: Array of IDs of shapes, lines, & groups contained within the layer
+          description: Array of IDs of shapes, lines, & groups contained within the group
           example:
           - VTAuCB8~evzW
           - VTAuo_Y56.q~
@@ -1513,254 +1532,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LinkedData'
-      description: Object representing a layer on the page of a document. Note that the ItemId of a layer is unique across all groups, layers, shapes, and lines.
+      description: Object representing a group on the page of a document. Note that the ItemId of a group is unique across all groups, layers, shapes, and lines.
       required:
       - id
-      - name
       - members
-      - customData
-      - linkedData
-    Shape:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Shape ID
-          example: VTAu-oQASzul
-        class:
-          type: string
-          description: A unique string representing the type of the shape (e.g., ProcessBlock)
-          example: ProcessBlock
-        textAreas:
-          type: array
-          items:
-            $ref: '#/components/schemas/TextArea'
-        customData:
-          type: array
-          items:
-            $ref: '#/components/schemas/DataPair'
-        linkedData:
-          type: array
-          items:
-            $ref: '#/components/schemas/LinkedData'
-        contains:
-          $ref: '#/components/schemas/Contains'
-          description: If the shape is a container (e.g., a frame), lists the IDs of shapes, lines, and groups contained within it
-        image:
-          $ref: '#/components/schemas/Image'
-          description: If the shape has an image fill, describes the image
-        linkUrl:
-          type: string
-          description: The external website or destination URL attached to the shape, if configured.
-          example: https://example.com
-      required:
-      - id
-      - class
-      - textAreas
-      - customData
-      - linkedData
-      description: Object representing a shape placed on a page of a document. Note that the ItemId of a shape is unique across all groups, layers, shapes, and lines.
-    Image:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-          - resource
-          - user
-          description: Whether the image is a Lucid resource image (`resource`) or a user-uploaded image (`user`)
-          example: resource
-        id:
-          type: string
-          description: The ID of the resource image. Present when type is `resource`.
-          example: T2VkijPHy1qh
-        url:
-          type: string
-          description: The URL of the user-uploaded image. Present when type is `user`.
-          example: https://example.com/image.png
-      required:
-      - type
-      description: Object describing the image fill on a shape.
-    AbsolutePoint:
-      type: object
-      description: An absolute point on the page canvas.
-      properties:
-        x:
-          type: number
-          description: The x-coordinate. Must be between -1200000 and 1200000, inclusive.
-        y:
-          type: number
-          description: The y-coordinate. Must be between -1200000 and 1200000, inclusive.
-      required:
-      - x
-      - y
-    LucidStandardImportContent:
-      type: object
-      description: 'Defines the content of a document using the Lucid Standard Import format, including pages, shapes, and lines.
-
-        Mutually exclusive with `extensionBootstrapData`.
-
-        '
-      properties:
-        version:
-          type: integer
-          description: The version of the Lucid Standard Import format.
-          enum:
-          - 1
-          example: 1
-        pages:
-          type: array
-          description: List of pages to create in the document. At least one page is required.
-          minItems: 1
-          items:
-            $ref: '#/components/schemas/LucidStandardImportPage'
-        collections:
-          type: array
-          description: List of data collections to associate with the document.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportCollection'
-        documentSettings:
-          $ref: '#/components/schemas/LucidStandardImportDocumentSettings'
-      required:
-      - version
-      - pages
-    Data:
-      type: object
-      properties:
-        collections:
-          type: array
-          items:
-            $ref: '#/components/schemas/Collection'
-          description: Array of collections
-      required:
-      - collections
-      description: Object representing an array of Collections on a document.
-    BoundingBox:
-      type: object
-      description: The bounding box that defines a shape's position and size on the page.
-      properties:
-        x:
-          type: number
-          description: The x-coordinate of the top-left corner.
-          example: 0
-        y:
-          type: number
-          description: The y-coordinate of the top-left corner.
-          example: 0
-        w:
-          type: number
-          description: The width of the bounding box.
-          example: 100
-        h:
-          type: number
-          description: The height of the bounding box.
-          example: 50
-      required:
-      - x
-      - y
-      - w
-      - h
-    LucidStandardImportPageSettings:
-      type: object
-      description: Page-level settings for a Lucid Standard Import page.
-      properties:
-        fillColor:
-          type: string
-          description: Background fill color for the page as a hex color string.
-          example: '#ffffff'
-        infiniteCanvas:
-          type: boolean
-          description: Whether the page uses an infinite canvas.
-        size:
-          $ref: '#/components/schemas/LucidStandardImportPageSize'
-        autoTiling:
-          type: boolean
-          description: Whether auto-tiling is enabled for the page.
-        lineJumps:
-          type: boolean
-          description: 'Whether lines on this page draw small humps where they cross
-
-            other lines. Individual lines may override this with their own
-
-            `lineJumps` setting.
-
-            '
-    LucidStandardImportHideLayerAction:
-      type: object
-      description: Hide layers.
-      properties:
-        type:
-          type: string
-          enum:
-          - hideLayer
-        layers:
-          type: array
-          description: List of layer names to hide.
-          items:
-            type: string
-      required:
-      - type
-      - layers
-    LucidStandardImportPage:
-      type: object
-      description: A page definition within a Lucid Standard Import document.
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the page within the import.
-          example: page1
-        title:
-          type: string
-          description: The title of the page.
-          example: Page 1
-        shapes:
-          type: array
-          description: List of shapes to place on the page.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportShape'
-        lines:
-          type: array
-          description: List of lines to place on the page.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportLine'
-        groups:
-          type: array
-          description: List of groups to create on the page.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportGroup'
-        layers:
-          type: array
-          description: List of layers to create on the page.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportLayer'
-        customData:
-          type: array
-          description: Custom key-value data to attach to the page.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportCustomPageDatum'
-        dataBackedShapes:
-          type: array
-          description: List of data-backed shape generators (e.g., org charts, mind maps).
-          items:
-            $ref: '#/components/schemas/LucidStandardImportGenerator'
-        settings:
-          $ref: '#/components/schemas/LucidStandardImportPageSettings'
-      required:
-      - id
-      - title
-    LucidStandardImportCustomDatum:
-      type: object
-      description: A custom key-value pair attached to an item.
-      properties:
-        key:
-          type: string
-          description: The data key.
-        value:
-          type: string
-          description: The data value.
-      required:
-      - key
-      - value
     BootstrapData:
       type: object
       properties:
@@ -1790,127 +1565,23 @@ components:
       - minimumVersion
       - data
       description: Bootstrap data can be attached to the created document to be consumed by a specific Extension Package.
-    LucidStandardImportLineEndpoint:
+    LucidStandardImportCustomPageSize:
       type: object
-      description: An endpoint connected to another line.
+      description: A custom page size with explicit dimensions.
       properties:
-        type:
-          type: string
-          enum:
-          - lineEndpoint
-        style:
-          $ref: '#/components/schemas/EndpointStyle'
-        lineId:
-          type: string
-          description: The ID of the line to connect to.
-          example: line1
-        position:
+        w:
           type: number
-          description: Relative position along the line (0 to 1 inclusive).
-          minimum: 0
-          maximum: 1
+          description: Width of the page. Must be between 1.0 and 20000.0, inclusive.
+          minimum: 1
+          maximum: 20000
+        h:
+          type: number
+          description: Height of the page. Must be between 1.0 and 20000.0, inclusive.
+          minimum: 1
+          maximum: 20000
       required:
-      - type
-      - style
-      - lineId
-      - position
-    Repository:
-      type: object
-      properties:
-        repositoryId:
-          type: string
-          description: the ID of the repository
-          example: repo_2000008
-    LucidStandardImportLayer:
-      type: object
-      description: A layer on a page. Layers can contain shapes, lines, and groups.
-      properties:
-        id:
-          type: string
-          description: Unique identifier for the layer.
-          example: layer1
-        title:
-          type: string
-          description: The display name of the layer.
-          example: Background
-        items:
-          type: array
-          description: 'List of item IDs (shapes, lines, groups) contained in this layer. An item can belong to only one layer. If an item ID is specified in multiple layers, it is assigned to the first layer encountered, and all subsequent references to that item ID are ignored.
-
-            '
-          items:
-            type: string
-        customData:
-          type: array
-          description: Custom key-value data to attach to the layer.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportCustomDatum'
-        linkedData:
-          type: array
-          description: Links to data collection entries.
-          items:
-            $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
-        note:
-          type: string
-          description: A note to attach to the layer.
-        layerIndex:
-          type: integer
-          description: The index order of the layer.
-      required:
-      - id
-      - title
-    LucidStandardImportShapeEndpoint:
-      type: object
-      description: An endpoint connected to a shape.
-      properties:
-        type:
-          type: string
-          enum:
-          - shapeEndpoint
-        style:
-          $ref: '#/components/schemas/EndpointStyle'
-        shapeId:
-          type: string
-          description: The ID of the shape to connect to.
-          example: shape1
-        position:
-          $ref: '#/components/schemas/RelativePoint'
-          description: Optional relative position on the shape to connect to. If omitted, uses smart auto-linking.
-      required:
-      - type
-      - style
-      - shapeId
-    Line:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Line ID
-          example: VTAuwAeC0_R1
-        endpoint1:
-          $ref: '#/components/schemas/Endpoint'
-        endpoint2:
-          $ref: '#/components/schemas/Endpoint'
-        textAreas:
-          type: array
-          items:
-            $ref: '#/components/schemas/TextArea'
-        customData:
-          type: array
-          items:
-            $ref: '#/components/schemas/DataPair'
-        linkedData:
-          type: array
-          items:
-            $ref: '#/components/schemas/LinkedData'
-      description: Object representing a line on the page of a document. Note that the ItemId of a line is unique across all groups, layers, shapes, and lines.
-      required:
-      - id
-      - endpoint1
-      - endpoint2
-      - textAreas
-      - customData
-      - linkedData
+      - w
+      - h
     Document:
       type: object
       properties:
@@ -2062,28 +1733,6 @@ components:
           type: user
           name: John Doe
         accountId: 1234
-    CreatableProduct:
-      type: string
-      enum:
-      - lucidchart
-      - lucidspark
-      description: The Lucid Suite product types that can be created.
-      example: lucidchart
-    LucidStandardImportGotoPageAction:
-      type: object
-      description: Navigate to a page in the current document.
-      properties:
-        type:
-          type: string
-          enum:
-          - gotoPage
-        pageId:
-          type: string
-          description: The ID of the target page.
-          example: page2
-      required:
-      - type
-      - pageId
     Product:
       type: string
       enum:
@@ -2092,6 +1741,672 @@ components:
       - lucidspark
       description: The Lucid Suite product that a document was created in.
       example: lucidchart
+    RelativePoint:
+      type: object
+      description: A relative point with coordinates between 0 and 1, inclusive.
+      properties:
+        x:
+          type: number
+          description: The relative x-coordinate (0 to 1).
+          minimum: 0
+          maximum: 1
+        y:
+          type: number
+          description: The relative y-coordinate (0 to 1).
+          minimum: 0
+          maximum: 1
+      required:
+      - x
+      - y
+    LucidStandardImportPageSettings:
+      type: object
+      description: Page-level settings for a Lucid Standard Import page.
+      properties:
+        fillColor:
+          type: string
+          description: Background fill color for the page as a hex color string.
+          example: '#ffffff'
+        infiniteCanvas:
+          type: boolean
+          description: Whether the page uses an infinite canvas.
+        size:
+          $ref: '#/components/schemas/LucidStandardImportPageSize'
+        autoTiling:
+          type: boolean
+          description: Whether auto-tiling is enabled for the page.
+        lineJumps:
+          type: boolean
+          description: 'Whether lines on this page draw small humps where they cross
+
+            other lines. Individual lines may override this with their own
+
+            `lineJumps` setting.
+
+            '
+    LucidStandardImportLine:
+      type: object
+      description: A line definition within a page.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the line within the import.
+          example: line1
+        lineType:
+          type: string
+          description: The type of line routing.
+          enum:
+          - straight
+          - elbow
+          - curved
+          example: elbow
+        stroke:
+          $ref: '#/components/schemas/LucidStandardImportStroke'
+        endpoint1:
+          $ref: '#/components/schemas/LucidStandardImportEndpoint'
+        endpoint2:
+          $ref: '#/components/schemas/LucidStandardImportEndpoint'
+        text:
+          type: array
+          description: Text labels to display along the line.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLineText'
+        customData:
+          type: array
+          description: Custom key-value data to attach to the line.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCustomDatum'
+        linkedData:
+          type: array
+          description: Links to data collection entries.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
+        joints:
+          type: array
+          description: Control points for straight lines.
+          items:
+            $ref: '#/components/schemas/AbsolutePoint'
+        elbowControlPoints:
+          type: array
+          description: Control points for elbow lines.
+          items:
+            $ref: '#/components/schemas/AbsolutePoint'
+        cornerRadius:
+          type: number
+          description: Corner radius for elbow line bends.
+        zIndex:
+          type: integer
+          description: The z-order of the line on the page.
+        lineJumps:
+          type: boolean
+          description: 'Whether this line draws a small hump where it crosses other lines.
+
+            When set, overrides the page-level `lineJumps` setting for this
+
+            line only.
+
+            '
+      required:
+      - id
+      - lineType
+      - endpoint1
+      - endpoint2
+    BoundingBox:
+      type: object
+      description: The bounding box that defines a shape's position and size on the page.
+      properties:
+        x:
+          type: number
+          description: The x-coordinate of the top-left corner.
+          example: 0
+        y:
+          type: number
+          description: The y-coordinate of the top-left corner.
+          example: 0
+        w:
+          type: number
+          description: The width of the bounding box.
+          example: 100
+        h:
+          type: number
+          description: The height of the bounding box.
+          example: 50
+      required:
+      - x
+      - y
+      - w
+      - h
+    LucidStandardImportColorFill:
+      type: object
+      description: A solid color fill.
+      properties:
+        type:
+          type: string
+          enum:
+          - color
+        color:
+          type: string
+          description: Fill color as a hex color string.
+          example: '#ffffff'
+      required:
+      - type
+      - color
+    LucidStandardImportContent:
+      type: object
+      description: 'Defines the content of a document using the Lucid Standard Import format, including pages, shapes, and lines.
+
+        Mutually exclusive with `extensionBootstrapData`.
+
+        '
+      properties:
+        version:
+          type: integer
+          description: The version of the Lucid Standard Import format.
+          enum:
+          - 1
+          example: 1
+        pages:
+          type: array
+          description: List of pages to create in the document. At least one page is required.
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/LucidStandardImportPage'
+        collections:
+          type: array
+          description: List of data collections to associate with the document.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCollection'
+        documentSettings:
+          $ref: '#/components/schemas/LucidStandardImportDocumentSettings'
+      required:
+      - version
+      - pages
+    LucidStandardImportShowLayerAction:
+      type: object
+      description: Show layers.
+      properties:
+        type:
+          type: string
+          enum:
+          - showLayer
+        layers:
+          type: array
+          description: List of layer names to show.
+          items:
+            type: string
+      required:
+      - type
+      - layers
+    LucidStandardImportGenerator:
+      type: object
+      description: 'A data-backed shape generator that automatically creates shapes from data.
+
+        The `type` field determines which generator is used.
+
+        '
+      properties:
+        type:
+          type: string
+          description: The type of generator.
+          enum:
+          - orgChart
+          - mindMap
+          - assistedLayout
+          - umlSequence
+      required:
+      - type
+    LucidStandardImportLineEndpoint:
+      type: object
+      description: An endpoint connected to another line.
+      properties:
+        type:
+          type: string
+          enum:
+          - lineEndpoint
+        style:
+          $ref: '#/components/schemas/EndpointStyle'
+        lineId:
+          type: string
+          description: The ID of the line to connect to.
+          example: line1
+        position:
+          type: number
+          description: Relative position along the line (0 to 1 inclusive).
+          minimum: 0
+          maximum: 1
+      required:
+      - type
+      - style
+      - lineId
+      - position
+    PatchDocumentRequestBody:
+      type: object
+      description: Request body for updating a document. At least one field should be provided.
+      properties:
+        title:
+          type: string
+          description: New title for the document. Must be non-empty, at most 300 characters, and must not start or end with whitespace.
+          example: My Updated Document
+        parent:
+          description: 'ID of the folder or repository to move the document into. Set to null to move the document to the root folder.
+
+            For repositories, use the repository ID prefixed with `repo_` (e.g., `repo_12345`). For folders, use the numeric folder ID.
+
+            '
+          oneOf:
+          - type: integer
+            description: Numeric folder ID.
+          - type: string
+            description: Repository ID prefixed with `repo_`.
+          example: 12345
+        customTags:
+          type: array
+          items:
+            type: string
+          description: List of custom tags to assign to the document. Including this field overwrites all existing tags on the document with the provided values. Each tag must be non-empty and must not start or end with whitespace. Omitting this field leaves existing tags unchanged; set to an empty array to clear all tags.
+          example:
+          - in progress
+        classificationId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: ID of the classification to assign to the document. Omitting this field leaves the existing classification unchanged; set to null to remove the classification.
+          example: 1cdad938-bf0f-4a0c-a2f8-bf4eb94225ce
+    LucidStandardImportGroup:
+      type: object
+      description: A group of items on a page.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the group.
+          example: group1
+        items:
+          type: array
+          description: 'List of item IDs (shapes, lines, groups) contained in this group. An item can belong to only one group. If an item ID is specified in multiple groups, it is assigned to the first group encountered, and all subsequent references to that item ID are ignored.
+
+            '
+          items:
+            type: string
+        customData:
+          type: array
+          description: Custom key-value data to attach to the group.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCustomDatum'
+        linkedData:
+          type: array
+          description: Links to data collection entries.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
+        note:
+          type: string
+          description: A note to attach to the group.
+        zIndex:
+          type: integer
+          description: The z-order of the group on the page.
+      required:
+      - id
+    LucidStandardImportAction:
+      type: object
+      description: 'An interactive action attached to a shape. The `type` field determines the action kind.
+
+        '
+      discriminator:
+        propertyName: type
+        mapping:
+          url: '#/LucidStandardImportUrlAction'
+          gotoPage: '#/LucidStandardImportGotoPageAction'
+          gotoDocument: '#/LucidStandardImportGotoDocumentAction'
+          toggleLayer: '#/LucidStandardImportToggleLayerAction'
+          showLayer: '#/LucidStandardImportShowLayerAction'
+          hideLayer: '#/LucidStandardImportHideLayerAction'
+      oneOf:
+      - $ref: '#/components/schemas/LucidStandardImportUrlAction'
+      - $ref: '#/components/schemas/LucidStandardImportGotoPageAction'
+      - $ref: '#/components/schemas/LucidStandardImportGotoDocumentAction'
+      - $ref: '#/components/schemas/LucidStandardImportToggleLayerAction'
+      - $ref: '#/components/schemas/LucidStandardImportShowLayerAction'
+      - $ref: '#/components/schemas/LucidStandardImportHideLayerAction'
+    LucidStandardImportCustomPageDatum:
+      type: object
+      description: A custom key-value pair attached to a page, optionally globally inherited.
+      properties:
+        key:
+          type: string
+          description: The data key.
+        value:
+          type: string
+          description: The data value.
+        global:
+          type: boolean
+          description: When true, this data is globally inherited.
+          default: false
+      required:
+      - key
+      - value
+    Line:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Line ID
+          example: VTAuwAeC0_R1
+        endpoint1:
+          $ref: '#/components/schemas/Endpoint'
+        endpoint2:
+          $ref: '#/components/schemas/Endpoint'
+        textAreas:
+          type: array
+          items:
+            $ref: '#/components/schemas/TextArea'
+        customData:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+        linkedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedData'
+      description: Object representing a line on the page of a document. Note that the ItemId of a line is unique across all groups, layers, shapes, and lines.
+      required:
+      - id
+      - endpoint1
+      - endpoint2
+      - textAreas
+      - customData
+      - linkedData
+    LucidStandardImportLinkedDatum:
+      type: object
+      description: A reference linking an item to a data collection entry.
+      properties:
+        collectionId:
+          type: string
+          description: The ID of the collection containing the data.
+        key:
+          type: string
+          description: The key identifying the data entry within the collection.
+      required:
+      - collectionId
+      - key
+    LucidStandardImportLineText:
+      type: object
+      description: A text label on a line.
+      properties:
+        text:
+          type: string
+          description: The text content.
+        position:
+          type: number
+          description: Relative position along the line (0 to 1 inclusive).
+          default: 0.5
+          minimum: 0
+          maximum: 1
+        side:
+          type: string
+          description: Which side of the line the text appears on.
+          enum:
+          - top
+          - middle
+          - bottom
+          default: middle
+      required:
+      - text
+    Layer:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Layer ID
+          example: VTAu-dl6qtyx
+        name:
+          type: string
+          description: The name of the layer
+          example: Layer 1
+        members:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of shapes, lines, & groups contained within the layer
+          example:
+          - VTAuCB8~evzW
+          - VTAuo_Y56.q~
+        customData:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+        linkedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedData'
+      description: Object representing a layer on the page of a document. Note that the ItemId of a layer is unique across all groups, layers, shapes, and lines.
+      required:
+      - id
+      - name
+      - members
+      - customData
+      - linkedData
+    Data:
+      type: object
+      properties:
+        collections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Collection'
+          description: Array of collections
+      required:
+      - collections
+      description: Object representing an array of Collections on a document.
+    Contains:
+      type: object
+      properties:
+        shapes:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of shapes contained within the container
+          example:
+          - VTAuCB8~evzW
+        lines:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of lines contained within the container
+          example:
+          - VTAuo_Y56.q~
+        groups:
+          type: array
+          items:
+            type: string
+          description: Array of IDs of groups contained within the container
+          example:
+          - VTAu-dl6qtyx
+      required:
+      - shapes
+      - lines
+      - groups
+      description: Object listing the IDs of items contained within a container shape (e.g., a frame).
+    Shape:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Shape ID
+          example: VTAu-oQASzul
+        class:
+          type: string
+          description: A unique string representing the type of the shape (e.g., ProcessBlock)
+          example: ProcessBlock
+        textAreas:
+          type: array
+          items:
+            $ref: '#/components/schemas/TextArea'
+        customData:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataPair'
+        linkedData:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedData'
+        contains:
+          $ref: '#/components/schemas/Contains'
+          description: If the shape is a container (e.g., a frame), lists the IDs of shapes, lines, and groups contained within it
+        image:
+          $ref: '#/components/schemas/Image'
+          description: If the shape has an image fill, describes the image
+        linkUrl:
+          type: string
+          description: The external website or destination URL attached to the shape, if configured.
+          example: https://example.com
+      required:
+      - id
+      - class
+      - textAreas
+      - customData
+      - linkedData
+      description: Object representing a shape placed on a page of a document. Note that the ItemId of a shape is unique across all groups, layers, shapes, and lines.
+    Collection:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Id of the collection
+          example: ABAuwlf2BTy8
+        name:
+          type: string
+          description: Collection name
+          example: Collection 1
+        primaryKey:
+          type: array
+          items:
+            type: string
+          description: The primary key column name
+          example:
+          - PKey 1
+      required:
+      - id
+      - name
+      - primaryKey
+      description: A collection is a container inside of a source of data. A data source can have many collections, but a collection can only belong to one data source. A collection can be thought of as a tab or individual sheet in a spreadsheet file.
+    LucidStandardImportPositionEndpoint:
+      type: object
+      description: An endpoint at an absolute position on the page.
+      properties:
+        type:
+          type: string
+          enum:
+          - positionEndpoint
+        style:
+          $ref: '#/components/schemas/EndpointStyle'
+        position:
+          $ref: '#/components/schemas/AbsolutePoint'
+      required:
+      - type
+      - style
+      - position
+    LucidStandardImportPage:
+      type: object
+      description: A page definition within a Lucid Standard Import document.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the page within the import.
+          example: page1
+        title:
+          type: string
+          description: The title of the page.
+          example: Page 1
+        shapes:
+          type: array
+          description: List of shapes to place on the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportShape'
+        lines:
+          type: array
+          description: List of lines to place on the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLine'
+        groups:
+          type: array
+          description: List of groups to create on the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportGroup'
+        layers:
+          type: array
+          description: List of layers to create on the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportLayer'
+        customData:
+          type: array
+          description: Custom key-value data to attach to the page.
+          items:
+            $ref: '#/components/schemas/LucidStandardImportCustomPageDatum'
+        dataBackedShapes:
+          type: array
+          description: List of data-backed shape generators (e.g., org charts, mind maps).
+          items:
+            $ref: '#/components/schemas/LucidStandardImportGenerator'
+        settings:
+          $ref: '#/components/schemas/LucidStandardImportPageSettings'
+      required:
+      - id
+      - title
+    LucidStandardImportStroke:
+      type: object
+      description: Stroke styling for a line.
+      properties:
+        color:
+          type: string
+          description: Hex color string for the stroke.
+          default: '#000000'
+          example: '#000000'
+        width:
+          type: number
+          description: Stroke thickness. Must be between 0 and 10, inclusive.
+          default: 2
+          minimum: 0
+          maximum: 10
+          example: 2
+        style:
+          type: string
+          description: The stroke dash style.
+          enum:
+          - solid
+          - dotted
+          - dashed
+          default: solid
+          example: solid
+    CustomAttribute:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - singleLineText
+          - multiLineText
+          - singleSelectDropdown
+          - multiSelectDropdown
+          - webLink
+          - numericalRange
+          - hierarchicalDropdown
+          description: The custom attribute type
+          example: singleLineText
+        name:
+          type: string
+          description: Title of the custom attribute. hierarchicalDropdown attributes do not have names.
+          example: Sample Label
+        value:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              oneOf:
+              - $ref: '#/components/schemas/DataPair'
+              - type: string
+          description: The value assigned to the custom attribute. The type of this value is determined by the Attribute Type.
+          example: null
+      description: Object representing a custom attribute value for a document.
+      required:
+      - type
     LucidStandardImportCollection:
       type: object
       description: 'A data collection to associate with the document. Exactly one of `dataSource` or `values` must be provided — providing both or neither is an error.
@@ -2123,149 +2438,6 @@ components:
             items:
               type: object
               additionalProperties: true
-    LucidStandardImportEndpoint:
-      type: object
-      description: 'An endpoint of a line. The `type` field determines how the endpoint is positioned.
-
-        - `shapeEndpoint`: Connects to a shape by its ID.
-
-        - `positionEndpoint`: Connects to an absolute position on the page.
-
-        - `lineEndpoint`: Connects to another line at a relative position.
-
-        '
-      discriminator:
-        propertyName: type
-        mapping:
-          shapeEndpoint: '#/LucidStandardImportShapeEndpoint'
-          positionEndpoint: '#/LucidStandardImportPositionEndpoint'
-          lineEndpoint: '#/LucidStandardImportLineEndpoint'
-      oneOf:
-      - $ref: '#/components/schemas/LucidStandardImportShapeEndpoint'
-      - $ref: '#/components/schemas/LucidStandardImportPositionEndpoint'
-      - $ref: '#/components/schemas/LucidStandardImportLineEndpoint'
-    AccountDocument:
-      type: object
-      properties:
-        documentId:
-          type: string
-          format: uuid
-          description: Unique ID of the document
-          example: 110808fd-4553-4316-bccf-4f25ff59a532
-        title:
-          type: string
-          description: Title of the document
-          example: document title
-        adminViewUrl:
-          type: string
-          format: uri
-          description: Link to view the document
-          example: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/adminView
-        created:
-          type: string
-          format: date-time
-          description: Date and time of when the document was created
-          example: '2019-04-22T13:47:23Z'
-        owner:
-          type: object
-          properties:
-            ownerType:
-              type: string
-              description: user or account
-            id:
-              type: number
-              description: userId or accountId
-        lastModified:
-          type: string
-          format: date-time
-          description: Date and time of when the document was last modified
-          example: '2020-06-26T16:29:37Z'
-        trashed:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: If defined, the timestamp when the document was moved to the trash
-          example: null
-        customTags:
-          type: array
-          items:
-            type: string
-          description: List of any custom tags assigned to the document
-          example:
-          - in progress
-        product:
-          $ref: '#/components/schemas/Product'
-        status:
-          type:
-          - string
-          - 'null'
-          description: Current assigned status of the document
-          example: Complete
-        classification:
-          type:
-          - string
-          - 'null'
-          description: Current assigned classification of the document
-          example: Private
-        parent:
-          type:
-          - integer
-          - 'null'
-          description: ID of the parent folder
-          example: 123456788
-        userCollaboratorIds:
-          type: array
-          items:
-            type: integer
-          description: List of IDs of users that are collaborators on the document
-          example:
-          - 206418105
-          - 206418104
-          - 206418103
-        teamCollaboratorIds:
-          type: array
-          items:
-            type: integer
-          description: List of IDs of teams that are collaborators on the document
-          example:
-          - 111000660
-          - 111000661
-          - 111000659
-      required:
-      - documentId
-      - title
-      - adminViewUrl
-      - created
-      - owner
-      - lastModified
-      - customTags
-      - product
-      - userCollaboratorIds
-      - teamCollaboratorIds
-      example:
-        documentId: 110808fd-4553-4316-bccf-4f25ff59a532
-        title: document title
-        adminViewUrl: https://lucid.app/lucidchart/110808fd-4553-4316-bccf-4f25ff59a532/adminView
-        created: '2019-04-22T13:47:23Z'
-        owner:
-          ownerType: user
-          id: '123456'
-        lastModified: '2020-06-26T16:29:37Z'
-        customTags:
-        - in progress
-        product: lucidchart
-        status: Complete
-        parent: 123456788
-        trashed: null
-        userCollaboratorIds:
-        - 206418105
-        - 206418104
-        - 206418103
-        teamCollaboratorIds:
-        - 111000660
-        - 111000661
-        - 111000659
     TextArea:
       type: object
       properties:
@@ -2281,22 +2453,6 @@ components:
       required:
       - label
       - text
-    LucidStandardImportPositionEndpoint:
-      type: object
-      description: An endpoint at an absolute position on the page.
-      properties:
-        type:
-          type: string
-          enum:
-          - positionEndpoint
-        style:
-          $ref: '#/components/schemas/EndpointStyle'
-        position:
-          $ref: '#/components/schemas/AbsolutePoint'
-      required:
-      - type
-      - style
-      - position
     Items:
       type: object
       properties:
@@ -2326,316 +2482,160 @@ components:
       - lines
       - groups
       - layers
-    LucidStandardImportAction:
+    DocumentOwner:
       type: object
-      description: 'An interactive action attached to a shape. The `type` field determines the action kind.
-
-        '
-      discriminator:
-        propertyName: type
-        mapping:
-          url: '#/LucidStandardImportUrlAction'
-          gotoPage: '#/LucidStandardImportGotoPageAction'
-          gotoDocument: '#/LucidStandardImportGotoDocumentAction'
-          toggleLayer: '#/LucidStandardImportToggleLayerAction'
-          showLayer: '#/LucidStandardImportShowLayerAction'
-          hideLayer: '#/LucidStandardImportHideLayerAction'
-      oneOf:
-      - $ref: '#/components/schemas/LucidStandardImportUrlAction'
-      - $ref: '#/components/schemas/LucidStandardImportGotoPageAction'
-      - $ref: '#/components/schemas/LucidStandardImportGotoDocumentAction'
-      - $ref: '#/components/schemas/LucidStandardImportToggleLayerAction'
-      - $ref: '#/components/schemas/LucidStandardImportShowLayerAction'
-      - $ref: '#/components/schemas/LucidStandardImportHideLayerAction'
-    LucidStandardImportLinkedDatum:
-      type: object
-      description: A reference linking an item to a data collection entry.
       properties:
-        collectionId:
+        id:
+          type: number
+          description: Id of either the user or the account, depending on the type of the document user resource.
+          example: 123456
+        type:
           type: string
-          description: The ID of the collection containing the data.
-        key:
+          description: Specifies if the owner resource is referring to a user or an account. Value will be either "user" or "account".
+          example: user
+        name:
           type: string
-          description: The key identifying the data entry within the collection.
-      required:
-      - collectionId
-      - key
-    LucidStandardImportShape:
+          description: Full name of the user that owns this document. This field is excluded if this document is owned by an account.
+          example: John Doe
+    LucidStandardImportLayer:
       type: object
-      description: 'A shape definition within a page. The `type` field determines which kind of shape to create.
-
-        Common shape types include `rectangle`, `circle`, `diamond`, `cloud`, `process`, `document`,
-
-        `database`, `hexagon`, `octagon`, `pill`, `roundedRectangle`, `triangle`, `isoscelesTriangle`,
-
-        `stickyNote`, `image`, `table`, `swimLanes`, and many more including BPMN shapes.
-
-        '
+      description: A layer on a page. Layers can contain shapes, lines, and groups.
       properties:
         id:
           type: string
-          description: Unique identifier for the shape within the import. Used to reference this shape from lines and groups.
-          example: shape1
-        type:
+          description: Unique identifier for the layer.
+          example: layer1
+        title:
           type: string
-          description: The type of shape to create.
-          enum:
-          - bpmnActivity
-          - bpmnBlackBoxPool
-          - bpmnChoreography
-          - bpmnConversation
-          - bpmnDataObject
-          - bpmnDataStore
-          - bpmnEvent
-          - bpmnGateway
-          - bpmnGroup
-          - bpmnPool
-          - bpmnTextAnnotation
-          - braceContainer
-          - braceNote
-          - bracketContainer
-          - circle
-          - circleContainer
-          - cloud
-          - connector
-          - cross
-          - namedContainer
-          - namedShape
-          - data
-          - database
-          - decision
-          - delay
-          - diamond
-          - diamondContainer
-          - directAccessStorage
-          - display
-          - document
-          - doubleArrow
-          - flexiblePolygon
-          - freehandBlock
-          - freehandDrawing
-          - hexagon
-          - hotspot
-          - image
-          - internalStorage
-          - isoscelesTriangle
-          - lucidCard
-          - manualInput
-          - manualOperation
-          - merge
-          - multipleDocuments
-          - note
-          - octagon
-          - offPageLink
-          - or
-          - paperTape
-          - pentagon
-          - pillContainer
-          - polyStar
-          - predefinedProcess
-          - preparation
-          - process
-          - rectangle
-          - rectangleContainer
-          - rightTriangle
-          - roundedRectangleContainer
-          - singleArrow
-          - sparkCalloutSquare
-          - sparkContainer
-          - sparkFrame
-          - stickyNote
-          - storedData
-          - summingJunction
-          - swimLanes
-          - table
-          - terminator
-          - text
-          - umlClass
-          example: rectangle
-        boundingBox:
-          $ref: '#/components/schemas/BoundingBox'
-        text:
-          type: string
-          description: Text content to display inside the shape.
-          example: Hello World
-        opacity:
-          type: integer
-          description: Opacity of the shape, from 0 (fully transparent) to 100 (fully opaque).
-          minimum: 0
-          maximum: 100
-        note:
-          type: string
-          description: A note to attach to the shape.
-        zIndex:
-          type: integer
-          description: The z-order of the shape on the page.
+          description: The display name of the layer.
+          example: Background
+        items:
+          type: array
+          description: 'List of item IDs (shapes, lines, groups) contained in this layer. An item can belong to only one layer. If an item ID is specified in multiple layers, it is assigned to the first layer encountered, and all subsequent references to that item ID are ignored.
+
+            '
+          items:
+            type: string
         customData:
           type: array
-          description: Custom key-value data to attach to the shape.
+          description: Custom key-value data to attach to the layer.
           items:
             $ref: '#/components/schemas/LucidStandardImportCustomDatum'
-        style:
-          $ref: '#/components/schemas/LucidStandardImportStyle'
-        actions:
-          type: array
-          description: Interactive actions attached to the shape (e.g., navigate to a URL or page).
-          items:
-            $ref: '#/components/schemas/LucidStandardImportAction'
         linkedData:
           type: array
           description: Links to data collection entries.
           items:
             $ref: '#/components/schemas/LucidStandardImportLinkedDatum'
+        note:
+          type: string
+          description: A note to attach to the layer.
+        layerIndex:
+          type: integer
+          description: The index order of the layer.
       required:
       - id
-      - type
-      - boundingBox
-    LucidStandardImportStandardPageSize:
+      - title
+    LucidStandardImportToggleLayerAction:
       type: object
-      description: A standard named page size.
+      description: Toggle visibility of layers.
       properties:
         type:
           type: string
-          description: The standard page size name.
           enum:
-          - letter
-          - legal
-          - executive
-          - a3
-          - a4
-          - a5
-          - tabloid
-          - folio
-          - statement
-          example: letter
-        format:
-          type: string
-          description: Page orientation.
-          enum:
-          - landscape
-          - portrait
-          default: portrait
-      required:
-      - type
-    EndpointStyle:
-      type: string
-      description: The visual style of a line endpoint.
-      enum:
-      - none
-      - aggregation
-      - arrow
-      - hollowArrow
-      - openArrow
-      - async1
-      - async2
-      - closedSquare
-      - openSquare
-      - bpmnConditional
-      - bpmnDefault
-      - closedCircle
-      - openCircle
-      - composition
-      - exactlyOne
-      - generalization
-      - many
-      - nesting
-      - one
-      - oneOrMore
-      - zeroOrMore
-      - zeroOrOne
-      example: arrow
-    LucidStandardImportCustomPageSize:
-      type: object
-      description: A custom page size with explicit dimensions.
-      properties:
-        w:
-          type: number
-          description: Width of the page. Must be between 1.0 and 20000.0, inclusive.
-          minimum: 1
-          maximum: 20000
-        h:
-          type: number
-          description: Height of the page. Must be between 1.0 and 20000.0, inclusive.
-          minimum: 1
-          maximum: 20000
-      required:
-      - w
-      - h
-    Collection:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Id of the collection
-          example: ABAuwlf2BTy8
-        name:
-          type: string
-          description: Collection name
-          example: Collection 1
-        primaryKey:
+          - toggleLayer
+        layers:
           type: array
+          description: List of layer names to toggle.
           items:
             type: string
-          description: The primary key column name
-          example:
-          - PKey 1
       required:
-      - id
-      - name
-      - primaryKey
-      description: A collection is a container inside of a source of data. A data source can have many collections, but a collection can only belong to one data source. A collection can be thought of as a tab or individual sheet in a spreadsheet file.
-    LinkedData:
+      - type
+      - layers
+    LucidStandardImportCustomDatum:
       type: object
+      description: A custom key-value pair attached to an item.
       properties:
-        collection_id:
+        key:
           type: string
-          description: Id of the collection containing the data
-          example: ABAuwlf2BTy8
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/DataPair'
-          description: Key-value pairs from the dataset
-        primaryKeyValue:
-          type: string
-          description: The value of the primary key of the dataset
-          example: Pkey Value
-      description: Object representing data linked to a resource on a document.
-      required:
-      - data
-      - primaryKeyValue
-    DataPair:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Custom data key
+          description: The data key.
         value:
           type: string
-          description: Custom data value
-      description: Object representing a key-value pair of data.
+          description: The data value.
       required:
-      - name
+      - key
       - value
-      example:
-        name: City
-        value: New York
-    LucidStandardImportFill:
-      description: 'Fill style for a shape. The `type` field determines the fill kind.
-
-        - `color`: A solid color fill.
-
-        - `image`: An image fill, either by URL or by reference to an image in the import archive.
-
-        '
-      discriminator:
-        propertyName: type
-        mapping:
-          color: '#/LucidStandardImportColorFill'
-          image: '#/LucidStandardImportImageFill'
-      oneOf:
-      - $ref: '#/components/schemas/LucidStandardImportColorFill'
-      - $ref: '#/components/schemas/LucidStandardImportImageFill'
+    Endpoint:
+      type: object
+      properties:
+        style:
+          type: string
+          description: Line end style
+          example: Arrow
+        connectedTo:
+          type:
+          - string
+          - 'null'
+          description: Id of shape or line the line is connected to
+          example: null
+      description: Object representing the endpoint of a Line.
+      required:
+      - style
+      - connectedTo
+    LucidStandardImportHideLayerAction:
+      type: object
+      description: Hide layers.
+      properties:
+        type:
+          type: string
+          enum:
+          - hideLayer
+        layers:
+          type: array
+          description: List of layer names to hide.
+          items:
+            type: string
+      required:
+      - type
+      - layers
+    Image:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - resource
+          - user
+          description: Whether the image is a Lucid resource image (`resource`) or a user-uploaded image (`user`)
+          example: resource
+        id:
+          type: string
+          description: The ID of the resource image. Present when type is `resource`.
+          example: T2VkijPHy1qh
+        url:
+          type: string
+          description: The URL of the user-uploaded image. Present when type is `user`.
+          example: https://example.com/image.png
+      required:
+      - type
+      description: Object describing the image fill on a shape.
+    LucidStandardImportUrlAction:
+      type: object
+      description: Navigate to an external URL.
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+        url:
+          type: string
+          description: The target URL.
+          example: https://example.com
+        newWindow:
+          type: boolean
+          description: Whether to open in a new window.
+      required:
+      - type
+      - url
   parameters:
     RequestAs-AccountDocuments:
       in: header
