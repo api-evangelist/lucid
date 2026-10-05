@@ -1,0 +1,12 @@
+{
+ "url": "https://lucid.readme.io/openapi/lucid-scim-api.json",
+ "requested_url": "https://lucid.readme.io/openapi/lucid-scim-api.json",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 29073,
+ "sha256": "557bc4d166e701945d42461ef388fa727cbb4139c67e73b12c90e7923e1d1c5f",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 1.0), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
