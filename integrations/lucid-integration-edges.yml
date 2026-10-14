@@ -1,0 +1,27 @@
+generated: '2026-10-14'
+method: searched
+checked:
+- https://marketplace.atlassian.com/
+marketplace_apps: []
+edges:
+- partner_name: Atlassian Marketplace
+  partner: atlassian
+  partner_match: aggregator
+  type: marketplace
+  marketplace: atlassian
+  channel: partner-built
+  relationship: platform-app
+  direction: third-party
+  evidence: https://marketplace.atlassian.com/vendors/350257/lucid
+  listing_count: 7
+  apps:
+  - Lucidchart Diagrams Connector
+  - Lucidchart Diagrams Connector for Jira
+  - Lucidspark Boards Connector
+  - Lucidspark Boards Connector for Jira
+  - Lucidscale Models Connector
+  publisher_name: Lucid
+  detected_by: sweep-devtools.py
+  detected: '2026-10-14'
+source:
+- https://marketplace.atlassian.com/
