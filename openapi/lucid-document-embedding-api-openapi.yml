@@ -90,16 +90,6 @@ paths:
           description: The embed id in the parameter is not found.
 components:
   schemas:
-    ViewerType:
-      type: string
-      enum:
-      - rich
-      - simple
-      description: '- rich: The standard Lucid viewer experience. A fully interactive viewer with zoom, panning, and support for hotspots and other interactive elements.
-
-        - simple: A basic Lucid viewer experience that can be used in place of the rich viewer if there are performance or load time concerns. The simple viewer renders non-interactive raster images instead of a high-fidelity vector experience and is a poorer fit for viewing larger documents.
-
-        '
     ViewerCustomSettings:
       type: string
       enum:
@@ -110,14 +100,6 @@ components:
         - none: "Settings for <app>" link would not be available in the settings editor.
 
         '
-    Product:
-      type: string
-      enum:
-      - lucidchart
-      - lucidscale
-      - lucidspark
-      description: The Lucid Suite product that a document was created in.
-      example: lucidchart
     UI:
       type: string
       enum:
@@ -128,6 +110,24 @@ components:
         - settings: When loading an existing embed, show the user the embed settings interface before taking them to the standard embed view of the document.
 
         '
+    ViewerType:
+      type: string
+      enum:
+      - rich
+      - simple
+      description: '- rich: The standard Lucid viewer experience. A fully interactive viewer with zoom, panning, and support for hotspots and other interactive elements.
+
+        - simple: A basic Lucid viewer experience that can be used in place of the rich viewer if there are performance or load time concerns. The simple viewer renders non-interactive raster images instead of a high-fidelity vector experience and is a poorer fit for viewing larger documents.
+
+        '
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
     SessionConfig:
       type: object
       properties:

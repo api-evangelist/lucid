@@ -327,6 +327,33 @@ components:
           description: Array of users and their roles to add or update on the repository
       required:
       - users
+    RepositoryId:
+      type: string
+      description: Unique identifier for a repository folder, prefixed with `repo_`
+      example: repo_1234321
+    RepositoryObject:
+      type: object
+      properties:
+        repositoryId:
+          $ref: '#/components/schemas/RepositoryId'
+        name:
+          type: string
+          description: Display name of the repository
+          example: My Business Process Repository
+        accessType:
+          $ref: '#/components/schemas/RepositoryAccessType'
+        created:
+          type: string
+          format: date-time
+          description: The date and time the repository was created
+          example: '2022-11-11T21:48:35.293Z'
+    RepositoryRole:
+      type: string
+      enum:
+      - REPOSITORY_OWNER
+      - REPOSITORY_MEMBER
+      description: Role of a user on a repository
+      example: REPOSITORY_OWNER
     RepositoryGroupCollaborator:
       type: object
       properties:
@@ -338,18 +365,6 @@ components:
           type: integer
           description: Unique identifier of the group
           example: 123456
-    AddRepositoryUserRequest:
-      type: object
-      properties:
-        userId:
-          type: integer
-          description: Unique identifier of the user to add or update
-          example: 1234567
-        role:
-          $ref: '#/components/schemas/RepositoryRole'
-      required:
-      - userId
-      - role
     RepositoryUser:
       type: object
       properties:
@@ -368,6 +383,13 @@ components:
           format: date-time
           description: Date and time when the user was added to the repository
           example: '2026-01-21T01:10:41Z'
+    RepositoryAccessType:
+      type: string
+      enum:
+      - UNRESTRICTED
+      - RESTRICTED
+      description: Determines repository visibility. UNRESTRICTED repositories are visible to all users on the account, RESTRICTED are visible to specific authorized groups and individuals.
+      example: UNRESTRICTED
     RepositoryGroupsRequest:
       type: object
       properties:
@@ -381,40 +403,18 @@ components:
           - 789123
       required:
       - groups
-    RepositoryAccessType:
-      type: string
-      enum:
-      - UNRESTRICTED
-      - RESTRICTED
-      description: Determines repository visibility. UNRESTRICTED repositories are visible to all users on the account, RESTRICTED are visible to specific authorized groups and individuals.
-      example: UNRESTRICTED
-    RepositoryObject:
+    AddRepositoryUserRequest:
       type: object
       properties:
-        repositoryId:
-          $ref: '#/components/schemas/RepositoryId'
-        name:
-          type: string
-          description: Display name of the repository
-          example: My Business Process Repository
-        accessType:
-          $ref: '#/components/schemas/RepositoryAccessType'
-        created:
-          type: string
-          format: date-time
-          description: The date and time the repository was created
-          example: '2022-11-11T21:48:35.293Z'
-    RepositoryId:
-      type: string
-      description: Unique identifier for a repository folder, prefixed with `repo_`
-      example: repo_1234321
-    RepositoryRole:
-      type: string
-      enum:
-      - REPOSITORY_OWNER
-      - REPOSITORY_MEMBER
-      description: Role of a user on a repository
-      example: REPOSITORY_OWNER
+        userId:
+          type: integer
+          description: Unique identifier of the user to add or update
+          example: 1234567
+        role:
+          $ref: '#/components/schemas/RepositoryRole'
+      required:
+      - userId
+      - role
   securitySchemes:
     OAuth2:
       type: oauth2

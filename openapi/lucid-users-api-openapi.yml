@@ -385,6 +385,100 @@ paths:
     - url: https://users.lucid.app/scim/v2
 components:
   schemas:
+    CreateUserBody:
+      type: object
+      properties:
+        email:
+          type: string
+          example: john-doe@example.com
+          description: The user's email.
+        firstName:
+          type: string
+          example: John
+          description: The user's first name.
+        lastName:
+          type: string
+          example: Doe
+          description: The user's last name.
+        username:
+          type: string
+          example: john-doe@example.com
+          description: The user's username. If not provided the email will be used as the username.
+        password:
+          type: string
+          example: '`.~b"J<CA95m`bV@'
+          description: The user's password.
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserRole'
+          example:
+          - billing-admin
+          - team-admin
+          description: A list of roles assigned to the user.
+      required:
+      - email
+      - firstName
+      - lastName
+    Avatar:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - url
+          example: url
+          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
+        link:
+          type: string
+          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
+          description: A URL pointing to the user's avatar image.
+      required:
+      - type
+      - link
+      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
+    Profile:
+      type: object
+      properties:
+        accountId:
+          type: number
+          example: 100
+          description: The unique ID for the user's account.
+        username:
+          type: string
+          example: johndoe
+          description: Username of the user.
+        email:
+          type: string
+          example: john-doe@example.com
+          description: Email of the user.
+        fullName:
+          type: string
+          example: John Doe
+          description: Full name of the user.
+        id:
+          type: number
+          example: 101
+          description: ID of the user.
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+          description: A reference to the user's avatar image, falling back to their Gravatar image.
+      description: The Profile resource contains basic profile information about a user.
+    UserRole:
+      type: string
+      enum:
+      - account-owner
+      - billing-admin
+      - enterprise-shield-admin
+      - developer
+      - document-admin
+      - group-admin
+      - organizational-group-admin
+      - team-admin
+      - team-manager
+      - template-admin
+      - unknown-role
+      description: Allows various administrative actions.
     User:
       type: object
       properties:
@@ -424,100 +518,34 @@ components:
           $ref: '#/components/schemas/Avatar'
           description: A reference to the user's avatar image, falling back to their Gravatar image.
       description: A standard representation of a user.
-    UserRole:
-      type: string
-      enum:
-      - account-owner
-      - billing-admin
-      - enterprise-shield-admin
-      - developer
-      - document-admin
-      - group-admin
-      - organizational-group-admin
-      - team-admin
-      - team-manager
-      - template-admin
-      - unknown-role
-      description: Allows various administrative actions.
-    Avatar:
+    Email:
       type: object
       properties:
+        value:
+          type: string
+          description: The user's email.
+          example: john-doe@example.com
         type:
           type: string
-          enum:
-          - url
-          example: url
-          description: The kind of avatar. Currently always `url`, indicating the avatar is referenced by a link. Additional avatar kinds may be introduced in the future.
-        link:
-          type: string
-          example: https://www.gravatar.com/avatar/00000000000000000000000000000000?s=200&d=404
-          description: A URL pointing to the user's avatar image.
-      required:
-      - type
-      - link
-      description: A reference to a user's avatar image. When the user has no uploaded avatar, this falls back to their Gravatar image.
-    CreateUserBody:
+          description: A label indicating the attribute's function (e.g., 'work' or 'home').
+          example: work
+        primary:
+          type: boolean
+          description: Used to determine the primary email of the emails given.
+          example: true
+      description: An object representing a user's email.
+    PhoneNumber:
       type: object
       properties:
-        email:
+        value:
           type: string
-          example: john-doe@example.com
-          description: The user's email.
-        firstName:
+          description: The phone number.
+          example: +1-555-123-4567
+        type:
           type: string
-          example: John
-          description: The user's first name.
-        lastName:
-          type: string
-          example: Doe
-          description: The user's last name.
-        username:
-          type: string
-          example: john-doe@example.com
-          description: The user's username. If not provided the email will be used as the username.
-        password:
-          type: string
-          example: '`.~b"J<CA95m`bV@'
-          description: The user's password.
-        roles:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserRole'
-          example:
-          - billing-admin
-          - team-admin
-          description: A list of roles assigned to the user.
-      required:
-      - email
-      - firstName
-      - lastName
-    Profile:
-      type: object
-      properties:
-        accountId:
-          type: number
-          example: 100
-          description: The unique ID for the user's account.
-        username:
-          type: string
-          example: johndoe
-          description: Username of the user.
-        email:
-          type: string
-          example: john-doe@example.com
-          description: Email of the user.
-        fullName:
-          type: string
-          example: John Doe
-          description: Full name of the user.
-        id:
-          type: number
-          example: 101
-          description: ID of the user.
-        avatar:
-          $ref: '#/components/schemas/Avatar'
-          description: A reference to the user's avatar image, falling back to their Gravatar image.
-      description: The Profile resource contains basic profile information about a user.
+          description: The type of phone number (e.g., work, home, mobile). Only "work" type is currently supported.
+          example: work
+      description: An object representing a user's phone number.
     EnterpriseUserExtension:
       type: object
       description: Enterprise extension attributes for the user.
@@ -546,65 +574,33 @@ components:
               type: string
               description: The ID of the manager user. Will be in the form "lucid-1234" with 1234 being the ID of the Lucid user.
               example: lucid-5678
-    User_2:
-      allOf:
-      - $ref: '#/components/schemas/UserBase'
-      - type: object
-        properties:
-          id:
-            type: string
-            description: Will be in the form "lucid-1234" with 1234 being the ID of the Lucid user.
-            example: lucid-1234
-          groups:
-            type: array
-            items:
-              $ref: '#/components/schemas/UserGroup'
-      description: A standard representation of a user.
-    Email:
-      type: object
-      properties:
-        value:
-          type: string
-          description: The user's email.
-          example: john-doe@example.com
-        type:
-          type: string
-          description: A label indicating the attribute's function (e.g., 'work' or 'home').
-          example: work
-        primary:
-          type: boolean
-          description: Used to determine the primary email of the emails given.
-          example: true
-      description: An object representing a user's email.
-    Role:
+    UserOperation:
       type: object
       required:
-      - value
+      - op
       properties:
-        value:
+        op:
           type: string
-          description: Administrative role type.
-          example: DocumentAdmin
           enum:
-          - AccountAdmin
-          - BillingAdmin
-          - Developer
-          - DocumentAdmin
-          - EnterpriseShieldAdmin
-          - TemplateAdmin
-    CreateUser:
-      allOf:
-      - $ref: '#/components/schemas/UserBase'
-      - type: object
-        required:
-        - schemas
-        - userName
-        - emails
-        properties:
-          password:
-            type: string
-            example: password
-            description: Passwords must be at least 8 characters in length.
+          - add
+          - remove
+          - replace
+          description: The operation to perform.
+          example: add
+        path:
+          type: string
+          description: Path to the field you want to change.
+          example: roles
+        value:
+          oneOf:
+          - type: boolean
+          - type: string
+          - type: object
+          - type: array
+            items: {}
+          description: Value to be added/replaced.
+          example:
+          - value: Billing Admin
     Name:
       type: object
       properties:
@@ -621,6 +617,87 @@ components:
           description: The user's last name.
           example: Doe
       description: An object representing a user's name in various formats.
+    GetAllUsers:
+      type: object
+      properties:
+        schemas:
+          type: array
+          items:
+            type: string
+          example:
+          - urn:ietf:params:scim:api:messages:2.0:ListResponse
+        totalResults:
+          type: integer
+          description: The total number of users matching the query.
+          example: 1
+        startIndex:
+          type: integer
+          description: The index of the first user in the "Resources" list (for paginated results).
+          example: 1
+        itemsPerPage:
+          type: integer
+          description: The maximum number of users returned in the "Resources" list (for paginated results).
+          example: 100
+        Resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/User_2'
+          description: The list of users returned by the query.
+    UserGroup:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Id of group.
+          example: lucid-group-1234
+        display:
+          type: string
+          description: Display name of group.
+          example: Group A
+      description: An object representing a user's group.
+    CreateUser:
+      allOf:
+      - $ref: '#/components/schemas/UserBase'
+      - type: object
+        required:
+        - schemas
+        - userName
+        - emails
+        properties:
+          password:
+            type: string
+            example: password
+            description: Passwords must be at least 8 characters in length.
+    User_2:
+      allOf:
+      - $ref: '#/components/schemas/UserBase'
+      - type: object
+        properties:
+          id:
+            type: string
+            description: Will be in the form "lucid-1234" with 1234 being the ID of the Lucid user.
+            example: lucid-1234
+          groups:
+            type: array
+            items:
+              $ref: '#/components/schemas/UserGroup'
+      description: A standard representation of a user.
+    Role:
+      type: object
+      required:
+      - value
+      properties:
+        value:
+          type: string
+          description: Administrative role type.
+          example: DocumentAdmin
+          enum:
+          - AccountAdmin
+          - BillingAdmin
+          - Developer
+          - DocumentAdmin
+          - EnterpriseShieldAdmin
+          - TemplateAdmin
     UserBase:
       type: object
       description: Core attributes shared by all user representations.
@@ -673,83 +750,6 @@ components:
           description: A list of administrative roles assigned to the user. Assigning a role to a user allows that user to perform administrative actions associated with that role.
         urn:ietf:params:scim:schemas:extension:enterprise:2.0:User:
           $ref: '#/components/schemas/EnterpriseUserExtension'
-    PhoneNumber:
-      type: object
-      properties:
-        value:
-          type: string
-          description: The phone number.
-          example: +1-555-123-4567
-        type:
-          type: string
-          description: The type of phone number (e.g., work, home, mobile). Only "work" type is currently supported.
-          example: work
-      description: An object representing a user's phone number.
-    GetAllUsers:
-      type: object
-      properties:
-        schemas:
-          type: array
-          items:
-            type: string
-          example:
-          - urn:ietf:params:scim:api:messages:2.0:ListResponse
-        totalResults:
-          type: integer
-          description: The total number of users matching the query.
-          example: 1
-        startIndex:
-          type: integer
-          description: The index of the first user in the "Resources" list (for paginated results).
-          example: 1
-        itemsPerPage:
-          type: integer
-          description: The maximum number of users returned in the "Resources" list (for paginated results).
-          example: 100
-        Resources:
-          type: array
-          items:
-            $ref: '#/components/schemas/User_2'
-          description: The list of users returned by the query.
-    UserOperation:
-      type: object
-      required:
-      - op
-      properties:
-        op:
-          type: string
-          enum:
-          - add
-          - remove
-          - replace
-          description: The operation to perform.
-          example: add
-        path:
-          type: string
-          description: Path to the field you want to change.
-          example: roles
-        value:
-          oneOf:
-          - type: boolean
-          - type: string
-          - type: object
-          - type: array
-            items: {}
-          description: Value to be added/replaced.
-          example:
-          - value: Billing Admin
-    UserGroup:
-      type: object
-      properties:
-        value:
-          type: string
-          description: Id of group.
-          example: lucid-group-1234
-        display:
-          type: string
-          description: Display name of group.
-          example: Group A
-      description: An object representing a user's group.
   securitySchemes:
     OAuth2:
       type: oauth2

@@ -355,26 +355,24 @@ paths:
                 items:
                   $ref: '#/components/schemas/FolderContent'
 components:
+  parameters:
+    RequestAs-Folders:
+      in: header
+      name: Lucid-Request-As
+      required: true
+      description: 'If the requesting user is an account owner or folder admin with the required permissions and they make the request
+
+        with the value of “admin” as this header and include an admin scope, the request will be made using their admin
+
+        permissions.
+
+        Account owners and document admins can access the admin version of folder search.
+
+        '
+      schema:
+        type: string
+      example: admin
   schemas:
-    FolderAttribute:
-      type: object
-      description: An attribute assigned to the folder.
-      properties:
-        name:
-          type: string
-          description: Name of the attribute
-          example: Sample Label
-        value:
-          description: Value of the attribute. Can be any type, but attributes with the same name will always have the same type.
-          example: Sample Value
-    Product:
-      type: string
-      enum:
-      - lucidchart
-      - lucidscale
-      - lucidspark
-      description: The Lucid Suite product that a document was created in.
-      example: lucidchart
     FolderContentType:
       type: string
       description: '* folder  -  Type denoting that the Folder Content Resource is a folder and will have a Number id field and no product field.
@@ -386,17 +384,6 @@ components:
       - folder
       - document
       example: document
-    FolderType:
-      type: string
-      description: '* folder - Folders can live in other folders, team folders, or the root of a user’s folder manager ("My Documents"). A folder in "My Documents" will have a null parent field.
-
-        * team   - Team folders can never live in another folder and are always located in the "Team Folders" section of a user''s folder manager. Team folders will not have a parent field. Learn more
-
-        '
-      enum:
-      - folder
-      - team
-      example: folder
     FolderContent:
       type: object
       description: A representation of a single item contained in a folder.
@@ -425,6 +412,25 @@ components:
       - type
       - name
       - isShortcut
+    FolderAttribute:
+      type: object
+      description: An attribute assigned to the folder.
+      properties:
+        name:
+          type: string
+          description: Name of the attribute
+          example: Sample Label
+        value:
+          description: Value of the attribute. Can be any type, but attributes with the same name will always have the same type.
+          example: Sample Value
+    Product:
+      type: string
+      enum:
+      - lucidchart
+      - lucidscale
+      - lucidspark
+      description: The Lucid Suite product that a document was created in.
+      example: lucidchart
     Folder:
       type: object
       description: A standard representation of a folder.
@@ -465,23 +471,17 @@ components:
       - type
       - name
       - created
-  parameters:
-    RequestAs-Folders:
-      in: header
-      name: Lucid-Request-As
-      required: true
-      description: 'If the requesting user is an account owner or folder admin with the required permissions and they make the request
+    FolderType:
+      type: string
+      description: '* folder - Folders can live in other folders, team folders, or the root of a user’s folder manager ("My Documents"). A folder in "My Documents" will have a null parent field.
 
-        with the value of “admin” as this header and include an admin scope, the request will be made using their admin
-
-        permissions.
-
-        Account owners and document admins can access the admin version of folder search.
+        * team   - Team folders can never live in another folder and are always located in the "Team Folders" section of a user''s folder manager. Team folders will not have a parent field. Learn more
 
         '
-      schema:
-        type: string
-      example: admin
+      enum:
+      - folder
+      - team
+      example: folder
   securitySchemes:
     OAuth2:
       type: oauth2

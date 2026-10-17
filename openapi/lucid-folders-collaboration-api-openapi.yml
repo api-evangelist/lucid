@@ -481,26 +481,6 @@ components:
       - teamId
       - role
       - created
-    FolderUserCollaborator:
-      type: object
-      properties:
-        folderId:
-          type: integer
-          description: Folder ID
-        userId:
-          type: integer
-          description: User ID
-        role:
-          $ref: '#/components/schemas/Role'
-        created:
-          type: string
-          format: date-time
-          description: Date and time when the collaboration was created
-      required:
-      - folderId
-      - userId
-      - role
-      - created
     FolderGroupCollaborator:
       type: object
       properties:
@@ -519,6 +499,26 @@ components:
       required:
       - folderId
       - groupId
+      - role
+      - created
+    FolderUserCollaborator:
+      type: object
+      properties:
+        folderId:
+          type: integer
+          description: Folder ID
+        userId:
+          type: integer
+          description: User ID
+        role:
+          $ref: '#/components/schemas/Role'
+        created:
+          type: string
+          format: date-time
+          description: Date and time when the collaboration was created
+      required:
+      - folderId
+      - userId
       - role
       - created
   securitySchemes:
