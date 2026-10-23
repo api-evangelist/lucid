@@ -716,3 +716,9 @@ x-harvest:
   method: searched
   source: https://lucid-developer-docs.readme.io/mcp
   note: 'Assembled operation-by-operation from Lucid''s own documentation MCP server (tools list-endpoints + get-endpoint), which returns verbatim OpenAPI 3.0.3 fragments out of the spec Lucid uploaded to its ReadMe hub (/branches/1.4/apis/lucid-data-api.json). Paths, operations, parameters, request bodies, responses, components and securitySchemes are provider content, unmodified. Only the info block is ours: ReadMe''s per-endpoint fragments omit info, so title/description are copied verbatim from the provider''s own list-specs description for this spec.'
+x-provenance:
+  method: harvested
+  publisher: Lucid
+  source: https://lucid.readme.io/openapi/lucid-data-api.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
